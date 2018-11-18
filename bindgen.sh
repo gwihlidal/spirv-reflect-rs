@@ -1,0 +1,1 @@
+bindgen --no-layout-tests ./vendor/spirv_reflect.h -o ./gen/bindings.rs
