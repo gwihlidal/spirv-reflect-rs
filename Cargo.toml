@@ -25,6 +25,9 @@ include = [
 travis-ci = { repository = "gwihlidal/spirv-reflect-rs" }
 maintenance = { status = "actively-developed" }
 
+[dependencies]
+bitflags = "1.0.4"
+
 [build-dependencies]
 cc = { version = "1.0.25", features = ["parallel"] }
 

@@ -8,9 +8,7 @@ fn main() {
     build.include("src");
 
     // Add the files we build
-    let source_files = [
-        "vendor/spirv_reflect.c",
-    ];
+    let source_files = ["vendor/spirv_reflect.c"];
 
     for source_file in &source_files {
         build.file(&source_file);
