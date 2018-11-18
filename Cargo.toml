@@ -1,0 +1,34 @@
+[package]
+name = "spirv-reflect"
+version = "0.1.0"
+authors = ["Graham Wihlidal <graham@wihlidal.ca>"]
+description = "Reflection API in rust for SPIR-V shader byte code, intended for Vulkan applications."
+homepage = "https://github.com/gwihlidal/spirv-reflect-rs"
+repository = "https://github.com/gwihlidal/spirv-reflect-rs"
+documentation = "https://docs.rs/meshopt"
+readme = "README.md"
+keywords = ["shader", "spirv", "glsl", "hlsl", "reflect"]
+categories = ["rendering", "rendering::engine", ]
+license = "MIT/Apache-2.0"
+build = "build.rs"
+include = [
+    "src/*.rs",
+    "gen/bindings.rs",
+    "build.rs",
+    "Cargo.toml",
+    "vendor/spirv_reflect.h",
+    "vendor/spirv_reflect.c",
+    "vendor/include/spirv/unified1/spirv.h",
+]
+
+[badges]
+travis-ci = { repository = "gwihlidal/spirv-reflect-rs" }
+maintenance = { status = "actively-developed" }
+
+[build-dependencies]
+cc = { version = "1.0.25", features = ["parallel"] }
+
+[profile.release]
+lto = true
+opt-level = 3
+codegen-units = 1
