@@ -18,6 +18,9 @@ fn main() {
     if target.contains("darwin") {
         build
             .flag("-std=c++11")
+            .flag("-Wno-missing-field-initializers")
+            .flag("-Wno-sign-compare")
+            .flag("-Wno-deprecated")
             .cpp_link_stdlib("c++")
             .cpp_set_stdlib("c++")
             .cpp(true);

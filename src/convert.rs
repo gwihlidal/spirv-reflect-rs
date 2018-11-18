@@ -94,6 +94,72 @@ pub(crate) fn ffi_to_dimension(
     }
 }
 
+pub(crate) fn ffi_to_image_traits(
+    ffi_type: ffi::SpvReflectImageTraits,
+) -> ReflectImageTraits {
+    ReflectImageTraits {
+        dim: ffi_to_dimension(ffi_type.dim),
+        depth: ffi_type.depth,
+        arrayed: ffi_type.arrayed,
+        ms: ffi_type.ms,
+        sampled: ffi_type.sampled,
+        image_format: ffi_to_format(ffi_type.image_format),
+    }
+}
+
+pub(crate) fn ffi_to_format(
+    ffi_type: ffi::SpvReflectFormat,
+) -> ReflectFormat {
+    ReflectFormat::Undefined
+}
+
+pub(crate) fn ffi_to_decoration_flags(
+    ffi_type: ffi::SpvReflectDecorationFlags,
+) -> ReflectDecorationFlags {
+    ReflectDecorationFlags::NONE
+}
+
+pub(crate) fn ffi_to_numeric_traits(
+    ffi_type: ffi::SpvReflectNumericTraits,
+) -> ReflectNumericTraits {
+    ReflectNumericTraits::default()
+}
+
+pub(crate) fn ffi_to_array_traits(
+    ffi_type: ffi::SpvReflectArrayTraits,
+) -> ReflectArrayTraits {
+    ReflectArrayTraits::default()
+}
+
+pub(crate) fn ffi_to_binding_array_traits(
+    ffi_type: ffi::SpvReflectBindingArrayTraits,
+) -> ReflectBindingArrayTraits {
+    ReflectBindingArrayTraits::default()
+}
+
+pub(crate) fn ffi_to_block_variable(
+    ffi_type: ffi::SpvReflectBlockVariable,
+) -> ReflectBlockVariable {
+    let c_str: &std::ffi::CStr = unsafe { std::ffi::CStr::from_ptr(ffi_type.name) };
+    let str_slice: &str = c_str.to_str().unwrap();
+    //member_count: ffi_type.member_count,
+    let members: Vec<Box<ReflectBlockVariable>> = Vec::new();
+    let type_description = Some(Box::new(ReflectTypeDescription::default()));
+    ReflectBlockVariable {
+        spirv_id: ffi_type.spirv_id,
+        name: str_slice.to_owned(),
+        offset: ffi_type.offset,
+        absolute_offset: ffi_type.absolute_offset,
+        size: ffi_type.size,
+        padded_size: ffi_type.padded_size,
+        decoration_flags: ffi_to_decoration_flags(ffi_type.decoration_flags),
+        numeric: ffi_to_numeric_traits(ffi_type.numeric),
+        array: ffi_to_array_traits(ffi_type.array),
+        members,
+        type_description,
+    }
+}
+
 pub fn result_to_string(result: ffi::SpvReflectResult) -> &'static str {
     match result {
         ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => "Success",

@@ -96,24 +96,36 @@ impl ShaderModule {
                                     input_attachment_index: ffi_binding_ref.input_attachment_index,
                                     set: ffi_binding_ref.set,
                                     descriptor_type: convert::ffi_to_descriptor_type(ffi_binding_ref.descriptor_type),
-
-                            /*            pub descriptor_type: ReflectDescriptorType,
-    pub resource_type: ReflectResourceType,
-    pub image: ReflectImageTraits,
-    pub block: ReflectBlockVariable,
-    pub array: ReflectBindingArrayTraits,
-    pub count: u32,
-    pub uav_counter_id: u32,
-    //pub uav_counter_binding: *mut SpvReflectDescriptorBinding,
-    //pub type_description: *mut SpvReflectTypeDescription,
-    pub word_offset: ReflectDescriptorBindingSet,
-*/
-
-
-                                    ..Default::default() // TODO
+                                    resource_type: convert::ffi_to_resource_type(ffi_binding_ref.resource_type),
+                                    image: convert::ffi_to_image_traits(ffi_binding_ref.image),
+                                    block: convert::ffi_to_block_variable(ffi_binding_ref.block),
+                                    array: convert::ffi_to_binding_array_traits(ffi_binding_ref.array),
+                                    count: ffi_binding_ref.count,
+                                    uav_counter_id: ffi_binding_ref.uav_counter_id,
+                                    uav_counter_binding: match ffi_binding_ref.uav_counter_binding.is_null() {
+                                        true => {
+                                            None
+                                        },
+                                        false => {
+                                            None
+                                        }
+                                    },
+                                    type_description: match ffi_binding_ref.type_description.is_null() {
+                                        true => {
+                                            None
+                                        },
+                                        false => {
+                                            None
+                                        }
+                                    },
+                                    
+                                    //ffi_to_type_description()
+                                    //uav_counter_binding: convert::ffi_to_uav_counter_binding(ff_binding_ref.uav_counter_binding),
+                                    //type_description: convert::ffi_to_uav_counter_binding(ff_binding_ref.uav_counter_binding),
+                                    word_offset: (ffi_binding_ref.word_offset.binding, ffi_binding_ref.word_offset.set),
                                 });
                             }
-                            sets.push(types::ReflectDescriptorSet {
+                            sets.push(types::descriptor::ReflectDescriptorSet {
                                 set: ffi_set_ref.set,
                                 bindings,
                             });
