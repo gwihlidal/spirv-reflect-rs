@@ -3,17 +3,37 @@ use types::*;
 
 pub(crate) fn ffi_to_generator(ffi_type: ffi::SpvReflectGenerator) -> ReflectGenerator {
     match ffi_type {
-        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_LLVM_SPIRV_TRANSLATOR => ReflectGenerator::KHRONOS_LLVM_SPIRV_TRANSLATOR,
-        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_KHRONOS_SPIRV_TOOLS_ASSEMBLER => ReflectGenerator::KHRONOS_SPIRV_TOOLS_ASSEMBLER,
-        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_KHRONOS_GLSLANG_REFERENCE_FRONT_END => ReflectGenerator::KHRONOS_GLSLANG_REFERENCE_FRONT_END,
-        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_GOOGLE_SHADERC_OVER_GLSLANG => ReflectGenerator::GOOGLE_SHADERC_OVER_GLSLANG,
-        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_GOOGLE_SPIREGG => ReflectGenerator::GOOGLE_SPIREGG,
-        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_GOOGLE_RSPIRV => ReflectGenerator::GOOGLE_RSPIRV,
-        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_X_LEGEND_MESA_MESAIR_SPIRV_TRANSLATOR => ReflectGenerator::X_LEGEND_MESA_MESAIR_SPIRV_TRANSLATOR,
-        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_KHRONOS_SPIRV_TOOLS_LINKER => ReflectGenerator::KHRONOS_SPIRV_TOOLS_LINKER,
-        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_WINE_VKD3D_SHADER_COMPILER => ReflectGenerator::WINE_VKD3D_SHADER_COMPILER,
-        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_CLAY_CLAY_SHADER_COMPILER => ReflectGenerator::CLAY_CLAY_SHADER_COMPILER,
-        _ => ReflectGenerator::UNKNOWN,
+        ffi::SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_LLVM_SPIRV_TRANSLATOR => {
+            ReflectGenerator::KhronosLlvmSpirvTranslator
+        }
+        ffi::SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_SPIRV_TOOLS_ASSEMBLER => {
+            ReflectGenerator::KhronosSpirvToolsAssembler
+        }
+        ffi::SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_GLSLANG_REFERENCE_FRONT_END => {
+            ReflectGenerator::KhronosGlslangReferenceFrontEnd
+        }
+        ffi::SpvReflectGenerator_SPV_REFLECT_GENERATOR_GOOGLE_SHADERC_OVER_GLSLANG => {
+            ReflectGenerator::GoogleShadercOverGlslang
+        }
+        ffi::SpvReflectGenerator_SPV_REFLECT_GENERATOR_GOOGLE_SPIREGG => {
+            ReflectGenerator::GoogleSpiregg
+        }
+        ffi::SpvReflectGenerator_SPV_REFLECT_GENERATOR_GOOGLE_RSPIRV => {
+            ReflectGenerator::GoogleRspirv
+        }
+        ffi::SpvReflectGenerator_SPV_REFLECT_GENERATOR_X_LEGEND_MESA_MESAIR_SPIRV_TRANSLATOR => {
+            ReflectGenerator::XLegendMesaMesairSpirvTranslator
+        }
+        ffi::SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_SPIRV_TOOLS_LINKER => {
+            ReflectGenerator::KhronosSpirvToolsLinker
+        }
+        ffi::SpvReflectGenerator_SPV_REFLECT_GENERATOR_WINE_VKD3D_SHADER_COMPILER => {
+            ReflectGenerator::WineVkd3dShaderCompiler
+        }
+        ffi::SpvReflectGenerator_SPV_REFLECT_GENERATOR_CLAY_CLAY_SHADER_COMPILER => {
+            ReflectGenerator::ClayClayShaderCompiler
+        }
+        _ => ReflectGenerator::Unknown,
     }
 }
 
@@ -58,61 +78,41 @@ pub(crate) fn ffi_to_descriptor_type(
     }
 }
 
-pub(crate) fn ffi_to_resource_type(
-    ffi_type: ffi::SpvReflectResourceType,
-) -> ReflectResourceType {
+pub(crate) fn ffi_to_resource_type(ffi_type: ffi::SpvReflectResourceType) -> ReflectResourceType {
     match ffi_type {
         ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_UNDEFINED => {
             ReflectResourceType::Undefined
-        },
+        }
         ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_SAMPLER => {
             ReflectResourceType::Sampler
-        },
+        }
         ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_CBV => {
             ReflectResourceType::ConstantBufferView
-        },
+        }
         ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_SRV => {
             ReflectResourceType::ShaderResourceView
-        },
+        }
         ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_UAV => {
             ReflectResourceType::UnorderedAccessView
-        },
+        }
         _ => unimplemented!(),
     }
 }
 
-pub(crate) fn ffi_to_dimension(
-    ffi_type: ffi::SpvDim,
-) -> ReflectDimension {
+pub(crate) fn ffi_to_dimension(ffi_type: ffi::SpvDim) -> ReflectDimension {
     match ffi_type {
-        ffi::SpvDim__SpvDim1D => {
-            ReflectDimension::Type1d
-        },
-        ffi::SpvDim__SpvDim2D => {
-            ReflectDimension::Type2d
-        },
-        ffi::SpvDim__SpvDim3D => {
-            ReflectDimension::Type3d
-        },
-        ffi::SpvDim__SpvDimCube => {
-            ReflectDimension::Cube
-        },
-        ffi::SpvDim__SpvDimRect => {
-            ReflectDimension::Rect
-        },
-        ffi::SpvDim__SpvDimBuffer => {
-            ReflectDimension::Buffer
-        },
-        ffi::SpvDim__SpvDimSubpassData => {
-            ReflectDimension::SubPassData
-        },
+        ffi::SpvDim__SpvDim1D => ReflectDimension::Type1d,
+        ffi::SpvDim__SpvDim2D => ReflectDimension::Type2d,
+        ffi::SpvDim__SpvDim3D => ReflectDimension::Type3d,
+        ffi::SpvDim__SpvDimCube => ReflectDimension::Cube,
+        ffi::SpvDim__SpvDimRect => ReflectDimension::Rect,
+        ffi::SpvDim__SpvDimBuffer => ReflectDimension::Buffer,
+        ffi::SpvDim__SpvDimSubpassData => ReflectDimension::SubPassData,
         _ => unimplemented!(),
     }
 }
 
-pub(crate) fn ffi_to_image_traits(
-    ffi_type: ffi::SpvReflectImageTraits,
-) -> ReflectImageTraits {
+pub(crate) fn ffi_to_image_traits(ffi_type: ffi::SpvReflectImageTraits) -> ReflectImageTraits {
     ReflectImageTraits {
         dim: ffi_to_dimension(ffi_type.dim),
         depth: ffi_type.depth,
@@ -123,9 +123,7 @@ pub(crate) fn ffi_to_image_traits(
     }
 }
 
-pub(crate) fn ffi_to_image_format(
-    ffi_type: ffi::SpvImageFormat,
-) -> ReflectImageFormat {
+pub(crate) fn ffi_to_image_format(ffi_type: ffi::SpvImageFormat) -> ReflectImageFormat {
     match ffi_type {
         ffi::SpvImageFormat__SpvImageFormatUnknown => ReflectImageFormat::Undefined,
         ffi::SpvImageFormat__SpvImageFormatRgba32f => ReflectImageFormat::RGBA32_FLOAT,
@@ -167,13 +165,11 @@ pub(crate) fn ffi_to_image_format(
         ffi::SpvImageFormat__SpvImageFormatRg8ui => ReflectImageFormat::RG8_UINT,
         ffi::SpvImageFormat__SpvImageFormatR16ui => ReflectImageFormat::R16_UINT,
         ffi::SpvImageFormat__SpvImageFormatR8ui => ReflectImageFormat::R8_UINT,
-        _ => unimplemented!()
+        _ => unimplemented!(),
     }
 }
 
-pub(crate) fn ffi_to_format(
-    ffi_type: ffi::SpvReflectFormat,
-) -> ReflectFormat {
+pub(crate) fn ffi_to_format(ffi_type: ffi::SpvReflectFormat) -> ReflectFormat {
     match ffi_type {
         ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_UNDEFINED => ReflectFormat::Undefined,
         ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32_UINT => ReflectFormat::R32_UINT,
@@ -184,17 +180,23 @@ pub(crate) fn ffi_to_format(
         ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32_SFLOAT => ReflectFormat::R32G32_SFLOAT,
         ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32_UINT => ReflectFormat::R32G32B32_UINT,
         ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32_SINT => ReflectFormat::R32G32B32_SINT,
-        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32_SFLOAT => ReflectFormat::R32G32B32_SFLOAT,
-        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_UINT => ReflectFormat::R32G32B32A32_UINT,
-        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_SINT => ReflectFormat::R32G32B32A32_SINT,
-        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_SFLOAT => ReflectFormat::R32G32B32A32_SFLOAT,
-        _ => unimplemented!()
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32_SFLOAT => {
+            ReflectFormat::R32G32B32_SFLOAT
+        }
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_UINT => {
+            ReflectFormat::R32G32B32A32_UINT
+        }
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_SINT => {
+            ReflectFormat::R32G32B32A32_SINT
+        }
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_SFLOAT => {
+            ReflectFormat::R32G32B32A32_SFLOAT
+        }
+        _ => unimplemented!(),
     }
 }
 
-pub(crate) fn ffi_to_storage_class(
-    ffi_type: ffi::SpvStorageClass,
-) -> ReflectStorageClass {
+pub(crate) fn ffi_to_storage_class(ffi_type: ffi::SpvStorageClass) -> ReflectStorageClass {
     match ffi_type {
         ffi::SpvStorageClass__SpvStorageClassUniformConstant => ReflectStorageClass::Undefined,
         ffi::SpvStorageClass__SpvStorageClassInput => ReflectStorageClass::Input,
@@ -209,7 +211,7 @@ pub(crate) fn ffi_to_storage_class(
         ffi::SpvStorageClass__SpvStorageClassAtomicCounter => ReflectStorageClass::AtomicCounter,
         ffi::SpvStorageClass__SpvStorageClassImage => ReflectStorageClass::Image,
         ffi::SpvStorageClass__SpvStorageClassStorageBuffer => ReflectStorageClass::StorageBuffer,
-        _ => unimplemented!()
+        _ => unimplemented!(),
     }
 }
 
@@ -240,13 +242,11 @@ pub(crate) fn ffi_to_numeric_traits(
             column_count: ffi_type.matrix.column_count,
             row_count: ffi_type.matrix.row_count,
             stride: ffi_type.matrix.stride,
-        }
+        },
     }
 }
 
-pub(crate) fn ffi_to_array_traits(
-    ffi_type: ffi::SpvReflectArrayTraits,
-) -> ReflectArrayTraits {
+pub(crate) fn ffi_to_array_traits(ffi_type: ffi::SpvReflectArrayTraits) -> ReflectArrayTraits {
     ReflectArrayTraits {
         dims_count: ffi_type.dims_count,
         dims: ffi_type.dims,

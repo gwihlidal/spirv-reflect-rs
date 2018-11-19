@@ -26,7 +26,7 @@ impl ShaderModule {
     pub fn get_generator(&self) -> types::ReflectGenerator {
         match self.module {
             Some(module) => convert::ffi_to_generator(module.generator),
-            None => types::ReflectGenerator::UNKNOWN,
+            None => types::ReflectGenerator::Unknown,
         }
     }
 
@@ -57,7 +57,7 @@ impl ShaderModule {
                     Ok(String::new())
                 } else {
                     let c_str: &std::ffi::CStr =
-                    unsafe { std::ffi::CStr::from_ptr(module.entry_point_name) };
+                        unsafe { std::ffi::CStr::from_ptr(module.entry_point_name) };
                     let str_slice: &str = c_str.to_str().unwrap();
                     Ok(str_slice.to_owned())
                 }
@@ -150,34 +150,41 @@ impl ShaderModule {
                                     binding: ffi_binding_ref.binding,
                                     input_attachment_index: ffi_binding_ref.input_attachment_index,
                                     set: ffi_binding_ref.set,
-                                    descriptor_type: convert::ffi_to_descriptor_type(ffi_binding_ref.descriptor_type),
-                                    resource_type: convert::ffi_to_resource_type(ffi_binding_ref.resource_type),
+                                    descriptor_type: convert::ffi_to_descriptor_type(
+                                        ffi_binding_ref.descriptor_type,
+                                    ),
+                                    resource_type: convert::ffi_to_resource_type(
+                                        ffi_binding_ref.resource_type,
+                                    ),
                                     image: convert::ffi_to_image_traits(ffi_binding_ref.image),
                                     block: convert::ffi_to_block_variable(ffi_binding_ref.block),
-                                    array: convert::ffi_to_binding_array_traits(ffi_binding_ref.array),
+                                    array: convert::ffi_to_binding_array_traits(
+                                        ffi_binding_ref.array,
+                                    ),
                                     count: ffi_binding_ref.count,
                                     uav_counter_id: ffi_binding_ref.uav_counter_id,
-                                    uav_counter_binding: match ffi_binding_ref.uav_counter_binding.is_null() {
-                                        true => {
-                                            None
-                                        },
-                                        false => {
-                                            None
-                                        }
+                                    uav_counter_binding: match ffi_binding_ref
+                                        .uav_counter_binding
+                                        .is_null()
+                                    {
+                                        true => None,
+                                        false => None,
                                     },
-                                    type_description: match ffi_binding_ref.type_description.is_null() {
-                                        true => {
-                                            None
-                                        },
-                                        false => {
-                                            None
-                                        }
+                                    type_description: match ffi_binding_ref
+                                        .type_description
+                                        .is_null()
+                                    {
+                                        true => None,
+                                        false => None,
                                     },
-                                    
+
                                     //ffi_to_type_description()
                                     //uav_counter_binding: convert::ffi_to_uav_counter_binding(ff_binding_ref.uav_counter_binding),
                                     //type_description: convert::ffi_to_uav_counter_binding(ff_binding_ref.uav_counter_binding),
-                                    word_offset: (ffi_binding_ref.word_offset.binding, ffi_binding_ref.word_offset.set),
+                                    word_offset: (
+                                        ffi_binding_ref.word_offset.binding,
+                                        ffi_binding_ref.word_offset.set,
+                                    ),
                                 });
                             }
                             sets.push(types::descriptor::ReflectDescriptorSet {

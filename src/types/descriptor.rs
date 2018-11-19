@@ -1,4 +1,7 @@
-use types::{ReflectResourceType, ReflectTypeDescription, ReflectBindingArrayTraits, ReflectBlockVariable, ReflectImageTraits};
+use types::{
+    ReflectBindingArrayTraits, ReflectBlockVariable, ReflectImageTraits, ReflectResourceType,
+    ReflectTypeDescription,
+};
 
 #[derive(Debug, Copy, Clone)]
 pub enum ReflectDescriptorType {

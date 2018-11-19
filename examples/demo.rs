@@ -24,8 +24,6 @@ fn main() {
 
             let generator = module.get_generator();
             println!("generator: {:?}", generator);
-
-            
         }
         Err(err) => {
             panic!("Error occurred - {:?}", err);
