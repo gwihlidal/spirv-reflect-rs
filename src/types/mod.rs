@@ -12,8 +12,6 @@ pub use self::resource::*;
 pub use self::traits::*;
 pub use self::variable::*;
 
-use ffi;
-
 #[derive(Debug, Copy, Clone)]
 pub enum ReflectGenerator {
     Unknown,

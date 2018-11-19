@@ -1,5 +1,7 @@
 #[macro_use]
 extern crate bitflags;
+extern crate num_traits;
+extern crate spirv_headers;
 
 pub mod convert;
 pub mod ffi;

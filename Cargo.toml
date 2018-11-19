@@ -27,6 +27,8 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 bitflags = "1.0.4"
+spirv_headers = "1.3.4"
+num-traits = "0.2.6"
 
 [build-dependencies]
 cc = { version = "1.0.25", features = ["parallel"] }
