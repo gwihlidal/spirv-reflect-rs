@@ -3,6 +3,8 @@ extern crate bitflags;
 extern crate num_traits;
 extern crate spirv_headers;
 
+use num_traits::cast::FromPrimitive;
+
 pub mod convert;
 pub mod ffi;
 pub mod types;
@@ -38,20 +40,6 @@ pub struct ShaderModule {
 }
 
 impl ShaderModule {
-    pub fn get_generator(&self) -> types::ReflectGenerator {
-        match self.module {
-            Some(module) => convert::ffi_to_generator(module.generator),
-            None => types::ReflectGenerator::Unknown,
-        }
-    }
-
-    pub fn get_shader_stage(&self) -> types::ReflectShaderStageFlags {
-        match self.module {
-            Some(module) => convert::ffi_to_shader_stage_flags(module.shader_stage),
-            None => types::ReflectShaderStageFlags::UNDEFINED,
-        }
-    }
-
     pub fn get_code_size(&self) -> usize {
         match self.module {
             Some(module) => unsafe { ffi::spvReflectGetCodeSize(&module) as usize },
@@ -65,15 +53,71 @@ impl ShaderModule {
         unsafe { std::slice::from_raw_parts(ffi::spvReflectGetCode(&module), code_size / 4) }
     }
 
-    pub fn get_entry_point_name(&self) -> Result<String, &str> {
+    pub fn get_generator(&self) -> types::ReflectGenerator {
         match self.module {
-            Some(module) => Ok(ffi_to_string(module.entry_point_name)),
-            None => Ok(String::new()),
+            Some(module) => convert::ffi_to_generator(module.generator),
+            None => types::ReflectGenerator::Unknown,
         }
     }
+
+    pub fn get_entry_point_name(&self) -> String {
+        match self.module {
+            Some(module) => ffi_to_string(module.entry_point_name),
+            None => String::new(),
+        }
+    }
+
+    pub fn get_shader_stage(&self) -> types::ReflectShaderStageFlags {
+        match self.module {
+            Some(module) => convert::ffi_to_shader_stage_flags(module.shader_stage),
+            None => types::ReflectShaderStageFlags::UNDEFINED,
+        }
+    }
+
+    
+
+    
+
+    pub fn get_source_language(&self) -> spirv_headers::SourceLanguage {
+        match self.module {
+            Some(module) => match spirv_headers::SourceLanguage::from_i32(module.source_language) {
+                Some(language) => language,
+                None => spirv_headers::SourceLanguage::Unknown,
+            },
+            None => spirv_headers::SourceLanguage::Unknown,
+        }
+    }
+
+    pub fn get_source_language_version(&self) -> u32 {
+        match self.module {
+            Some(module) => module.source_language_version,
+            None => 0,
+        }
+    }
+
+    pub fn get_source_file(&self) -> String {
+        match self.module {
+            Some(module) => ffi_to_string(module.source_file),
+            None => String::new(),
+        }
+    }
+
+    pub fn get_source_text(&self) -> String {
+        match self.module {
+            Some(module) => ffi_to_string(module.source_source),
+            None => String::new(),
+        }
+    }
+
+    pub fn get_spirv_execution_model(&self) -> spirv_headers::ExecutionModel {
+        match self.module {
+            Some(module) => {
+                match spirv_headers::ExecutionModel::from_i32(module.spirv_execution_model) {
+                    Some(model) => model,
+                    None => spirv_headers::ExecutionModel::Vertex,
                 }
             }
-            None => Ok(String::new()),
+            None => spirv_headers::ExecutionModel::Vertex,
         }
     }
 
@@ -82,12 +126,6 @@ impl ShaderModule {
     pub entry_point_id: u32,
     pub entry_point_count: u32,
     pub entry_points: *mut SpvReflectEntryPoint,
-    pub source_language: SpvSourceLanguage,
-    pub source_language_version: u32,
-    pub source_file: *const ::std::os::raw::c_char,
-    pub source_source: *const ::std::os::raw::c_char,
-    pub spirv_execution_model: SpvExecutionModel,
-    pub shader_stage: SpvReflectShaderStageFlagBits,
     pub descriptor_binding_count: u32,
     pub descriptor_bindings: *mut SpvReflectDescriptorBinding,
     pub descriptor_set_count: u32,
@@ -98,7 +136,6 @@ impl ShaderModule {
     pub output_variables: *mut SpvReflectInterfaceVariable,
     pub push_constant_block_count: u32,
     pub push_constant_blocks: *mut SpvReflectBlockVariable,
-    pub _internal: *mut SpvReflectShaderModule_Internal,
 }
 */
 
