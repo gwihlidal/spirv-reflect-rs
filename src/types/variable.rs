@@ -1,5 +1,6 @@
-use types::op::ReflectOp;
+use types::op::{ReflectBuiltIn, ReflectOp};
 use types::traits::*;
+use types::image::ReflectFormat;
 
 bitflags! {
     pub struct ReflectDecorationFlags: u32 {
@@ -134,9 +135,21 @@ impl Default for ReflectStorageClass {
     }
 }
 
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct ReflectInterfaceVariable {
-    //pub word_offset: u32,
+    pub spirv_id: u32,
+    pub name: String,
+    pub location: u32,
+    pub storage_class: ReflectStorageClass,
+    pub semantic: String,
+    pub decoration_flags: ReflectDecorationFlags,
+    pub built_in: ReflectBuiltIn,
+    pub numeric: ReflectNumericTraits,
+    pub array: ReflectArrayTraits,
+    pub members: Vec<ReflectInterfaceVariable>,
+    pub format: ReflectFormat,
+    pub type_description: Option<ReflectTypeDescription>,
+    pub word_offset: u32,
 }
 
 #[derive(Debug, Default, Copy, Clone)]

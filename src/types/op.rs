@@ -3,7 +3,7 @@ use num_traits::cast::FromPrimitive;
 use spirv_headers;
 use std::ops::Deref;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct ReflectOp(spirv_headers::Op);
 
 impl Default for ReflectOp {
@@ -23,6 +23,31 @@ impl From<ffi::SpvOp> for ReflectOp {
     fn from(raw_op: ffi::SpvOp) -> Self {
         match spirv_headers::Op::from_i32(raw_op) {
             Some(op) => ReflectOp(op),
+            None => Default::default(),
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct ReflectBuiltIn(spirv_headers::BuiltIn);
+
+impl Default for ReflectBuiltIn {
+    fn default() -> Self {
+        ReflectBuiltIn(spirv_headers::BuiltIn::Position)
+    }
+}
+
+impl Deref for ReflectBuiltIn {
+    type Target = spirv_headers::BuiltIn;
+    fn deref(&self) -> &spirv_headers::BuiltIn {
+        &self.0
+    }
+}
+
+impl From<ffi::SpvBuiltIn> for ReflectBuiltIn {
+    fn from(raw_built_in: ffi::SpvBuiltIn) -> Self {
+        match spirv_headers::BuiltIn::from_i32(raw_built_in) {
+            Some(built_in) => ReflectBuiltIn(built_in),
             None => Default::default(),
         }
     }

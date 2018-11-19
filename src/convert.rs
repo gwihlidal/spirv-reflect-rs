@@ -1,6 +1,37 @@
 use ffi;
 use types::*;
 
+pub(crate) fn ffi_to_interface_variable(
+    ffi_type: &ffi::SpvReflectInterfaceVariable,
+) -> ReflectInterfaceVariable {
+    let ffi_members =
+        unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
+    let members: Vec<ReflectInterfaceVariable> = ffi_members
+        .iter()
+        .map(|&member| ffi_to_interface_variable(&member))
+        .collect();
+    ReflectInterfaceVariable {
+        spirv_id: ffi_type.spirv_id,
+        name: super::ffi_to_string(ffi_type.name),
+        location: ffi_type.location,
+        storage_class: ffi_to_storage_class(ffi_type.storage_class),
+        semantic: super::ffi_to_string(ffi_type.semantic),
+        decoration_flags: ffi_to_decoration_flags(ffi_type.decoration_flags),
+        built_in: ReflectBuiltIn::from(ffi_type.built_in),
+        numeric: ffi_to_numeric_traits(ffi_type.numeric),
+        array: ffi_to_array_traits(ffi_type.array),
+        members,
+        format: ffi_to_format(ffi_type.format),
+        type_description: match ffi_type.type_description.is_null() {
+            true => None,
+            false => Some(ffi_to_type_description(unsafe {
+                &*ffi_type.type_description
+            })),
+        },
+        word_offset: ffi_type.word_offset.location,
+    }
+}
+
 pub(crate) fn ffi_to_type_description(
     ffi_type: &ffi::SpvReflectTypeDescription,
 ) -> ReflectTypeDescription {
