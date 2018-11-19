@@ -92,7 +92,7 @@ pub struct ReflectTypeDescription {
     pub type_flags: ReflectTypeFlags,
     pub decoration_flags: ReflectDecorationFlags,
     pub traits: ReflectTypeDescriptionTraits,
-    pub members: Vec<Box<ReflectTypeDescription>>,
+    pub members: Vec<ReflectTypeDescription>,
 }
 
 #[derive(Default, Debug, Clone)]
@@ -106,8 +106,8 @@ pub struct ReflectBlockVariable {
     pub decoration_flags: ReflectDecorationFlags,
     pub numeric: ReflectNumericTraits,
     pub array: ReflectArrayTraits,
-    pub members: Vec<Box<ReflectBlockVariable>>,
-    pub type_description: Option<Box<ReflectTypeDescription>>,
+    pub members: Vec<ReflectBlockVariable>,
+    pub type_description: Option<ReflectTypeDescription>,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -134,6 +134,10 @@ impl Default for ReflectStorageClass {
     }
 }
 
+#[derive(Debug, Default, Copy, Clone)]
 pub struct ReflectInterfaceVariable {
     //pub word_offset: u32,
 }
+
+#[derive(Debug, Default, Copy, Clone)]
+pub struct ReflectEntryPoint {}

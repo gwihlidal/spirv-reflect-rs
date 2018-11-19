@@ -1,6 +1,60 @@
 use ffi;
 use types::*;
 
+pub(crate) fn ffi_to_type_description(
+    ffi_type: &ffi::SpvReflectTypeDescription,
+) -> ReflectTypeDescription {
+    let ffi_members =
+        unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
+    let members: Vec<ReflectTypeDescription> = ffi_members
+        .iter()
+        .map(|&member| ffi_to_type_description(&member))
+        .collect();
+    ReflectTypeDescription {
+        id: ffi_type.id,
+        op: ReflectOp::from(ffi_type.op),
+        type_name: super::ffi_to_string(ffi_type.type_name),
+        struct_member_name: super::ffi_to_string(ffi_type.struct_member_name),
+        storage_class: ffi_to_storage_class(ffi_type.storage_class),
+        type_flags: ffi_to_type_flags(ffi_type.type_flags as i32),
+        decoration_flags: ffi_to_decoration_flags(ffi_type.decoration_flags),
+        traits: ffi_to_type_description_traits(ffi_type.traits),
+        members,
+    }
+}
+
+pub(crate) fn ffi_to_descriptor_binding(
+    ffi_type: &ffi::SpvReflectDescriptorBinding,
+) -> ReflectDescriptorBinding {
+    ReflectDescriptorBinding {
+        spirv_id: ffi_type.spirv_id,
+        name: super::ffi_to_string(ffi_type.name),
+        binding: ffi_type.binding,
+        input_attachment_index: ffi_type.input_attachment_index,
+        set: ffi_type.set,
+        descriptor_type: ffi_to_descriptor_type(ffi_type.descriptor_type),
+        resource_type: ffi_to_resource_type(ffi_type.resource_type),
+        image: ffi_to_image_traits(ffi_type.image),
+        block: ffi_to_block_variable(&ffi_type.block),
+        array: ffi_to_binding_array_traits(ffi_type.array),
+        count: ffi_type.count,
+        uav_counter_id: ffi_type.uav_counter_id,
+        uav_counter_binding: match ffi_type.uav_counter_binding.is_null() {
+            true => None,
+            false => Some(Box::new(ffi_to_descriptor_binding(unsafe {
+                &*ffi_type.uav_counter_binding
+            }))),
+        },
+        type_description: match ffi_type.type_description.is_null() {
+            true => None,
+            false => Some(ffi_to_type_description(unsafe {
+                &*ffi_type.type_description
+            })),
+        },
+        word_offset: (ffi_type.word_offset.binding, ffi_type.word_offset.set),
+    }
+}
+
 pub(crate) fn ffi_to_generator(ffi_type: ffi::SpvReflectGenerator) -> ReflectGenerator {
     match ffi_type {
         ffi::SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_LLVM_SPIRV_TRANSLATOR => {
@@ -112,6 +166,16 @@ pub(crate) fn ffi_to_dimension(ffi_type: ffi::SpvDim) -> ReflectDimension {
     }
 }
 
+pub(crate) fn ffi_to_type_description_traits(
+    ffi_type: ffi::SpvReflectTypeDescription_Traits,
+) -> ReflectTypeDescriptionTraits {
+    ReflectTypeDescriptionTraits {
+        numeric: ffi_to_numeric_traits(ffi_type.numeric),
+        image: ffi_to_image_traits(ffi_type.image),
+        array: ffi_to_array_traits(ffi_type.array),
+    }
+}
+
 pub(crate) fn ffi_to_image_traits(ffi_type: ffi::SpvReflectImageTraits) -> ReflectImageTraits {
     ReflectImageTraits {
         dim: ffi_to_dimension(ffi_type.dim),
@@ -198,7 +262,9 @@ pub(crate) fn ffi_to_format(ffi_type: ffi::SpvReflectFormat) -> ReflectFormat {
 
 pub(crate) fn ffi_to_storage_class(ffi_type: ffi::SpvStorageClass) -> ReflectStorageClass {
     match ffi_type {
-        ffi::SpvStorageClass__SpvStorageClassUniformConstant => ReflectStorageClass::Undefined,
+        ffi::SpvStorageClass__SpvStorageClassUniformConstant => {
+            ReflectStorageClass::UniformConstant
+        }
         ffi::SpvStorageClass__SpvStorageClassInput => ReflectStorageClass::Input,
         ffi::SpvStorageClass__SpvStorageClassUniform => ReflectStorageClass::Uniform,
         ffi::SpvStorageClass__SpvStorageClassOutput => ReflectStorageClass::Output,
@@ -211,6 +277,7 @@ pub(crate) fn ffi_to_storage_class(ffi_type: ffi::SpvStorageClass) -> ReflectSto
         ffi::SpvStorageClass__SpvStorageClassAtomicCounter => ReflectStorageClass::AtomicCounter,
         ffi::SpvStorageClass__SpvStorageClassImage => ReflectStorageClass::Image,
         ffi::SpvStorageClass__SpvStorageClassStorageBuffer => ReflectStorageClass::StorageBuffer,
+        -1 => ReflectStorageClass::Undefined,
         _ => unimplemented!(),
     }
 }
@@ -219,6 +286,10 @@ pub(crate) fn ffi_to_shader_stage_flags(
     ffi_type: ffi::SpvReflectShaderStageFlagBits,
 ) -> ReflectShaderStageFlags {
     ReflectShaderStageFlags::from_bits(ffi_type as u32).unwrap()
+}
+
+pub(crate) fn ffi_to_type_flags(ffi_type: ffi::SpvReflectTypeFlagBits) -> ReflectTypeFlags {
+    ReflectTypeFlags::from_bits(ffi_type as u32).unwrap()
 }
 
 pub(crate) fn ffi_to_decoration_flags(
@@ -264,15 +335,17 @@ pub(crate) fn ffi_to_binding_array_traits(
 }
 
 pub(crate) fn ffi_to_block_variable(
-    ffi_type: ffi::SpvReflectBlockVariable,
+    ffi_type: &ffi::SpvReflectBlockVariable,
 ) -> ReflectBlockVariable {
-    use ffi_to_string;
-    //member_count: ffi_type.member_count,
-    let members: Vec<Box<ReflectBlockVariable>> = Vec::new();
-    let type_description = Some(Box::new(ReflectTypeDescription::default()));
+    let ffi_members =
+        unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
+    let members: Vec<ReflectBlockVariable> = ffi_members
+        .iter()
+        .map(|&member| ffi_to_block_variable(&member))
+        .collect();
     ReflectBlockVariable {
         spirv_id: ffi_type.spirv_id,
-        name: ffi_to_string(ffi_type.name),
+        name: super::ffi_to_string(ffi_type.name),
         offset: ffi_type.offset,
         absolute_offset: ffi_type.absolute_offset,
         size: ffi_type.size,
@@ -281,7 +354,12 @@ pub(crate) fn ffi_to_block_variable(
         numeric: ffi_to_numeric_traits(ffi_type.numeric),
         array: ffi_to_array_traits(ffi_type.array),
         members,
-        type_description,
+        type_description: match ffi_type.type_description.is_null() {
+            true => None,
+            false => Some(ffi_to_type_description(unsafe {
+                &*ffi_type.type_description
+            })),
+        },
     }
 }
 

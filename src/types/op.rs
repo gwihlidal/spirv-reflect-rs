@@ -1,6 +1,7 @@
 use ffi;
 use num_traits::cast::FromPrimitive;
 use spirv_headers;
+use std::ops::Deref;
 
 #[derive(Debug, Clone)]
 pub struct ReflectOp(spirv_headers::Op);
@@ -8,6 +9,13 @@ pub struct ReflectOp(spirv_headers::Op);
 impl Default for ReflectOp {
     fn default() -> Self {
         ReflectOp(spirv_headers::Op::Nop)
+    }
+}
+
+impl Deref for ReflectOp {
+    type Target = spirv_headers::Op;
+    fn deref(&self) -> &spirv_headers::Op {
+        &self.0
     }
 }
 

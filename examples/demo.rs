@@ -33,8 +33,6 @@ fn main() {
             let spv_execution_model = module.get_spirv_execution_model();
             println!("spv_execution_model: {:?}", spv_execution_model);
 
-
-
             let code_size = module.get_code_size();
             let code_slice = module.get_code_slice();
             println!("size is {}", code_size);
@@ -43,7 +41,7 @@ fn main() {
             println!("descriptor count is {}", count);
 
             let sets = module.descriptor_sets().unwrap();
-            //println!("descriptor sets {:?}", sets);
+            println!("descriptor sets {:?}", sets);
         }
         Err(err) => {
             panic!("Error occurred - {:?}", err);

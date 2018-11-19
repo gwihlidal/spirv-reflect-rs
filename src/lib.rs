@@ -60,23 +60,12 @@ impl ShaderModule {
         }
     }
 
-    pub fn get_entry_point_name(&self) -> String {
-        match self.module {
-            Some(module) => ffi_to_string(module.entry_point_name),
-            None => String::new(),
-        }
-    }
-
     pub fn get_shader_stage(&self) -> types::ReflectShaderStageFlags {
         match self.module {
             Some(module) => convert::ffi_to_shader_stage_flags(module.shader_stage),
             None => types::ReflectShaderStageFlags::UNDEFINED,
         }
     }
-
-    
-
-    
 
     pub fn get_source_language(&self) -> spirv_headers::SourceLanguage {
         match self.module {
@@ -128,8 +117,6 @@ impl ShaderModule {
     pub entry_points: *mut SpvReflectEntryPoint,
     pub descriptor_binding_count: u32,
     pub descriptor_bindings: *mut SpvReflectDescriptorBinding,
-    pub descriptor_set_count: u32,
-    pub descriptor_sets: [SpvReflectDescriptorSet; 64usize],
     pub input_variable_count: u32,
     pub input_variables: *mut SpvReflectInterfaceVariable,
     pub output_variable_count: u32,
@@ -188,49 +175,9 @@ impl ShaderModule {
                                 )
                             };
                             for ffi_binding in ffi_bindings {
-                                let ffi_binding_ref = unsafe { &**ffi_binding };
-                                bindings.push(types::ReflectDescriptorBinding {
-                                    spirv_id: ffi_binding_ref.spirv_id,
-                                    name: ffi_to_string(ffi_binding_ref.name),
-                                    binding: ffi_binding_ref.binding,
-                                    input_attachment_index: ffi_binding_ref.input_attachment_index,
-                                    set: ffi_binding_ref.set,
-                                    descriptor_type: convert::ffi_to_descriptor_type(
-                                        ffi_binding_ref.descriptor_type,
-                                    ),
-                                    resource_type: convert::ffi_to_resource_type(
-                                        ffi_binding_ref.resource_type,
-                                    ),
-                                    image: convert::ffi_to_image_traits(ffi_binding_ref.image),
-                                    block: convert::ffi_to_block_variable(ffi_binding_ref.block),
-                                    array: convert::ffi_to_binding_array_traits(
-                                        ffi_binding_ref.array,
-                                    ),
-                                    count: ffi_binding_ref.count,
-                                    uav_counter_id: ffi_binding_ref.uav_counter_id,
-                                    uav_counter_binding: match ffi_binding_ref
-                                        .uav_counter_binding
-                                        .is_null()
-                                    {
-                                        true => None,
-                                        false => None,
-                                    },
-                                    type_description: match ffi_binding_ref
-                                        .type_description
-                                        .is_null()
-                                    {
-                                        true => None,
-                                        false => None,
-                                    },
-
-                                    //ffi_to_type_description()
-                                    //uav_counter_binding: convert::ffi_to_uav_counter_binding(ff_binding_ref.uav_counter_binding),
-                                    //type_description: convert::ffi_to_uav_counter_binding(ff_binding_ref.uav_counter_binding),
-                                    word_offset: (
-                                        ffi_binding_ref.word_offset.binding,
-                                        ffi_binding_ref.word_offset.set,
-                                    ),
-                                });
+                                bindings.push(convert::ffi_to_descriptor_binding(unsafe {
+                                    &**ffi_binding
+                                }));
                             }
                             sets.push(types::descriptor::ReflectDescriptorSet {
                                 set: ffi_set_ref.set,
@@ -249,6 +196,17 @@ impl ShaderModule {
             // Invalid shader module
             Ok(Vec::new())
         }
+    }
+
+    pub fn get_entry_point_name(&self) -> String {
+        match self.module {
+            Some(module) => ffi_to_string(module.entry_point_name),
+            None => String::new(),
+        }
+    }
+
+    pub fn get_entry_point(&self, name: &str) -> Option<types::variable::ReflectEntryPoint> {
+        Default::default()
     }
 }
 
