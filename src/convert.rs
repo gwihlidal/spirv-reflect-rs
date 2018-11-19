@@ -266,14 +266,13 @@ pub(crate) fn ffi_to_binding_array_traits(
 pub(crate) fn ffi_to_block_variable(
     ffi_type: ffi::SpvReflectBlockVariable,
 ) -> ReflectBlockVariable {
-    let c_str: &std::ffi::CStr = unsafe { std::ffi::CStr::from_ptr(ffi_type.name) };
-    let str_slice: &str = c_str.to_str().unwrap();
+    use ffi_to_string;
     //member_count: ffi_type.member_count,
     let members: Vec<Box<ReflectBlockVariable>> = Vec::new();
     let type_description = Some(Box::new(ReflectTypeDescription::default()));
     ReflectBlockVariable {
         spirv_id: ffi_type.spirv_id,
-        name: str_slice.to_owned(),
+        name: ffi_to_string(ffi_type.name),
         offset: ffi_type.offset,
         absolute_offset: ffi_type.absolute_offset,
         size: ffi_type.size,

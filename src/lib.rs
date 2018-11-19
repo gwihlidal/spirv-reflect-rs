@@ -7,6 +7,19 @@ pub mod convert;
 pub mod ffi;
 pub mod types;
 
+pub fn ffi_to_string(ffi: *const ::std::os::raw::c_char) -> String {
+    if ffi.is_null() {
+        String::new()
+    } else {
+        let c_str: &std::ffi::CStr = unsafe { std::ffi::CStr::from_ptr(ffi) };
+        let str_slice: &str = match c_str.to_str() {
+            Ok(c_str) => c_str,
+            Err(_) => &"",
+        };
+        str_slice.to_owned()
+    }
+}
+
 impl Default for ffi::SpvReflectShaderModule {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
@@ -54,14 +67,10 @@ impl ShaderModule {
 
     pub fn get_entry_point_name(&self) -> Result<String, &str> {
         match self.module {
-            Some(module) => {
-                if module.entry_point_name.is_null() {
-                    Ok(String::new())
-                } else {
-                    let c_str: &std::ffi::CStr =
-                        unsafe { std::ffi::CStr::from_ptr(module.entry_point_name) };
-                    let str_slice: &str = c_str.to_str().unwrap();
-                    Ok(str_slice.to_owned())
+            Some(module) => Ok(ffi_to_string(module.entry_point_name)),
+            None => Ok(String::new()),
+        }
+    }
                 }
             }
             None => Ok(String::new()),
@@ -143,12 +152,9 @@ impl ShaderModule {
                             };
                             for ffi_binding in ffi_bindings {
                                 let ffi_binding_ref = unsafe { &**ffi_binding };
-                                let c_str: &std::ffi::CStr =
-                                    unsafe { std::ffi::CStr::from_ptr(ffi_binding_ref.name) };
-                                let str_slice: &str = c_str.to_str().unwrap();
                                 bindings.push(types::ReflectDescriptorBinding {
                                     spirv_id: ffi_binding_ref.spirv_id,
-                                    name: str_slice.to_owned(),
+                                    name: ffi_to_string(ffi_binding_ref.name),
                                     binding: ffi_binding_ref.binding,
                                     input_attachment_index: ffi_binding_ref.input_attachment_index,
                                     set: ffi_binding_ref.set,
