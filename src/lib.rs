@@ -172,15 +172,3 @@ pub fn create_shader_module(spv_data: &[u8]) -> Result<ShaderModule, &str> {
         _ => Err(convert::result_to_string(result)),
     }
 }
-
-/*
-let mut module: SpvReflectShaderModule = empty_shader_module();
-
-    let mut result: SpvReflectResult = unsafe {
-        spvReflectCreateShaderModule(
-            spv_data.len(),
-            spv_data.as_ptr() as *const ::std::os::raw::c_void,
-            &mut module,
-        )
-    };
-    */

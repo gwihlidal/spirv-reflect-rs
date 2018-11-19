@@ -176,6 +176,27 @@ pub(crate) fn ffi_to_format(
     }
 }
 
+pub(crate) fn ffi_to_storage_class(
+    ffi_type: ffi::SpvStorageClass,
+) -> ReflectStorageClass {
+    match ffi_type {
+        ffi::SpvStorageClass__SpvStorageClassUniformConstant => ReflectStorageClass::Undefined,
+        ffi::SpvStorageClass__SpvStorageClassInput => ReflectStorageClass::Input,
+        ffi::SpvStorageClass__SpvStorageClassUniform => ReflectStorageClass::Uniform,
+        ffi::SpvStorageClass__SpvStorageClassOutput => ReflectStorageClass::Output,
+        ffi::SpvStorageClass__SpvStorageClassWorkgroup => ReflectStorageClass::WorkGroup,
+        ffi::SpvStorageClass__SpvStorageClassCrossWorkgroup => ReflectStorageClass::CrossWorkGroup,
+        ffi::SpvStorageClass__SpvStorageClassPrivate => ReflectStorageClass::Private,
+        ffi::SpvStorageClass__SpvStorageClassFunction => ReflectStorageClass::Function,
+        ffi::SpvStorageClass__SpvStorageClassGeneric => ReflectStorageClass::Generic,
+        ffi::SpvStorageClass__SpvStorageClassPushConstant => ReflectStorageClass::PushConstant,
+        ffi::SpvStorageClass__SpvStorageClassAtomicCounter => ReflectStorageClass::AtomicCounter,
+        ffi::SpvStorageClass__SpvStorageClassImage => ReflectStorageClass::Image,
+        ffi::SpvStorageClass__SpvStorageClassStorageBuffer => ReflectStorageClass::StorageBuffer,
+        _ => unimplemented!()
+    }
+}
+
 pub(crate) fn ffi_to_decoration_flags(
     ffi_type: ffi::SpvReflectDecorationFlags,
 ) -> ReflectDecorationFlags {

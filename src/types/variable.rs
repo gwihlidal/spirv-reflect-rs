@@ -1,3 +1,5 @@
+use types::op::ReflectOp;
+
 bitflags! {
     pub struct ReflectDecorationFlags: u32 {
         const NONE = 0;
@@ -86,10 +88,10 @@ pub struct ReflectArrayTraits {
 #[derive(Default, Debug, Clone)]
 pub struct ReflectTypeDescription {
     pub id: u32,
-    //pub op: SpvOp,
+    pub op: ReflectOp,
     pub type_name: String,
     pub struct_member_name: String,
-    //pub storage_class: StorageClass,
+    pub storage_class: ReflectStorageClass,
     //pub type_flags: ReflectTypeFlags,
     pub decoration_flags: ReflectDecorationFlags,
     //pub traits: ReflectTypeDescription_Traits,
@@ -111,3 +113,26 @@ pub struct ReflectBlockVariable {
     pub type_description: Option<Box<ReflectTypeDescription>>,
 }
 
+#[derive(Debug, Copy, Clone)]
+pub enum ReflectStorageClass {
+    Undefined,
+    UniformConstant,
+    Input,
+    Uniform,
+    Output,
+    WorkGroup,
+    CrossWorkGroup,
+    Private,
+    Function,
+    Generic,
+    PushConstant,
+    AtomicCounter,
+    Image,
+    StorageBuffer,
+}
+
+impl Default for ReflectStorageClass {
+    fn default() -> Self {
+        ReflectStorageClass::Undefined
+    }
+}
