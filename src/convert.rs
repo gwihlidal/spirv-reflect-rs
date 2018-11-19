@@ -1,6 +1,22 @@
 use ffi;
 use types::*;
 
+pub(crate) fn ffi_to_generator(ffi_type: ffi::SpvReflectGenerator) -> ReflectGenerator {
+    match ffi_type {
+        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_LLVM_SPIRV_TRANSLATOR => ReflectGenerator::KHRONOS_LLVM_SPIRV_TRANSLATOR,
+        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_KHRONOS_SPIRV_TOOLS_ASSEMBLER => ReflectGenerator::KHRONOS_SPIRV_TOOLS_ASSEMBLER,
+        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_KHRONOS_GLSLANG_REFERENCE_FRONT_END => ReflectGenerator::KHRONOS_GLSLANG_REFERENCE_FRONT_END,
+        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_GOOGLE_SHADERC_OVER_GLSLANG => ReflectGenerator::GOOGLE_SHADERC_OVER_GLSLANG,
+        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_GOOGLE_SPIREGG => ReflectGenerator::GOOGLE_SPIREGG,
+        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_GOOGLE_RSPIRV => ReflectGenerator::GOOGLE_RSPIRV,
+        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_X_LEGEND_MESA_MESAIR_SPIRV_TRANSLATOR => ReflectGenerator::X_LEGEND_MESA_MESAIR_SPIRV_TRANSLATOR,
+        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_KHRONOS_SPIRV_TOOLS_LINKER => ReflectGenerator::KHRONOS_SPIRV_TOOLS_LINKER,
+        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_WINE_VKD3D_SHADER_COMPILER => ReflectGenerator::WINE_VKD3D_SHADER_COMPILER,
+        SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_CLAY_CLAY_SHADER_COMPILER => ReflectGenerator::CLAY_CLAY_SHADER_COMPILER,
+        _ => ReflectGenerator::UNKNOWN,
+    }
+}
+
 pub(crate) fn ffi_to_descriptor_type(
     ffi_type: ffi::SpvReflectDescriptorType,
 ) -> ReflectDescriptorType {
@@ -195,6 +211,12 @@ pub(crate) fn ffi_to_storage_class(
         ffi::SpvStorageClass__SpvStorageClassStorageBuffer => ReflectStorageClass::StorageBuffer,
         _ => unimplemented!()
     }
+}
+
+pub(crate) fn ffi_to_shader_stage_flags(
+    ffi_type: ffi::SpvReflectShaderStageFlagBits,
+) -> ReflectShaderStageFlags {
+    ReflectShaderStageFlags::from_bits(ffi_type as u32).unwrap()
 }
 
 pub(crate) fn ffi_to_decoration_flags(

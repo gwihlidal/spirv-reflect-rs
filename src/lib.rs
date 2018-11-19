@@ -23,18 +23,73 @@ pub struct ShaderModule {
 }
 
 impl ShaderModule {
-    pub fn code_size(&self) -> usize {
+    pub fn get_generator(&self) -> types::ReflectGenerator {
+        match self.module {
+            Some(module) => convert::ffi_to_generator(module.generator),
+            None => types::ReflectGenerator::UNKNOWN,
+        }
+    }
+
+    pub fn get_shader_stage(&self) -> types::ReflectShaderStageFlags {
+        match self.module {
+            Some(module) => convert::ffi_to_shader_stage_flags(module.shader_stage),
+            None => types::ReflectShaderStageFlags::UNDEFINED,
+        }
+    }
+
+    pub fn get_code_size(&self) -> usize {
         match self.module {
             Some(module) => unsafe { ffi::spvReflectGetCodeSize(&module) as usize },
             None => 0,
         }
     }
 
-    pub fn code_slice(&self) -> &[u32] {
-        let code_size = self.code_size();
+    pub fn get_code_slice(&self) -> &[u32] {
+        let code_size = self.get_code_size();
         let module = self.module.unwrap();
         unsafe { std::slice::from_raw_parts(ffi::spvReflectGetCode(&module), code_size / 4) }
     }
+
+    pub fn get_entry_point_name(&self) -> Result<String, &str> {
+        match self.module {
+            Some(module) => {
+                if module.entry_point_name.is_null() {
+                    Ok(String::new())
+                } else {
+                    let c_str: &std::ffi::CStr =
+                    unsafe { std::ffi::CStr::from_ptr(module.entry_point_name) };
+                    let str_slice: &str = c_str.to_str().unwrap();
+                    Ok(str_slice.to_owned())
+                }
+            }
+            None => Ok(String::new()),
+        }
+    }
+
+    /*
+
+    pub entry_point_id: u32,
+    pub entry_point_count: u32,
+    pub entry_points: *mut SpvReflectEntryPoint,
+    pub source_language: SpvSourceLanguage,
+    pub source_language_version: u32,
+    pub source_file: *const ::std::os::raw::c_char,
+    pub source_source: *const ::std::os::raw::c_char,
+    pub spirv_execution_model: SpvExecutionModel,
+    pub shader_stage: SpvReflectShaderStageFlagBits,
+    pub descriptor_binding_count: u32,
+    pub descriptor_bindings: *mut SpvReflectDescriptorBinding,
+    pub descriptor_set_count: u32,
+    pub descriptor_sets: [SpvReflectDescriptorSet; 64usize],
+    pub input_variable_count: u32,
+    pub input_variables: *mut SpvReflectInterfaceVariable,
+    pub output_variable_count: u32,
+    pub output_variables: *mut SpvReflectInterfaceVariable,
+    pub push_constant_block_count: u32,
+    pub push_constant_blocks: *mut SpvReflectBlockVariable,
+    pub _internal: *mut SpvReflectShaderModule_Internal,
+}
+*/
 
     pub fn descriptor_set_count(&self) -> Result<u32, &str> {
         match self.module {
@@ -147,7 +202,6 @@ impl ShaderModule {
 
 impl Drop for ShaderModule {
     fn drop(&mut self) {
-        println!("Dropping!");
         if let Some(mut module) = self.module {
             unsafe {
                 ffi::spvReflectDestroyShaderModule(&mut module);
