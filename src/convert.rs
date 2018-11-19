@@ -103,38 +103,121 @@ pub(crate) fn ffi_to_image_traits(
         arrayed: ffi_type.arrayed,
         ms: ffi_type.ms,
         sampled: ffi_type.sampled,
-        image_format: ffi_to_format(ffi_type.image_format),
+        image_format: ffi_to_image_format(ffi_type.image_format),
+    }
+}
+
+pub(crate) fn ffi_to_image_format(
+    ffi_type: ffi::SpvImageFormat,
+) -> ReflectImageFormat {
+    match ffi_type {
+        ffi::SpvImageFormat__SpvImageFormatUnknown => ReflectImageFormat::Undefined,
+        ffi::SpvImageFormat__SpvImageFormatRgba32f => ReflectImageFormat::RGBA32_FLOAT,
+        ffi::SpvImageFormat__SpvImageFormatRgba16f => ReflectImageFormat::RGBA16_FLOAT,
+        ffi::SpvImageFormat__SpvImageFormatR32f => ReflectImageFormat::R32_FLOAT,
+        ffi::SpvImageFormat__SpvImageFormatRgba8 => ReflectImageFormat::RGBA8,
+        ffi::SpvImageFormat__SpvImageFormatRgba8Snorm => ReflectImageFormat::RGBA8_SNORM,
+        ffi::SpvImageFormat__SpvImageFormatRg32f => ReflectImageFormat::RG32_FLOAT,
+        ffi::SpvImageFormat__SpvImageFormatRg16f => ReflectImageFormat::RG16_FLOAT,
+        ffi::SpvImageFormat__SpvImageFormatR11fG11fB10f => ReflectImageFormat::R11G11B10_FLOAT,
+        ffi::SpvImageFormat__SpvImageFormatR16f => ReflectImageFormat::R16_FLOAT,
+        ffi::SpvImageFormat__SpvImageFormatRgba16 => ReflectImageFormat::RGBA16,
+        ffi::SpvImageFormat__SpvImageFormatRgb10A2 => ReflectImageFormat::RGB10A2,
+        ffi::SpvImageFormat__SpvImageFormatRg16 => ReflectImageFormat::RG16,
+        ffi::SpvImageFormat__SpvImageFormatRg8 => ReflectImageFormat::RG8,
+        ffi::SpvImageFormat__SpvImageFormatR16 => ReflectImageFormat::R16,
+        ffi::SpvImageFormat__SpvImageFormatR8 => ReflectImageFormat::R8,
+        ffi::SpvImageFormat__SpvImageFormatRgba16Snorm => ReflectImageFormat::RGBA16_SNORM,
+        ffi::SpvImageFormat__SpvImageFormatRg16Snorm => ReflectImageFormat::RG16_SNORM,
+        ffi::SpvImageFormat__SpvImageFormatRg8Snorm => ReflectImageFormat::RG8_SNORM,
+        ffi::SpvImageFormat__SpvImageFormatR16Snorm => ReflectImageFormat::R16_SNORM,
+        ffi::SpvImageFormat__SpvImageFormatR8Snorm => ReflectImageFormat::R8_SNORM,
+        ffi::SpvImageFormat__SpvImageFormatRgba32i => ReflectImageFormat::RGBA32_INT,
+        ffi::SpvImageFormat__SpvImageFormatRgba16i => ReflectImageFormat::RGBA16_INT,
+        ffi::SpvImageFormat__SpvImageFormatRgba8i => ReflectImageFormat::RGBA8_INT,
+        ffi::SpvImageFormat__SpvImageFormatR32i => ReflectImageFormat::R32_INT,
+        ffi::SpvImageFormat__SpvImageFormatRg32i => ReflectImageFormat::RG32_INT,
+        ffi::SpvImageFormat__SpvImageFormatRg16i => ReflectImageFormat::RG16_INT,
+        ffi::SpvImageFormat__SpvImageFormatRg8i => ReflectImageFormat::RG8_INT,
+        ffi::SpvImageFormat__SpvImageFormatR16i => ReflectImageFormat::R16_INT,
+        ffi::SpvImageFormat__SpvImageFormatR8i => ReflectImageFormat::R8_INT,
+        ffi::SpvImageFormat__SpvImageFormatRgba32ui => ReflectImageFormat::RGBA32_UINT,
+        ffi::SpvImageFormat__SpvImageFormatRgba16ui => ReflectImageFormat::RGBA16_UINT,
+        ffi::SpvImageFormat__SpvImageFormatRgba8ui => ReflectImageFormat::RGBA8_UINT,
+        ffi::SpvImageFormat__SpvImageFormatR32ui => ReflectImageFormat::R32_UINT,
+        ffi::SpvImageFormat__SpvImageFormatRgb10a2ui => ReflectImageFormat::RGB10A2_UINT,
+        ffi::SpvImageFormat__SpvImageFormatRg32ui => ReflectImageFormat::RG32_UINT,
+        ffi::SpvImageFormat__SpvImageFormatRg16ui => ReflectImageFormat::RG16_UINT,
+        ffi::SpvImageFormat__SpvImageFormatRg8ui => ReflectImageFormat::RG8_UINT,
+        ffi::SpvImageFormat__SpvImageFormatR16ui => ReflectImageFormat::R16_UINT,
+        ffi::SpvImageFormat__SpvImageFormatR8ui => ReflectImageFormat::R8_UINT,
+        _ => unimplemented!()
     }
 }
 
 pub(crate) fn ffi_to_format(
     ffi_type: ffi::SpvReflectFormat,
 ) -> ReflectFormat {
-    ReflectFormat::Undefined
+    match ffi_type {
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_UNDEFINED => ReflectFormat::Undefined,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32_UINT => ReflectFormat::R32_UINT,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32_SINT => ReflectFormat::R32_SINT,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32_SFLOAT => ReflectFormat::R32_SFLOAT,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32_UINT => ReflectFormat::R32G32_UINT,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32_SINT => ReflectFormat::R32G32_SINT,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32_SFLOAT => ReflectFormat::R32G32_SFLOAT,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32_UINT => ReflectFormat::R32G32B32_UINT,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32_SINT => ReflectFormat::R32G32B32_SINT,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32_SFLOAT => ReflectFormat::R32G32B32_SFLOAT,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_UINT => ReflectFormat::R32G32B32A32_UINT,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_SINT => ReflectFormat::R32G32B32A32_SINT,
+        ffi::SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_SFLOAT => ReflectFormat::R32G32B32A32_SFLOAT,
+        _ => unimplemented!()
+    }
 }
 
 pub(crate) fn ffi_to_decoration_flags(
     ffi_type: ffi::SpvReflectDecorationFlags,
 ) -> ReflectDecorationFlags {
-    ReflectDecorationFlags::NONE
+    ReflectDecorationFlags::from_bits(ffi_type).unwrap()
 }
 
 pub(crate) fn ffi_to_numeric_traits(
     ffi_type: ffi::SpvReflectNumericTraits,
 ) -> ReflectNumericTraits {
-    ReflectNumericTraits::default()
+    ReflectNumericTraits {
+        scalar: ReflectNumericTraitsScalar {
+            width: ffi_type.scalar.width,
+            signedness: ffi_type.scalar.signedness,
+        },
+        vector: ReflectNumericTraitsVector {
+            component_count: ffi_type.vector.component_count,
+        },
+        matrix: ReflectNumericTraitsMatrix {
+            column_count: ffi_type.matrix.column_count,
+            row_count: ffi_type.matrix.row_count,
+            stride: ffi_type.matrix.stride,
+        }
+    }
 }
 
 pub(crate) fn ffi_to_array_traits(
     ffi_type: ffi::SpvReflectArrayTraits,
 ) -> ReflectArrayTraits {
-    ReflectArrayTraits::default()
+    ReflectArrayTraits {
+        dims_count: ffi_type.dims_count,
+        dims: ffi_type.dims,
+        stride: ffi_type.stride,
+    }
 }
 
 pub(crate) fn ffi_to_binding_array_traits(
     ffi_type: ffi::SpvReflectBindingArrayTraits,
 ) -> ReflectBindingArrayTraits {
-    ReflectBindingArrayTraits::default()
+    ReflectBindingArrayTraits {
+        dims_count: ffi_type.dims_count,
+        dims: ffi_type.dims,
+    }
 }
 
 pub(crate) fn ffi_to_block_variable(
