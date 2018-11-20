@@ -43,6 +43,17 @@ pub struct ShaderModule {
 }
 
 impl ShaderModule {
+    pub fn load_u8_data(spv_data: &[u8]) -> Result<ShaderModule, &str> {
+        Ok(create_shader_module(spv_data)?)
+    }
+
+    pub fn load_u32_data(spv_data: &[u32]) -> Result<ShaderModule, &str> {
+        let u8_data: &[u8] = unsafe {
+            std::slice::from_raw_parts(spv_data.as_ptr() as *const u8, std::mem::size_of::<u32>())
+        };
+        Ok(create_shader_module(u8_data)?)
+    }
+
     pub fn get_code_size(&self) -> usize {
         match self.module {
             Some(module) => unsafe { ffi::spvReflectGetCodeSize(&module) as usize },
@@ -557,6 +568,20 @@ impl Drop for ShaderModule {
         }
     }
 }
+
+/*
+impl From<&[u8]> for ShaderModule {
+    fn from(spv_data: &[u8]) -> Result<ShaderModule, &str> {
+        create_shader_module(spv_data)?
+    }
+}
+*/
+
+/*impl<'a, T: AsRef<[u8]>> From<T> for ShaderModule {
+    fn from(v: T) -> Result<ShaderModule, &'static str> {
+        Ok(create_shader_module(v.as_ref())?)
+    }
+}*/
 
 pub fn create_shader_module(spv_data: &[u8]) -> Result<ShaderModule, &str> {
     let mut module: ffi::SpvReflectShaderModule = unsafe { std::mem::zeroed() };

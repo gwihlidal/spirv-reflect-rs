@@ -4,7 +4,7 @@ use spirv_reflect::*;
 fn main() {
     let spv_data = include_bytes!("./sample.spv");
 
-    match create_shader_module(spv_data) {
+    match ShaderModule::load_u8_data(spv_data) {
         Ok(mut module) => {
             let _entry_point_name = module.get_entry_point_name();
             let _generator = module.get_generator();
