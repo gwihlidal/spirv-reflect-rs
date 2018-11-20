@@ -1,8 +1,8 @@
 use ffi;
+use types::descriptor::ReflectDescriptorSet;
+use types::image::ReflectFormat;
 use types::op::{ReflectBuiltIn, ReflectOp};
 use types::traits::*;
-use types::image::ReflectFormat;
-use types::descriptor::ReflectDescriptorSet;
 
 bitflags! {
     pub struct ReflectDecorationFlags: u32 {

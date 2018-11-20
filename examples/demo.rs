@@ -76,6 +76,9 @@ fn main() {
             for var in &input_vars2 {
                 println!("input var2 - name: {} location: {}", var.name, var.location);
             }
+
+            let _entry_points = module.enumerate_entry_points().unwrap();
+            //println!("entry points: {:?}", entry_points);
         }
         Err(err) => {
             panic!("Error occurred - {:?}", err);

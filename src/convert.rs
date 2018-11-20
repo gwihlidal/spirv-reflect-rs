@@ -1,24 +1,52 @@
 use ffi;
-use types::*;
 use num_traits::cast::FromPrimitive;
 use spirv_headers;
+use types::*;
 
-pub(crate) fn ffi_to_entry_point(
-    ffi_type: &ffi::SpvReflectEntryPoint
-) -> ReflectEntryPoint {
+pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> ReflectEntryPoint {
     ReflectEntryPoint {
         name: super::ffi_to_string(ffi_type.name),
         id: ffi_type.id,
-        spirv_execution_model: match spirv_headers::ExecutionModel::from_i32(ffi_type.spirv_execution_model) {
+        spirv_execution_model: match spirv_headers::ExecutionModel::from_i32(
+            ffi_type.spirv_execution_model,
+        ) {
             Some(model) => model,
             None => spirv_headers::ExecutionModel::Vertex,
         },
         shader_stage: ffi_to_shader_stage_flags(ffi_type.shader_stage),
-        input_variables: Vec::new(), // TODO
-        output_variables: Vec::new(), // TODO
-        descriptor_sets: Vec::new(), // TODO
-        used_uniforms: Vec::new(), // TODO
-        used_push_constants: Vec::new(), // TODO
+        input_variables: unsafe {
+            std::slice::from_raw_parts(
+                ffi_type.input_variables,
+                ffi_type.input_variable_count as usize,
+            )
+        }.iter()
+        .map(|&var| ffi_to_interface_variable(&var))
+        .collect(),
+        output_variables: unsafe {
+            std::slice::from_raw_parts(
+                ffi_type.output_variables,
+                ffi_type.output_variable_count as usize,
+            )
+        }.iter()
+        .map(|&var| ffi_to_interface_variable(&var))
+        .collect(),
+        descriptor_sets: unsafe {
+            std::slice::from_raw_parts(
+                ffi_type.descriptor_sets,
+                ffi_type.descriptor_set_count as usize,
+            )
+        }.iter()
+        .map(|&set| ffi_to_descriptor_set(&set))
+        .collect(),
+        used_uniforms: unsafe {
+            std::slice::from_raw_parts(ffi_type.used_uniforms, ffi_type.used_uniform_count as usize)
+        }.to_vec(),
+        used_push_constants: unsafe {
+            std::slice::from_raw_parts(
+                ffi_type.used_push_constants,
+                ffi_type.used_push_constant_count as usize,
+            )
+        }.to_vec(),
     }
 }
 
@@ -74,6 +102,22 @@ pub(crate) fn ffi_to_type_description(
         decoration_flags: ffi_to_decoration_flags(ffi_type.decoration_flags),
         traits: ffi_to_type_description_traits(ffi_type.traits),
         members,
+    }
+}
+
+pub(crate) fn ffi_to_descriptor_set(
+    ffi_type: &ffi::SpvReflectDescriptorSet,
+) -> ReflectDescriptorSet {
+    let mut bindings: Vec<ReflectDescriptorBinding> =
+        Vec::with_capacity(ffi_type.binding_count as usize);
+    let ffi_bindings =
+        unsafe { std::slice::from_raw_parts(ffi_type.bindings, ffi_type.binding_count as usize) };
+    for ffi_binding in ffi_bindings {
+        bindings.push(ffi_to_descriptor_binding(unsafe { &**ffi_binding }));
+    }
+    descriptor::ReflectDescriptorSet {
+        set: ffi_type.set,
+        bindings,
     }
 }
 
