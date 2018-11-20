@@ -1,5 +1,5 @@
 #[allow(non_camel_case_types)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Serialize)]
 pub enum ReflectImageFormat {
     Undefined,
     RGBA32_FLOAT,
@@ -50,7 +50,7 @@ impl Default for ReflectImageFormat {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Serialize)]
 pub enum ReflectFormat {
     Undefined,
     R32_UINT,

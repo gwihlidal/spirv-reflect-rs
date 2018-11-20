@@ -5,6 +5,7 @@ use types::op::{ReflectBuiltIn, ReflectOp};
 use types::traits::*;
 
 bitflags! {
+    #[derive(Serialize)]
     pub struct ReflectDecorationFlags: u32 {
         const NONE = 0;
         const BLOCK = 1;
@@ -25,6 +26,7 @@ impl Default for ReflectDecorationFlags {
 }
 
 bitflags! {
+    #[derive(Serialize)]
     pub struct ReflectTypeFlags: u32 {
         const UNDEFINED = 0;
         const VOID = 1;
@@ -50,6 +52,7 @@ impl Default for ReflectTypeFlags {
 }
 
 bitflags! {
+    #[derive(Serialize)]
     pub struct ReflectShaderStageFlags: u32 {
         const UNDEFINED = 0x00000000;
         const VERTEX = 0x00000001;
@@ -67,7 +70,7 @@ impl Default for ReflectShaderStageFlags {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Serialize)]
 pub enum ReflectDimension {
     Undefined,
     Type1d,
@@ -85,10 +88,11 @@ impl Default for ReflectDimension {
     }
 }
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Serialize)]
 pub struct ReflectTypeDescription {
     pub id: u32,
-    pub op: ReflectOp,
+    #[serde(skip_serializing)]
+    pub op: ReflectOp, // TODO: Serialization support
     pub type_name: String,
     pub struct_member_name: String,
     pub storage_class: ReflectStorageClass,
@@ -98,7 +102,7 @@ pub struct ReflectTypeDescription {
     pub members: Vec<ReflectTypeDescription>,
 }
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Serialize)]
 pub struct ReflectBlockVariable {
     pub spirv_id: u32,
     pub name: String,
@@ -113,7 +117,7 @@ pub struct ReflectBlockVariable {
     pub type_description: Option<ReflectTypeDescription>,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Serialize)]
 pub enum ReflectStorageClass {
     Undefined,
     UniformConstant,
@@ -137,7 +141,7 @@ impl Default for ReflectStorageClass {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ReflectInterfaceVariable {
     pub spirv_id: u32,
     pub name: String,
@@ -145,21 +149,24 @@ pub struct ReflectInterfaceVariable {
     pub storage_class: ReflectStorageClass,
     pub semantic: String,
     pub decoration_flags: ReflectDecorationFlags,
-    pub built_in: ReflectBuiltIn,
+    #[serde(skip_serializing)]
+    pub built_in: ReflectBuiltIn, // TODO: Serialization support
     pub numeric: ReflectNumericTraits,
     pub array: ReflectArrayTraits,
     pub members: Vec<ReflectInterfaceVariable>,
     pub format: ReflectFormat,
     pub type_description: Option<ReflectTypeDescription>,
     pub word_offset: u32,
+    #[serde(skip_serializing)]
     pub(crate) internal_data: *const ffi::SpvReflectInterfaceVariable,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ReflectEntryPoint {
     pub name: String,
     pub id: u32,
-    pub spirv_execution_model: spirv_headers::ExecutionModel,
+    #[serde(skip_serializing)]
+    pub spirv_execution_model: spirv_headers::ExecutionModel, // TODO: Serialization support
     pub shader_stage: ReflectShaderStageFlags,
     pub input_variables: Vec<ReflectInterfaceVariable>,
     pub output_variables: Vec<ReflectInterfaceVariable>,

@@ -1,61 +1,50 @@
 use types::image::ReflectImageFormat;
 use types::ReflectDimension;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Clone, Serialize)]
 pub struct ReflectBindingArrayTraits {
-    pub dims_count: u32,
-    pub dims: [u32; 32usize],
+    pub dims: Vec<u32>,
 }
 
-impl Default for ReflectBindingArrayTraits {
-    fn default() -> Self {
-        ReflectBindingArrayTraits {
-            dims_count: 0,
-            dims: [0; 32],
-        }
-    }
-}
-
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone, Serialize)]
 pub struct ReflectNumericTraitsScalar {
     pub width: u32,
     pub signedness: u32,
 }
 
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone, Serialize)]
 pub struct ReflectNumericTraitsVector {
     pub component_count: u32,
 }
 
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone, Serialize)]
 pub struct ReflectNumericTraitsMatrix {
     pub column_count: u32,
     pub row_count: u32,
     pub stride: u32,
 }
 
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone, Serialize)]
 pub struct ReflectNumericTraits {
     pub scalar: ReflectNumericTraitsScalar,
     pub vector: ReflectNumericTraitsVector,
     pub matrix: ReflectNumericTraitsMatrix,
 }
 
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Clone, Serialize)]
 pub struct ReflectArrayTraits {
-    pub dims_count: u32,
-    pub dims: [u32; 32usize],
+    pub dims: Vec<u32>,
     pub stride: u32,
 }
 
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Clone, Serialize)]
 pub struct ReflectTypeDescriptionTraits {
     pub numeric: ReflectNumericTraits,
     pub image: ReflectImageTraits,
     pub array: ReflectArrayTraits,
 }
 
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone, Serialize)]
 pub struct ReflectImageTraits {
     pub dim: ReflectDimension,
     pub depth: u32,

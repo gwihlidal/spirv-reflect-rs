@@ -23,10 +23,10 @@ This crate provides an FFI layer and idiomatic rust wrappers for the excellent [
 * Extract input/output variables from SPIR-V bytecode (including semantic decorations for HLSL shaders), to assist in validation of pipeline input/output settings.
 * Easily map Vulkan types to DirectX 12 resource types
 * Remap descriptor bindings, and update the source SPIR-V bytecode accordingly.
+* Log all reflection data as human-readable text.
 
 ## Planned Features
 
-* Log all reflection data as human-readable text.
 * Extensive unit tests and examples.
 * Pure rust version.
 * Command line tool for reflection and manipulation.
@@ -37,7 +37,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-spirv-reflect = "0.1.0"
+spirv-reflect = "0.1.1"
 ```
 
 and add this to your crate root:

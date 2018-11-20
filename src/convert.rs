@@ -420,9 +420,10 @@ pub(crate) fn ffi_to_numeric_traits(
 }
 
 pub(crate) fn ffi_to_array_traits(ffi_type: ffi::SpvReflectArrayTraits) -> ReflectArrayTraits {
+    let mut dims = ffi_type.dims.to_vec();
+    dims.truncate(ffi_type.dims_count as usize);
     ReflectArrayTraits {
-        dims_count: ffi_type.dims_count,
-        dims: ffi_type.dims,
+        dims,
         stride: ffi_type.stride,
     }
 }
@@ -430,10 +431,9 @@ pub(crate) fn ffi_to_array_traits(ffi_type: ffi::SpvReflectArrayTraits) -> Refle
 pub(crate) fn ffi_to_binding_array_traits(
     ffi_type: ffi::SpvReflectBindingArrayTraits,
 ) -> ReflectBindingArrayTraits {
-    ReflectBindingArrayTraits {
-        dims_count: ffi_type.dims_count,
-        dims: ffi_type.dims,
-    }
+    let mut dims = ffi_type.dims.to_vec();
+    dims.truncate(ffi_type.dims_count as usize);
+    ReflectBindingArrayTraits { dims }
 }
 
 pub(crate) fn ffi_to_block_variable(

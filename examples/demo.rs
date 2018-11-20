@@ -1,84 +1,54 @@
 extern crate spirv_reflect;
-
 use spirv_reflect::*;
 
 fn main() {
-    println!("Testing");
-
     let spv_data = include_bytes!("./sample.spv");
 
     match create_shader_module(spv_data) {
         Ok(mut module) => {
-            let entry_point_name = module.get_entry_point_name();
-            println!("entry point name: {}", entry_point_name);
+            let _entry_point_name = module.get_entry_point_name();
+            let _generator = module.get_generator();
+            let _shader_stage = module.get_shader_stage();
+            let _source_lang = module.get_source_language();
+            let _source_lang_ver = module.get_source_language_version();
+            let _source_file = module.get_source_file();
+            let _source_text = module.get_source_text();
+            let _spv_execution_model = module.get_spirv_execution_model();
+            let _output_vars = module.enumerate_output_variables(None).unwrap();
+            let _bindings = module.enumerate_descriptor_bindings(None).unwrap();
+            let _sets = module.enumerate_descriptor_sets(None).unwrap();
 
-            let generator = module.get_generator();
-            println!("generator: {:?}", generator);
-
-            let shader_stage = module.get_shader_stage();
-            println!("shader_stage: {:?}", shader_stage);
-
-            let source_lang = module.get_source_language();
-            println!("source_lang: {:?}", source_lang);
-
-            let source_lang_ver = module.get_source_language_version();
-            println!("source_lang_ver: {}", source_lang_ver);
-
-            let source_file = module.get_source_file();
-            println!("source_file: {}", source_file);
-
-            let source_text = module.get_source_text();
-            println!("source_text: {}", source_text);
-
-            let spv_execution_model = module.get_spirv_execution_model();
-            println!("spv_execution_model: {:?}", spv_execution_model);
-
-            //let code_size = module.get_code_size();
-            //let code_slice = module.get_code_slice();
-            //println!("size is {}", code_size);
-            //println!("slice is {:?}", code_slice);
-
+            println!("Original input variables (unmodified)");
             let input_vars = module.enumerate_input_variables(None).unwrap();
-            println!("");
-            //println!("");
-            //println!("");
-            //println!("input variables {:?}", input_vars);
             for var in &input_vars {
-                println!("input var - name: {} location: {}", var.name, var.location);
+                println!(
+                    "   input var - name: {} location: {}",
+                    var.name, var.location
+                );
                 if var.name == "input.Alpha" {
+                    // Change alpha input variable location from 2 to 8
                     module.change_input_variable_location(&var, 8).unwrap();
                 }
             }
 
-            let _output_vars = module.enumerate_output_variables(None).unwrap();
-            println!("");
-            //println!("");
-            //println!("");
-            //println!("output variables {:?}", output_vars);
-
-            let _bindings = module.enumerate_descriptor_bindings(None).unwrap();
-            println!("");
-            //println!("");
-            //println!("");
-            //println!("descriptor bindings {:?}", bindings);
-
-            let _sets = module.enumerate_descriptor_sets(None).unwrap();
-            println!("");
-            //println!("");
-            //println!("");
-            //println!("descriptor sets {:?}", sets);
-
+            println!("Modified input variables (alpha location is now 8)");
             let input_vars2 = module.enumerate_input_variables(None).unwrap();
-            println!("");
-            //println!("");
-            //println!("");
-            //println!("input variables {:?}", input_vars);
             for var in &input_vars2 {
-                println!("input var2 - name: {} location: {}", var.name, var.location);
+                println!(
+                    "   input var - name: {} location: {}",
+                    var.name, var.location
+                );
             }
 
-            let _entry_points = module.enumerate_entry_points().unwrap();
-            //println!("entry points: {:?}", entry_points);
+            println!("Entry points (yaml)");
+            let entry_points = module.enumerate_entry_points().unwrap();
+            for entry_point in &entry_points {
+                let output = serde_yaml::to_string(&entry_point).unwrap();
+                println!("{}", output);
+            }
+
+            let _code_size = module.get_code_size();
+            let _code_slice = module.get_code_slice();
         }
         Err(err) => {
             panic!("Error occurred - {:?}", err);
