@@ -12,7 +12,16 @@ categories = ["rendering", "rendering::engine", ]
 license = "MIT/Apache-2.0"
 build = "build.rs"
 include = [
-    "src/*.rs",
+    "src/types/descriptor.rs",
+    "src/types/image.rs",
+    "src/types/mod.rs",
+    "src/types/op.rs",
+    "src/types/resource.rs",
+    "src/types/traits.rs",
+    "src/types/variable.rs",
+    "src/convert.rs",
+    "src/ffi.rs",
+    "src/lib.rs",
     "gen/bindings.rs",
     "build.rs",
     "Cargo.toml",
