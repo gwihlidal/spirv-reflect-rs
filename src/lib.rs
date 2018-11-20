@@ -117,39 +117,140 @@ impl ShaderModule {
     pub entry_points: *mut SpvReflectEntryPoint,
     pub descriptor_binding_count: u32,
     pub descriptor_bindings: *mut SpvReflectDescriptorBinding,
-    pub input_variable_count: u32,
-    pub input_variables: *mut SpvReflectInterfaceVariable,
-    pub output_variable_count: u32,
-    pub output_variables: *mut SpvReflectInterfaceVariable,
+
     pub push_constant_block_count: u32,
     pub push_constant_blocks: *mut SpvReflectBlockVariable,
 }
 */
 
-    pub fn descriptor_set_count(&self) -> Result<u32, &str> {
-        match self.module {
-            Some(module) => {
-                let mut count: u32 = 0;
+    pub fn enumerate_input_variables(&self) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
+        if let Some(ref module) = self.module {
+            let mut count: u32 = 0;
+            let result = unsafe {
+                ffi::spvReflectEnumerateInputVariables(
+                    module,
+                    &mut count,
+                    ::std::ptr::null_mut(),
+                )
+            };
+            if result == ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS && count > 0 {
+                let mut ffi_vars: Vec<*mut ffi::SpvReflectInterfaceVariable> =
+                    vec![::std::ptr::null_mut(); count as usize];
                 let result = unsafe {
-                    ffi::spvReflectEnumerateDescriptorSets(
-                        &module,
-                        &mut count,
-                        ::std::ptr::null_mut(),
+                    let mut out_count: u32 = count;
+                    ffi::spvReflectEnumerateInputVariables(
+                        module,
+                        &mut out_count,
+                        ffi_vars.as_mut_ptr(),
                     )
                 };
                 match result {
-                    ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => Ok(count),
+                    ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
+                        let vars: Vec<types::ReflectInterfaceVariable> = ffi_vars
+                            .iter()
+                            .map(|&var| convert::ffi_to_interface_variable(unsafe { &*var }))
+                            .collect();
+                        Ok(vars)
+                    }
                     _ => Err(convert::result_to_string(result)),
                 }
+            } else {
+                Ok(Vec::new())
             }
-            None => Ok(0),
+        } else {
+            Ok(Vec::new())
         }
     }
 
-    pub fn descriptor_sets(&self) -> Result<Vec<types::ReflectDescriptorSet>, &str> {
-        let count = self.descriptor_set_count()?;
+    pub fn enumerate_output_variables(&self) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
         if let Some(ref module) = self.module {
-            if count > 0 {
+            let mut count: u32 = 0;
+            let result = unsafe {
+                ffi::spvReflectEnumerateOutputVariables(
+                    module,
+                    &mut count,
+                    ::std::ptr::null_mut(),
+                )
+            };
+            if result == ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS && count > 0 {
+                let mut ffi_vars: Vec<*mut ffi::SpvReflectInterfaceVariable> =
+                    vec![::std::ptr::null_mut(); count as usize];
+                let result = unsafe {
+                    let mut out_count: u32 = count;
+                    ffi::spvReflectEnumerateOutputVariables(
+                        module,
+                        &mut out_count,
+                        ffi_vars.as_mut_ptr(),
+                    )
+                };
+                match result {
+                    ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
+                        let vars: Vec<types::ReflectInterfaceVariable> = ffi_vars
+                            .iter()
+                            .map(|&var| convert::ffi_to_interface_variable(unsafe { &*var }))
+                            .collect();
+                        Ok(vars)
+                    }
+                    _ => Err(convert::result_to_string(result)),
+                }
+            } else {
+                Ok(Vec::new())
+            }
+        } else {
+            Ok(Vec::new())
+        }
+    }
+
+    pub fn enumerate_descriptor_bindings(&self) -> Result<Vec<types::ReflectDescriptorBinding>, &str> {
+        if let Some(ref module) = self.module {
+            let mut count: u32 = 0;
+            let result = unsafe {
+                ffi::spvReflectEnumerateDescriptorBindings(
+                    module,
+                    &mut count,
+                    ::std::ptr::null_mut(),
+                )
+            };
+            if result == ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS && count > 0 {
+                let mut ffi_bindings: Vec<*mut ffi::SpvReflectDescriptorBinding> =
+                    vec![::std::ptr::null_mut(); count as usize];
+                let result = unsafe {
+                    let mut out_count: u32 = count;
+                    ffi::spvReflectEnumerateDescriptorBindings(
+                        module,
+                        &mut out_count,
+                        ffi_bindings.as_mut_ptr(),
+                    )
+                };
+                match result {
+                    ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
+                        let bindings: Vec<types::ReflectDescriptorBinding> = ffi_bindings
+                            .iter()
+                            .map(|&binding| convert::ffi_to_descriptor_binding(unsafe { &*binding }))
+                            .collect();
+                        Ok(bindings)
+                    }
+                    _ => Err(convert::result_to_string(result)),
+                }
+            } else {
+                Ok(Vec::new())
+            }
+        } else {
+            Ok(Vec::new())
+        }
+    }
+
+    pub fn enumerate_descriptor_sets(&self) -> Result<Vec<types::ReflectDescriptorSet>, &str> {
+        if let Some(ref module) = self.module {
+            let mut count: u32 = 0;
+            let result = unsafe {
+                ffi::spvReflectEnumerateDescriptorSets(
+                    module,
+                    &mut count,
+                    ::std::ptr::null_mut(),
+                )
+            };
+            if result == ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS && count > 0 {
                 let mut ffi_sets: Vec<*mut ffi::SpvReflectDescriptorSet> =
                     vec![::std::ptr::null_mut(); count as usize];
                 let result = unsafe {
@@ -189,11 +290,9 @@ impl ShaderModule {
                     _ => Err(convert::result_to_string(result)),
                 }
             } else {
-                // No descriptor sets
                 Ok(Vec::new())
             }
         } else {
-            // Invalid shader module
             Ok(Vec::new())
         }
     }

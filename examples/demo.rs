@@ -37,11 +37,30 @@ fn main() {
             let code_slice = module.get_code_slice();
             println!("size is {}", code_size);
             //println!("slice is {:?}", code_slice);
-            let count = module.descriptor_set_count().unwrap();
-            println!("descriptor count is {}", count);
 
-            let sets = module.descriptor_sets().unwrap();
+            let sets = module.enumerate_descriptor_sets().unwrap();
+            println!("");
+            println!("");
+            println!("");
             println!("descriptor sets {:?}", sets);
+
+            let input_vars = module.enumerate_input_variables().unwrap();
+            println!("");
+            println!("");
+            println!("");
+            println!("input variables {:?}", input_vars);
+
+            let output_vars = module.enumerate_output_variables().unwrap();
+            println!("");
+            println!("");
+            println!("");
+            println!("output variables {:?}", output_vars);
+
+            let bindings = module.enumerate_descriptor_bindings().unwrap();
+            println!("");
+            println!("");
+            println!("");
+            println!("descriptor bindings {:?}", bindings);
         }
         Err(err) => {
             panic!("Error occurred - {:?}", err);
