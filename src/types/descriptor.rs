@@ -30,7 +30,7 @@ pub type ReflectOrdinalBinding = u32;
 pub type ReflectOrdinalSet = u32;
 pub type ReflectDescriptorBindingSet = (ReflectOrdinalBinding, ReflectOrdinalSet);
 
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct ReflectDescriptorBinding {
     pub spirv_id: u32,
     pub name: String,
@@ -47,6 +47,7 @@ pub struct ReflectDescriptorBinding {
     pub uav_counter_binding: Option<Box<ReflectDescriptorBinding>>,
     pub type_description: Option<ReflectTypeDescription>,
     pub word_offset: ReflectDescriptorBindingSet,
+    pub(crate) internal_data: *const ffi::SpvReflectDescriptorBinding,
 }
 
 #[derive(Debug, Clone)]

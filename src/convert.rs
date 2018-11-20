@@ -114,7 +114,7 @@ pub(crate) fn ffi_to_descriptor_set(
     let ffi_bindings =
         unsafe { std::slice::from_raw_parts(ffi_type.bindings, ffi_type.binding_count as usize) };
     for ffi_binding in ffi_bindings {
-        bindings.push(ffi_to_descriptor_binding(unsafe { &**ffi_binding }));
+        bindings.push(ffi_to_descriptor_binding(*ffi_binding));
     }
     descriptor::ReflectDescriptorSet {
         set: ffi_type.set,
@@ -124,8 +124,9 @@ pub(crate) fn ffi_to_descriptor_set(
 }
 
 pub(crate) fn ffi_to_descriptor_binding(
-    ffi_type: &ffi::SpvReflectDescriptorBinding,
+    ffi_type_ptr: *const ffi::SpvReflectDescriptorBinding,
 ) -> ReflectDescriptorBinding {
+    let ffi_type = unsafe { &*ffi_type_ptr };
     ReflectDescriptorBinding {
         spirv_id: ffi_type.spirv_id,
         name: super::ffi_to_string(ffi_type.name),
@@ -141,9 +142,9 @@ pub(crate) fn ffi_to_descriptor_binding(
         uav_counter_id: ffi_type.uav_counter_id,
         uav_counter_binding: match ffi_type.uav_counter_binding.is_null() {
             true => None,
-            false => Some(Box::new(ffi_to_descriptor_binding(unsafe {
-                &*ffi_type.uav_counter_binding
-            }))),
+            false => Some(Box::new(ffi_to_descriptor_binding(
+                ffi_type.uav_counter_binding,
+            ))),
         },
         type_description: match ffi_type.type_description.is_null() {
             true => None,
@@ -152,6 +153,7 @@ pub(crate) fn ffi_to_descriptor_binding(
             })),
         },
         word_offset: (ffi_type.word_offset.binding, ffi_type.word_offset.set),
+        internal_data: ffi_type_ptr,
     }
 }
 

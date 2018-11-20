@@ -288,9 +288,8 @@ impl ShaderModule {
                     ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
                         let bindings: Vec<types::ReflectDescriptorBinding> = ffi_bindings
                             .iter()
-                            .map(|&binding| {
-                                convert::ffi_to_descriptor_binding(unsafe { &*binding })
-                            }).collect();
+                            .map(|&binding| convert::ffi_to_descriptor_binding(binding))
+                            .collect();
                         Ok(bindings)
                     }
                     _ => Err(convert::result_to_string(result)),
@@ -430,11 +429,28 @@ impl ShaderModule {
 
     pub fn change_descriptor_binding_numbers(
         &mut self,
-        _binding: types::descriptor::ReflectDescriptorBinding,
-        _new_binding: u32,
-        _new_set: Option<u32>,
+        binding: types::descriptor::ReflectDescriptorBinding,
+        new_binding: u32,
+        new_set: Option<u32>,
     ) -> Result<(), &str> {
-        Ok(())
+        match self.module {
+            Some(mut module) => {
+                let new_set = new_set.unwrap_or(ffi::SPV_REFLECT_SET_NUMBER_DONT_CHANGE as u32);
+                let result = unsafe {
+                    ffi::spvReflectChangeDescriptorBindingNumbers(
+                        &mut module as *mut ffi::SpvReflectShaderModule,
+                        binding.internal_data,
+                        new_binding,
+                        new_set,
+                    )
+                };
+                match result {
+                    ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => Ok(()),
+                    _ => Err(convert::result_to_string(result)),
+                }
+            }
+            None => Ok(()),
+        }
     }
 
     pub fn change_descriptor_set_number(
