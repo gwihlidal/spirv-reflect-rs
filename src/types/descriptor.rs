@@ -1,3 +1,4 @@
+use ffi;
 use types::{
     ReflectBindingArrayTraits, ReflectBlockVariable, ReflectImageTraits, ReflectResourceType,
     ReflectTypeDescription,
@@ -48,8 +49,9 @@ pub struct ReflectDescriptorBinding {
     pub word_offset: ReflectDescriptorBindingSet,
 }
 
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct ReflectDescriptorSet {
     pub set: u32,
     pub bindings: Vec<ReflectDescriptorBinding>,
+    pub(crate) internal_data: *const ffi::SpvReflectDescriptorSet,
 }

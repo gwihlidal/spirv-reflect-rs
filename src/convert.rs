@@ -106,8 +106,9 @@ pub(crate) fn ffi_to_type_description(
 }
 
 pub(crate) fn ffi_to_descriptor_set(
-    ffi_type: &ffi::SpvReflectDescriptorSet,
+    ffi_type_ptr: *const ffi::SpvReflectDescriptorSet,
 ) -> ReflectDescriptorSet {
+    let ffi_type = unsafe { &*ffi_type_ptr };
     let mut bindings: Vec<ReflectDescriptorBinding> =
         Vec::with_capacity(ffi_type.binding_count as usize);
     let ffi_bindings =
@@ -118,6 +119,7 @@ pub(crate) fn ffi_to_descriptor_set(
     descriptor::ReflectDescriptorSet {
         set: ffi_type.set,
         bindings,
+        internal_data: ffi_type_ptr,
     }
 }
 

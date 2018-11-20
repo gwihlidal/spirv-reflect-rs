@@ -224,7 +224,7 @@ impl ShaderModule {
                     ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
                         let vars: Vec<types::ReflectInterfaceVariable> = ffi_vars
                             .iter()
-                            .map(|&var| convert::ffi_to_interface_variable(unsafe { &*var }))
+                            .map(|&var| convert::ffi_to_interface_variable(var))
                             .collect();
                         Ok(vars)
                     }
@@ -352,7 +352,7 @@ impl ShaderModule {
                 match result {
                     ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => Ok(ffi_sets
                         .iter()
-                        .map(|&set| convert::ffi_to_descriptor_set(unsafe { &*set }))
+                        .map(|&set| convert::ffi_to_descriptor_set(set))
                         .collect()),
                     _ => Err(convert::result_to_string(result)),
                 }
@@ -439,10 +439,25 @@ impl ShaderModule {
 
     pub fn change_descriptor_set_number(
         &mut self,
-        _set: types::descriptor::ReflectDescriptorSet,
-        _new_set: u32,
+        set: types::descriptor::ReflectDescriptorSet,
+        new_set: u32,
     ) -> Result<(), &str> {
-        Ok(())
+        match self.module {
+            Some(mut module) => {
+                let result = unsafe {
+                    ffi::spvReflectChangeDescriptorSetNumber(
+                        &mut module as *mut ffi::SpvReflectShaderModule,
+                        set.internal_data,
+                        new_set,
+                    )
+                };
+                match result {
+                    ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => Ok(()),
+                    _ => Err(convert::result_to_string(result)),
+                }
+            }
+            None => Ok(()),
+        }
     }
 
     pub fn change_input_variable_location(
