@@ -45,7 +45,14 @@ serde_yaml = "0.8.7"
 [build-dependencies]
 cc = { version = "1.0.25", features = ["parallel"] }
 
+[build-dependencies.bindgen]
+version = "0.43.1"
+optional = true
+
 [profile.release]
 lto = true
 opt-level = 3
 codegen-units = 1
+
+[features]
+generate_bindings=["bindgen"]
