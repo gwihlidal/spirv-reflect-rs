@@ -8,7 +8,7 @@ fn main() {
     let spv_data = include_bytes!("./sample.spv");
 
     match create_shader_module(spv_data) {
-        Ok(module) => {
+        Ok(mut module) => {
             let entry_point_name = module.get_entry_point_name();
             println!("entry point name: {}", entry_point_name);
 
@@ -33,34 +33,49 @@ fn main() {
             let spv_execution_model = module.get_spirv_execution_model();
             println!("spv_execution_model: {:?}", spv_execution_model);
 
-            let code_size = module.get_code_size();
-            let code_slice = module.get_code_slice();
-            println!("size is {}", code_size);
+            //let code_size = module.get_code_size();
+            //let code_slice = module.get_code_slice();
+            //println!("size is {}", code_size);
             //println!("slice is {:?}", code_slice);
 
-            let sets = module.enumerate_descriptor_sets().unwrap();
+            let input_vars = module.enumerate_input_variables(None).unwrap();
             println!("");
-            println!("");
-            println!("");
-            println!("descriptor sets {:?}", sets);
+            //println!("");
+            //println!("");
+            //println!("input variables {:?}", input_vars);
+            for var in &input_vars {
+                println!("input var - name: {} location: {}", var.name, var.location);
+                if var.name == "input.Alpha" {
+                    module.change_input_variable_location(&var, 8).unwrap();
+                }
+            }
 
-            let input_vars = module.enumerate_input_variables().unwrap();
+            let _output_vars = module.enumerate_output_variables(None).unwrap();
             println!("");
-            println!("");
-            println!("");
-            println!("input variables {:?}", input_vars);
+            //println!("");
+            //println!("");
+            //println!("output variables {:?}", output_vars);
 
-            let output_vars = module.enumerate_output_variables().unwrap();
+            let _bindings = module.enumerate_descriptor_bindings(None).unwrap();
             println!("");
-            println!("");
-            println!("");
-            println!("output variables {:?}", output_vars);
+            //println!("");
+            //println!("");
+            //println!("descriptor bindings {:?}", bindings);
 
-            let bindings = module.enumerate_descriptor_bindings().unwrap();
+            let _sets = module.enumerate_descriptor_sets(None).unwrap();
             println!("");
+            //println!("");
+            //println!("");
+            //println!("descriptor sets {:?}", sets);
+
+            let input_vars2 = module.enumerate_input_variables(None).unwrap();
             println!("");
-            println!("");
-            println!("descriptor bindings {:?}", bindings);
+            //println!("");
+            //println!("");
+            //println!("input variables {:?}", input_vars);
+            for var in &input_vars2 {
+                println!("input var2 - name: {} location: {}", var.name, var.location);
+            }
         }
         Err(err) => {
             panic!("Error occurred - {:?}", err);

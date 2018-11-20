@@ -1,9 +1,31 @@
 use ffi;
 use types::*;
+use num_traits::cast::FromPrimitive;
+use spirv_headers;
+
+pub(crate) fn ffi_to_entry_point(
+    ffi_type: &ffi::SpvReflectEntryPoint
+) -> ReflectEntryPoint {
+    ReflectEntryPoint {
+        name: super::ffi_to_string(ffi_type.name),
+        id: ffi_type.id,
+        spirv_execution_model: match spirv_headers::ExecutionModel::from_i32(ffi_type.spirv_execution_model) {
+            Some(model) => model,
+            None => spirv_headers::ExecutionModel::Vertex,
+        },
+        shader_stage: ffi_to_shader_stage_flags(ffi_type.shader_stage),
+        input_variables: Vec::new(), // TODO
+        output_variables: Vec::new(), // TODO
+        descriptor_sets: Vec::new(), // TODO
+        used_uniforms: Vec::new(), // TODO
+        used_push_constants: Vec::new(), // TODO
+    }
+}
 
 pub(crate) fn ffi_to_interface_variable(
-    ffi_type: &ffi::SpvReflectInterfaceVariable,
+    ffi_type_ptr: *const ffi::SpvReflectInterfaceVariable,
 ) -> ReflectInterfaceVariable {
+    let ffi_type = unsafe { &*ffi_type_ptr };
     let ffi_members =
         unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
     let members: Vec<ReflectInterfaceVariable> = ffi_members
@@ -29,6 +51,7 @@ pub(crate) fn ffi_to_interface_variable(
             })),
         },
         word_offset: ffi_type.word_offset.location,
+        internal_data: ffi_type_ptr,
     }
 }
 

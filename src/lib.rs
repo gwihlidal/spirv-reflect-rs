@@ -110,39 +110,117 @@ impl ShaderModule {
         }
     }
 
-    /*
-
-    pub entry_point_id: u32,
-    pub entry_point_count: u32,
-    pub entry_points: *mut SpvReflectEntryPoint,
-    pub descriptor_binding_count: u32,
-    pub descriptor_bindings: *mut SpvReflectDescriptorBinding,
-
-    pub push_constant_block_count: u32,
-    pub push_constant_blocks: *mut SpvReflectBlockVariable,
-}
-*/
-
-    pub fn enumerate_input_variables(&self) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
+    pub fn enumerate_input_variables(&self, entry_point: Option<&str>) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
         if let Some(ref module) = self.module {
             let mut count: u32 = 0;
             let result = unsafe {
-                ffi::spvReflectEnumerateInputVariables(
-                    module,
-                    &mut count,
-                    ::std::ptr::null_mut(),
-                )
+                match entry_point {
+                    Some(entry_point) => {
+                        let entry_point_cstr = std::ffi::CString::new(entry_point).unwrap();
+                        ffi::spvReflectEnumerateEntryPointInputVariables(
+                            module,
+                            entry_point_cstr.as_ptr(),
+                            &mut count,
+                            ::std::ptr::null_mut(),
+                        )
+                    },
+                    None => {
+                        ffi::spvReflectEnumerateInputVariables(
+                            module,
+                            &mut count,
+                            ::std::ptr::null_mut(),
+                        )
+                    },
+                }
             };
             if result == ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS && count > 0 {
                 let mut ffi_vars: Vec<*mut ffi::SpvReflectInterfaceVariable> =
                     vec![::std::ptr::null_mut(); count as usize];
                 let result = unsafe {
                     let mut out_count: u32 = count;
-                    ffi::spvReflectEnumerateInputVariables(
-                        module,
-                        &mut out_count,
-                        ffi_vars.as_mut_ptr(),
-                    )
+                    match entry_point {
+                        Some(entry_point) => {
+                            let entry_point_cstr = std::ffi::CString::new(entry_point).unwrap();
+                            ffi::spvReflectEnumerateEntryPointInputVariables(
+                                module,
+                                entry_point_cstr.as_ptr(),
+                                &mut out_count,
+                                ffi_vars.as_mut_ptr(),
+                            )
+                        },
+                        None => {
+                            ffi::spvReflectEnumerateInputVariables(
+                                module,
+                                &mut out_count,
+                                ffi_vars.as_mut_ptr(),
+                            )
+                        },
+                    }
+                };
+                match result {
+                    ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
+                        let vars: Vec<types::ReflectInterfaceVariable> = ffi_vars
+                            .iter()
+                            .map(|&var| convert::ffi_to_interface_variable(var))
+                            .collect();
+                        Ok(vars)
+                    }
+                    _ => Err(convert::result_to_string(result)),
+                }
+            } else {
+                Ok(Vec::new())
+            }
+        } else {
+            Ok(Vec::new())
+        }
+    }
+
+    pub fn enumerate_output_variables(&self, entry_point: Option<&str>) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
+        if let Some(ref module) = self.module {
+            let mut count: u32 = 0;
+            let result = unsafe {
+                match entry_point {
+                    Some(entry_point) => {
+                        let entry_point_cstr = std::ffi::CString::new(entry_point).unwrap();
+                        ffi::spvReflectEnumerateEntryPointOutputVariables(
+                            module,
+                            entry_point_cstr.as_ptr(),
+                            &mut count,
+                            ::std::ptr::null_mut(),
+                        )
+                    },
+                    None => {
+                        ffi::spvReflectEnumerateOutputVariables(
+                            module,
+                            &mut count,
+                            ::std::ptr::null_mut(),
+                        )
+                    },
+                }
+            };
+            if result == ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS && count > 0 {
+                let mut ffi_vars: Vec<*mut ffi::SpvReflectInterfaceVariable> =
+                    vec![::std::ptr::null_mut(); count as usize];
+                let result = unsafe {
+                    let mut out_count: u32 = count;
+                    match entry_point {
+                        Some(entry_point) => {
+                            let entry_point_cstr = std::ffi::CString::new(entry_point).unwrap();
+                            ffi::spvReflectEnumerateEntryPointOutputVariables(
+                                module,
+                                entry_point_cstr.as_ptr(),
+                                &mut out_count,
+                                ffi_vars.as_mut_ptr(),
+                            )
+                        },
+                        None => {
+                            ffi::spvReflectEnumerateOutputVariables(
+                                module,
+                                &mut out_count,
+                                ffi_vars.as_mut_ptr(),
+                            )
+                        },
+                    }
                 };
                 match result {
                     ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
@@ -162,65 +240,52 @@ impl ShaderModule {
         }
     }
 
-    pub fn enumerate_output_variables(&self) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
+    pub fn enumerate_descriptor_bindings(&self, entry_point: Option<&str>) -> Result<Vec<types::ReflectDescriptorBinding>, &str> {
         if let Some(ref module) = self.module {
             let mut count: u32 = 0;
             let result = unsafe {
-                ffi::spvReflectEnumerateOutputVariables(
-                    module,
-                    &mut count,
-                    ::std::ptr::null_mut(),
-                )
-            };
-            if result == ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS && count > 0 {
-                let mut ffi_vars: Vec<*mut ffi::SpvReflectInterfaceVariable> =
-                    vec![::std::ptr::null_mut(); count as usize];
-                let result = unsafe {
-                    let mut out_count: u32 = count;
-                    ffi::spvReflectEnumerateOutputVariables(
-                        module,
-                        &mut out_count,
-                        ffi_vars.as_mut_ptr(),
-                    )
-                };
-                match result {
-                    ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
-                        let vars: Vec<types::ReflectInterfaceVariable> = ffi_vars
-                            .iter()
-                            .map(|&var| convert::ffi_to_interface_variable(unsafe { &*var }))
-                            .collect();
-                        Ok(vars)
-                    }
-                    _ => Err(convert::result_to_string(result)),
+                match entry_point {
+                    Some(entry_point) => {
+                        let entry_point_cstr = std::ffi::CString::new(entry_point).unwrap();
+                        ffi::spvReflectEnumerateEntryPointDescriptorBindings(
+                            module,
+                            entry_point_cstr.as_ptr(),
+                            &mut count,
+                            ::std::ptr::null_mut(),
+                        )
+                    },
+                    None => {
+                        ffi::spvReflectEnumerateDescriptorBindings(
+                            module,
+                            &mut count,
+                            ::std::ptr::null_mut(),
+                        )
+                    },
                 }
-            } else {
-                Ok(Vec::new())
-            }
-        } else {
-            Ok(Vec::new())
-        }
-    }
-
-    pub fn enumerate_descriptor_bindings(&self) -> Result<Vec<types::ReflectDescriptorBinding>, &str> {
-        if let Some(ref module) = self.module {
-            let mut count: u32 = 0;
-            let result = unsafe {
-                ffi::spvReflectEnumerateDescriptorBindings(
-                    module,
-                    &mut count,
-                    ::std::ptr::null_mut(),
-                )
             };
             if result == ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS && count > 0 {
                 let mut ffi_bindings: Vec<*mut ffi::SpvReflectDescriptorBinding> =
                     vec![::std::ptr::null_mut(); count as usize];
                 let result = unsafe {
                     let mut out_count: u32 = count;
-                    ffi::spvReflectEnumerateDescriptorBindings(
-                        module,
-                        &mut out_count,
-                        ffi_bindings.as_mut_ptr(),
-                    )
+                    match entry_point {
+                        Some(entry_point) => {
+                            let entry_point_cstr = std::ffi::CString::new(entry_point).unwrap();
+                            ffi::spvReflectEnumerateEntryPointDescriptorBindings(
+                                module,
+                                entry_point_cstr.as_ptr(),
+                                &mut out_count,
+                                ffi_bindings.as_mut_ptr(),
+                            )
+                        },
+                        None => {
+                            ffi::spvReflectEnumerateDescriptorBindings(
+                                module,
+                                &mut out_count,
+                                ffi_bindings.as_mut_ptr(),
+                            )
+                        },
+                    }
                 };
                 match result {
                     ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
@@ -240,26 +305,52 @@ impl ShaderModule {
         }
     }
 
-    pub fn enumerate_descriptor_sets(&self) -> Result<Vec<types::ReflectDescriptorSet>, &str> {
+    pub fn enumerate_descriptor_sets(&self, entry_point: Option<&str>) -> Result<Vec<types::ReflectDescriptorSet>, &str> {
         if let Some(ref module) = self.module {
             let mut count: u32 = 0;
             let result = unsafe {
-                ffi::spvReflectEnumerateDescriptorSets(
-                    module,
-                    &mut count,
-                    ::std::ptr::null_mut(),
-                )
+                match entry_point {
+                    Some(entry_point) => {
+                        let entry_point_cstr = std::ffi::CString::new(entry_point).unwrap();
+                        ffi::spvReflectEnumerateEntryPointDescriptorSets(
+                            module,
+                            entry_point_cstr.as_ptr(),
+                            &mut count,
+                            ::std::ptr::null_mut(),
+                        )
+                    },
+                    None => {
+                        ffi::spvReflectEnumerateDescriptorSets(
+                            module,
+                            &mut count,
+                            ::std::ptr::null_mut(),
+                        )
+                    },
+                }
             };
             if result == ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS && count > 0 {
                 let mut ffi_sets: Vec<*mut ffi::SpvReflectDescriptorSet> =
                     vec![::std::ptr::null_mut(); count as usize];
                 let result = unsafe {
                     let mut out_count: u32 = count;
-                    ffi::spvReflectEnumerateDescriptorSets(
-                        module,
-                        &mut out_count,
-                        ffi_sets.as_mut_ptr(),
-                    )
+                    match entry_point {
+                        Some(entry_point) => {
+                            let entry_point_cstr = std::ffi::CString::new(entry_point).unwrap();
+                            ffi::spvReflectEnumerateEntryPointDescriptorSets(
+                                module,
+                                entry_point_cstr.as_ptr(),
+                                &mut out_count,
+                                ffi_sets.as_mut_ptr(),
+                            )
+                        },
+                        None => {
+                            ffi::spvReflectEnumerateDescriptorSets(
+                                module,
+                                &mut out_count,
+                                ffi_sets.as_mut_ptr(),
+                            )
+                        },
+                    }
                 };
                 match result {
                     ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
@@ -297,6 +388,117 @@ impl ShaderModule {
         }
     }
 
+    pub fn enumerate_push_constant_blocks(&self, entry_point: Option<&str>) -> Result<Vec<types::ReflectBlockVariable>, &str> {
+        if let Some(ref module) = self.module {
+            let mut count: u32 = 0;
+            let result = unsafe {
+                match entry_point {
+                    Some(entry_point) => {
+                        let entry_point_cstr = std::ffi::CString::new(entry_point).unwrap();
+                        ffi::spvReflectEnumerateEntryPointPushConstantBlocks(
+                            module,
+                            entry_point_cstr.as_ptr(),
+                            &mut count,
+                            ::std::ptr::null_mut(),
+                        )
+                    },
+                    None => {
+                        ffi::spvReflectEnumeratePushConstantBlocks(
+                            module,
+                            &mut count,
+                            ::std::ptr::null_mut(),
+                        )
+                    },
+                }
+            };
+            if result == ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS && count > 0 {
+                let mut ffi_blocks: Vec<*mut ffi::SpvReflectBlockVariable> =
+                    vec![::std::ptr::null_mut(); count as usize];
+                let result = unsafe {
+                    let mut out_count: u32 = count;
+                    match entry_point {
+                        Some(entry_point) => {
+                            let entry_point_cstr = std::ffi::CString::new(entry_point).unwrap();
+                            ffi::spvReflectEnumerateEntryPointPushConstantBlocks(
+                                module,
+                                entry_point_cstr.as_ptr(),
+                                &mut out_count,
+                                ffi_blocks.as_mut_ptr(),
+                            )
+                        },
+                        None => {
+                            ffi::spvReflectEnumeratePushConstantBlocks(
+                                module,
+                                &mut out_count,
+                                ffi_blocks.as_mut_ptr(),
+                            )
+                        },
+                    }
+                };
+                match result {
+                    ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
+                        let blocks: Vec<types::ReflectBlockVariable> = ffi_blocks
+                            .iter()
+                            .map(|&block| convert::ffi_to_block_variable(unsafe { &*block }))
+                            .collect();
+                        Ok(blocks)
+                    }
+                    _ => Err(convert::result_to_string(result)),
+                }
+            } else {
+                Ok(Vec::new())
+            }
+        } else {
+            Ok(Vec::new())
+        }
+    }
+
+    pub fn change_descriptor_binding_numbers(&mut self, binding: types::descriptor::ReflectDescriptorBinding, new_binding: u32, new_set: Option<u32>) -> Result<(), &str> {
+        Ok(())
+    }
+
+    pub fn change_descriptor_set_number(&mut self, set: types::descriptor::ReflectDescriptorSet, new_set: u32) -> Result<(), &str> {
+        Ok(())
+    }
+
+    pub fn change_input_variable_location(&mut self, variable: &types::variable::ReflectInterfaceVariable, new_location: u32) -> Result<(), &str> {
+        match self.module {
+            Some(mut module) => {
+                let result = unsafe { ffi::spvReflectChangeInputVariableLocation(
+                    &mut module as *mut ffi::SpvReflectShaderModule,
+                    variable.internal_data,
+                    new_location)
+                };
+                match result {
+                    ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
+                        Ok(())
+                    }
+                    _ => Err(convert::result_to_string(result)),
+                }
+            },
+            None => Ok(()),
+        }
+    }
+
+    pub fn change_output_variable_location(&mut self, variable: &types::variable::ReflectInterfaceVariable, new_location: u32) -> Result<(), &str> {
+        match self.module {
+            Some(mut module) => {
+                let result = unsafe { ffi::spvReflectChangeOutputVariableLocation(
+                    &mut module as *mut ffi::SpvReflectShaderModule,
+                    variable.internal_data,
+                    new_location)
+                };
+                match result {
+                    ffi::SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS => {
+                        Ok(())
+                    }
+                    _ => Err(convert::result_to_string(result)),
+                }
+            },
+            None => Ok(()),
+        }
+    }
+
     pub fn get_entry_point_name(&self) -> String {
         match self.module {
             Some(module) => ffi_to_string(module.entry_point_name),
@@ -304,8 +506,17 @@ impl ShaderModule {
         }
     }
 
-    pub fn get_entry_point(&self, name: &str) -> Option<types::variable::ReflectEntryPoint> {
-        Default::default()
+    pub fn enumerate_entry_points(&self) -> Result<Vec<types::ReflectEntryPoint>, &str> {
+        if let Some(ref module) = self.module {
+            let ffi_entry_points = unsafe { std::slice::from_raw_parts(module.entry_points, module.entry_point_count as usize) };
+            let entry_points: Vec<types::ReflectEntryPoint> = ffi_entry_points
+                .iter()
+                .map(|&entry_point| convert::ffi_to_entry_point(&entry_point))
+                .collect();
+            Ok(entry_points)
+        } else {
+            Ok(Vec::new())
+        }
     }
 }
 

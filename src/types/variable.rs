@@ -1,6 +1,8 @@
+use ffi;
 use types::op::{ReflectBuiltIn, ReflectOp};
 use types::traits::*;
 use types::image::ReflectFormat;
+use types::descriptor::ReflectDescriptorSet;
 
 bitflags! {
     pub struct ReflectDecorationFlags: u32 {
@@ -135,7 +137,7 @@ impl Default for ReflectStorageClass {
     }
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct ReflectInterfaceVariable {
     pub spirv_id: u32,
     pub name: String,
@@ -150,7 +152,18 @@ pub struct ReflectInterfaceVariable {
     pub format: ReflectFormat,
     pub type_description: Option<ReflectTypeDescription>,
     pub word_offset: u32,
+    pub(crate) internal_data: *const ffi::SpvReflectInterfaceVariable,
 }
 
-#[derive(Debug, Default, Copy, Clone)]
-pub struct ReflectEntryPoint {}
+#[derive(Debug, Clone)]
+pub struct ReflectEntryPoint {
+    pub name: String,
+    pub id: u32,
+    pub spirv_execution_model: spirv_headers::ExecutionModel,
+    pub shader_stage: ReflectShaderStageFlags,
+    pub input_variables: Vec<ReflectInterfaceVariable>,
+    pub output_variables: Vec<ReflectInterfaceVariable>,
+    pub descriptor_sets: Vec<ReflectDescriptorSet>,
+    pub used_uniforms: Vec<u32>,
+    pub used_push_constants: Vec<u32>,
+}
