@@ -3,7 +3,7 @@ use num_traits::cast::FromPrimitive;
 use spirv_headers;
 use std::ops::Deref;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct ReflectOp(spirv_headers::Op);
 
 impl Default for ReflectOp {
@@ -28,7 +28,7 @@ impl From<ffi::SpvOp> for ReflectOp {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct ReflectBuiltIn(spirv_headers::BuiltIn);
 
 impl Default for ReflectBuiltIn {

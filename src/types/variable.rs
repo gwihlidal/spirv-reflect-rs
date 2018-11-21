@@ -70,7 +70,7 @@ impl Default for ReflectShaderStageFlags {
     }
 }
 
-#[derive(Debug, Copy, Clone, Serialize)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
 pub enum ReflectDimension {
     Undefined,
     Type1d,
@@ -88,7 +88,7 @@ impl Default for ReflectDimension {
     }
 }
 
-#[derive(Default, Debug, Clone, Serialize)]
+#[derive(Default, Debug, Clone, Serialize, PartialEq)]
 pub struct ReflectTypeDescription {
     pub id: u32,
     #[serde(skip_serializing)]
@@ -102,7 +102,7 @@ pub struct ReflectTypeDescription {
     pub members: Vec<ReflectTypeDescription>,
 }
 
-#[derive(Default, Debug, Clone, Serialize)]
+#[derive(Default, Debug, Clone, Serialize, PartialEq)]
 pub struct ReflectBlockVariable {
     pub spirv_id: u32,
     pub name: String,
@@ -117,7 +117,7 @@ pub struct ReflectBlockVariable {
     pub type_description: Option<ReflectTypeDescription>,
 }
 
-#[derive(Debug, Copy, Clone, Serialize)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
 pub enum ReflectStorageClass {
     Undefined,
     UniformConstant,

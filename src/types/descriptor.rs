@@ -4,7 +4,7 @@ use types::{
     ReflectTypeDescription,
 };
 
-#[derive(Debug, Copy, Clone, Serialize)]
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
 pub enum ReflectDescriptorType {
     Undefined,
     Sampler,
@@ -30,7 +30,7 @@ pub type ReflectOrdinalBinding = u32;
 pub type ReflectOrdinalSet = u32;
 pub type ReflectDescriptorBindingSet = (ReflectOrdinalBinding, ReflectOrdinalSet);
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct ReflectDescriptorBinding {
     pub spirv_id: u32,
     pub name: String,
@@ -51,7 +51,7 @@ pub struct ReflectDescriptorBinding {
     pub(crate) internal_data: *const ffi::SpvReflectDescriptorBinding,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct ReflectDescriptorSet {
     pub set: u32,
     pub bindings: Vec<ReflectDescriptorBinding>,
