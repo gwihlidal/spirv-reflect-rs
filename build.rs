@@ -44,6 +44,7 @@ fn generate_bindings(output_file: &str) {
         .whitelist_var("SPV.*")
         .whitelist_type("Spv.*")
         .whitelist_function("spv.*")
+        .trust_clang_mangling(false)
         .layout_tests(false)
         .generate()
         .expect("Unable to generate bindings!");
