@@ -1360,6 +1360,7 @@ pub struct SpvReflectShaderModule {
     pub _internal: *mut SpvReflectShaderModule_Internal,
 }
 #[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct SpvReflectShaderModule_Internal {
     pub spirv_size: usize,
     pub spirv_code: *mut u32,
@@ -1374,7 +1375,6 @@ extern "C" {
     ///@param  p_code    Pointer to SPIR-V code.
     ///@param  p_module  Pointer to an instance of SpvReflectShaderModule.
     ///@return           SPV_REFLECT_RESULT_SUCCESS on success.
-    #[link_name = "\u{1}_spvReflectCreateShaderModule"]
     pub fn spvReflectCreateShaderModule(
         size: usize,
         p_code: *const ::std::os::raw::c_void,
@@ -1382,7 +1382,6 @@ extern "C" {
     ) -> SpvReflectResult;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetShaderModule"]
     pub fn spvReflectGetShaderModule(
         size: usize,
         p_code: *const ::std::os::raw::c_void,
@@ -1393,7 +1392,6 @@ extern "C" {
     /// @fn spvReflectDestroyShaderModule
     ///
     ///@param  p_module  Pointer to an instance of SpvReflectShaderModule.
-    #[link_name = "\u{1}_spvReflectDestroyShaderModule"]
     pub fn spvReflectDestroyShaderModule(p_module: *mut SpvReflectShaderModule);
 }
 extern "C" {
@@ -1401,7 +1399,6 @@ extern "C" {
     ///
     ///@param  p_module  Pointer to an instance of SpvReflectShaderModule.
     ///@return           Returns the size of the SPIR-V in bytes
-    #[link_name = "\u{1}_spvReflectGetCodeSize"]
     pub fn spvReflectGetCodeSize(p_module: *const SpvReflectShaderModule) -> u32;
 }
 extern "C" {
@@ -1409,7 +1406,6 @@ extern "C" {
     ///
     ///@param  p_module  Pointer to an instance of SpvReflectShaderModule.
     ///@return           Returns a const pointer to the compiled SPIR-V bytecode.
-    #[link_name = "\u{1}_spvReflectGetCode"]
     pub fn spvReflectGetCode(p_module: *const SpvReflectShaderModule) -> *const u32;
 }
 extern "C" {
@@ -1419,7 +1415,6 @@ extern "C" {
     ///@param  entry_point  Name of the requested entry point.
     ///@return              Returns a const pointer to the requested entry point,
     ///or NULL if it's not found.
-    #[link_name = "\u{1}_spvReflectGetEntryPoint"]
     pub fn spvReflectGetEntryPoint(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1442,7 +1437,6 @@ extern "C" {
     ///@return              If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
-    #[link_name = "\u{1}_spvReflectEnumerateDescriptorBindings"]
     pub fn spvReflectEnumerateDescriptorBindings(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -1468,7 +1462,6 @@ extern "C" {
     ///@return              If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
-    #[link_name = "\u{1}_spvReflectEnumerateEntryPointDescriptorBindings"]
     pub fn spvReflectEnumerateEntryPointDescriptorBindings(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1493,7 +1486,6 @@ extern "C" {
     ///@return           If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
-    #[link_name = "\u{1}_spvReflectEnumerateDescriptorSets"]
     pub fn spvReflectEnumerateDescriptorSets(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -1519,7 +1511,6 @@ extern "C" {
     ///@return             If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
-    #[link_name = "\u{1}_spvReflectEnumerateEntryPointDescriptorSets"]
     pub fn spvReflectEnumerateEntryPointDescriptorSets(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1545,7 +1536,6 @@ extern "C" {
     ///@return               If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
-    #[link_name = "\u{1}_spvReflectEnumerateInputVariables"]
     pub fn spvReflectEnumerateInputVariables(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -1570,7 +1560,6 @@ extern "C" {
     ///@return               If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
-    #[link_name = "\u{1}_spvReflectEnumerateEntryPointInputVariables"]
     pub fn spvReflectEnumerateEntryPointInputVariables(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1596,7 +1585,6 @@ extern "C" {
     ///@return               If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
-    #[link_name = "\u{1}_spvReflectEnumerateOutputVariables"]
     pub fn spvReflectEnumerateOutputVariables(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -1621,7 +1609,6 @@ extern "C" {
     ///@return               If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
-    #[link_name = "\u{1}_spvReflectEnumerateEntryPointOutputVariables"]
     pub fn spvReflectEnumerateEntryPointOutputVariables(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1648,7 +1635,6 @@ extern "C" {
     ///@return            If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
-    #[link_name = "\u{1}_spvReflectEnumeratePushConstantBlocks"]
     pub fn spvReflectEnumeratePushConstantBlocks(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -1656,7 +1642,6 @@ extern "C" {
     ) -> SpvReflectResult;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectEnumeratePushConstants"]
     pub fn spvReflectEnumeratePushConstants(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -1682,7 +1667,6 @@ extern "C" {
     ///@return            If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
-    #[link_name = "\u{1}_spvReflectEnumerateEntryPointPushConstantBlocks"]
     pub fn spvReflectEnumerateEntryPointPushConstantBlocks(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1711,7 +1695,6 @@ extern "C" {
     ///@note                    If the module contains multiple desriptor bindings
     ///with the same set and binding numbers, there are
     ///no guarantees about which binding will be returned.
-    #[link_name = "\u{1}_spvReflectGetDescriptorBinding"]
     pub fn spvReflectGetDescriptorBinding(
         p_module: *const SpvReflectShaderModule,
         binding_number: u32,
@@ -1743,7 +1726,6 @@ extern "C" {
     ///@note                    If the entry point contains multiple desriptor bindings
     ///with the same set and binding numbers, there are
     ///no guarantees about which binding will be returned.
-    #[link_name = "\u{1}_spvReflectGetEntryPointDescriptorBinding"]
     pub fn spvReflectGetEntryPointDescriptorBinding(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1767,7 +1749,6 @@ extern "C" {
     ///If no match can be found, or if an unrelated error
     ///occurs, the return value will be NULL. Detailed
     ///error results are written to *pResult.
-    #[link_name = "\u{1}_spvReflectGetDescriptorSet"]
     pub fn spvReflectGetDescriptorSet(
         p_module: *const SpvReflectShaderModule,
         set_number: u32,
@@ -1790,7 +1771,6 @@ extern "C" {
     ///If no match can be found, or if an unrelated error
     ///occurs, the return value will be NULL. Detailed
     ///error results are written to *pResult.
-    #[link_name = "\u{1}_spvReflectGetEntryPointDescriptorSet"]
     pub fn spvReflectGetEntryPointDescriptorSet(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1799,7 +1779,6 @@ extern "C" {
     ) -> *const SpvReflectDescriptorSet;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetInputVariableByLocation"]
     pub fn spvReflectGetInputVariableByLocation(
         p_module: *const SpvReflectShaderModule,
         location: u32,
@@ -1807,7 +1786,6 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetInputVariable"]
     pub fn spvReflectGetInputVariable(
         p_module: *const SpvReflectShaderModule,
         location: u32,
@@ -1815,7 +1793,6 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetEntryPointInputVariableByLocation"]
     pub fn spvReflectGetEntryPointInputVariableByLocation(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1824,7 +1801,6 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetInputVariableBySemantic"]
     pub fn spvReflectGetInputVariableBySemantic(
         p_module: *const SpvReflectShaderModule,
         semantic: *const ::std::os::raw::c_char,
@@ -1832,7 +1808,6 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetEntryPointInputVariableBySemantic"]
     pub fn spvReflectGetEntryPointInputVariableBySemantic(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1841,7 +1816,6 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetOutputVariableByLocation"]
     pub fn spvReflectGetOutputVariableByLocation(
         p_module: *const SpvReflectShaderModule,
         location: u32,
@@ -1849,7 +1823,6 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetOutputVariable"]
     pub fn spvReflectGetOutputVariable(
         p_module: *const SpvReflectShaderModule,
         location: u32,
@@ -1857,7 +1830,6 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetEntryPointOutputVariableByLocation"]
     pub fn spvReflectGetEntryPointOutputVariableByLocation(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1866,7 +1838,6 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetOutputVariableBySemantic"]
     pub fn spvReflectGetOutputVariableBySemantic(
         p_module: *const SpvReflectShaderModule,
         semantic: *const ::std::os::raw::c_char,
@@ -1874,7 +1845,6 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetEntryPointOutputVariableBySemantic"]
     pub fn spvReflectGetEntryPointOutputVariableBySemantic(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1898,7 +1868,6 @@ extern "C" {
     ///If no match can be found, or if an unrelated error
     ///occurs, the return value will be NULL. Detailed
     ///error results are written to *pResult.
-    #[link_name = "\u{1}_spvReflectGetPushConstantBlock"]
     pub fn spvReflectGetPushConstantBlock(
         p_module: *const SpvReflectShaderModule,
         index: u32,
@@ -1906,7 +1875,6 @@ extern "C" {
     ) -> *const SpvReflectBlockVariable;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectGetPushConstant"]
     pub fn spvReflectGetPushConstant(
         p_module: *const SpvReflectShaderModule,
         index: u32,
@@ -1931,7 +1899,6 @@ extern "C" {
     ///If no match can be found, or if an unrelated error
     ///occurs, the return value will be NULL. Detailed
     ///error results are written to *pResult.
-    #[link_name = "\u{1}_spvReflectGetEntryPointPushConstantBlock"]
     pub fn spvReflectGetEntryPointPushConstantBlock(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -1961,7 +1928,6 @@ extern "C" {
     ///@return                     If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of
     ///the failure.
-    #[link_name = "\u{1}_spvReflectChangeDescriptorBindingNumbers"]
     pub fn spvReflectChangeDescriptorBindingNumbers(
         p_module: *mut SpvReflectShaderModule,
         p_binding: *const SpvReflectDescriptorBinding,
@@ -1970,7 +1936,6 @@ extern "C" {
     ) -> SpvReflectResult;
 }
 extern "C" {
-    #[link_name = "\u{1}_spvReflectChangeDescriptorBindingNumber"]
     pub fn spvReflectChangeDescriptorBindingNumber(
         p_module: *mut SpvReflectShaderModule,
         p_descriptor_binding: *const SpvReflectDescriptorBinding,
@@ -2000,7 +1965,6 @@ extern "C" {
     ///@return                 If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of
     ///the failure.
-    #[link_name = "\u{1}_spvReflectChangeDescriptorSetNumber"]
     pub fn spvReflectChangeDescriptorSetNumber(
         p_module: *mut SpvReflectShaderModule,
         p_set: *const SpvReflectDescriptorSet,
@@ -2023,7 +1987,6 @@ extern "C" {
     ///@return                   If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of
     ///the failure.
-    #[link_name = "\u{1}_spvReflectChangeInputVariableLocation"]
     pub fn spvReflectChangeInputVariableLocation(
         p_module: *mut SpvReflectShaderModule,
         p_input_variable: *const SpvReflectInterfaceVariable,
@@ -2046,7 +2009,6 @@ extern "C" {
     ///@return                   If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of
     ///the failure.
-    #[link_name = "\u{1}_spvReflectChangeOutputVariableLocation"]
     pub fn spvReflectChangeOutputVariableLocation(
         p_module: *mut SpvReflectShaderModule,
         p_output_variable: *const SpvReflectInterfaceVariable,
@@ -2059,7 +2021,6 @@ extern "C" {
     ///@param  source_lang  The source language code.
     ///@return Returns string of source language specified in \a source_lang.
     ///The caller must not free the memory associated with this string.
-    #[link_name = "\u{1}_spvReflectSourceLanguage"]
     pub fn spvReflectSourceLanguage(
         source_lang: SpvSourceLanguage,
     ) -> *const ::std::os::raw::c_char;
