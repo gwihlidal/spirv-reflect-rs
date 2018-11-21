@@ -1,5 +1,9 @@
 # Changes
 
+## 0.1.4 (2018-11-21)
+
+* Fixed some name mangling issues on Windows when bindings are generated on macOS
+
 ## 0.1.3 (2018-11-21)
 
 * Improved bindgen tooling, and also the generated bindings.rs file
