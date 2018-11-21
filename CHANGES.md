@@ -1,5 +1,9 @@
 # Changes
 
+## 0.1.5 (2018-11-21)
+
+* Added PartialEq to all types
+
 ## 0.1.4 (2018-11-21)
 
 * Fixed some name mangling issues on Windows when bindings are generated on macOS
