@@ -1,5 +1,9 @@
 # Changes
 
+## 0.1.3 (2018-11-21)
+
+* Improved bindgen tooling, and also the generated bindings.rs file
+
 ## 0.1.2 (2018-11-20)
 
 * Added `load_u8_data` and `load_u32_data` helpers to `ShaderModule` for convenience

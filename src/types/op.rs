@@ -21,7 +21,7 @@ impl Deref for ReflectOp {
 
 impl From<ffi::SpvOp> for ReflectOp {
     fn from(raw_op: ffi::SpvOp) -> Self {
-        match spirv_headers::Op::from_i32(raw_op) {
+        match spirv_headers::Op::from_u32(raw_op) {
             Some(op) => ReflectOp(op),
             None => Default::default(),
         }
@@ -46,7 +46,7 @@ impl Deref for ReflectBuiltIn {
 
 impl From<ffi::SpvBuiltIn> for ReflectBuiltIn {
     fn from(raw_built_in: ffi::SpvBuiltIn) -> Self {
-        match spirv_headers::BuiltIn::from_i32(raw_built_in) {
+        match spirv_headers::BuiltIn::from_u32(raw_built_in) {
             Some(built_in) => ReflectBuiltIn(built_in),
             None => Default::default(),
         }

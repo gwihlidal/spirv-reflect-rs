@@ -40,6 +40,10 @@ fn generate_bindings(output_file: &str) {
     let bindings = bindgen::Builder::default()
         .header("vendor/spirv_reflect.h")
         .rustfmt_bindings(true)
+        .blacklist_type("__darwin_.*")
+        .whitelist_var("SPV.*")
+        .whitelist_type("Spv.*")
+        .whitelist_function("spv.*")
         .layout_tests(false)
         .generate()
         .expect("Unable to generate bindings!");

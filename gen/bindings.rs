@@ -2,119 +2,7 @@
 
 pub const SPV_VERSION: u32 = 66304;
 pub const SPV_REVISION: u32 = 1;
-pub const _SAL_VERSION: u32 = 20;
-pub const __SAL_H_VERSION: u32 = 180000000;
-pub const _USE_DECLSPECS_FOR_SAL: u32 = 0;
-pub const _USE_ATTRIBUTES_FOR_SAL: u32 = 0;
-pub const _CRT_PACKING: u32 = 8;
-pub const _HAS_EXCEPTIONS: u32 = 1;
-pub const WCHAR_MIN: u32 = 0;
-pub const WCHAR_MAX: u32 = 65535;
-pub const WINT_MIN: u32 = 0;
-pub const WINT_MAX: u32 = 65535;
-pub const _ARGMAX: u32 = 100;
-pub const _CRT_INT_MAX: u32 = 2147483647;
-pub const _CRT_FUNCTIONS_REQUIRED: u32 = 1;
-pub const _CRT_HAS_CXX17: u32 = 0;
-pub const _ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE: u32 = 1;
-pub const _CRT_BUILD_DESKTOP_APP: u32 = 1;
-pub const __STDC_SECURE_LIB__: f64 = 200411.0;
-pub const __GOT_SECURE_LIB__: f64 = 200411.0;
-pub const __STDC_WANT_SECURE_LIB__: u32 = 1;
-pub const _SECURECRT_FILL_BUFFER_PATTERN: u32 = 254;
-pub const _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES: u32 = 0;
-pub const _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT: u32 = 0;
-pub const _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES: u32 = 1;
-pub const _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_MEMORY: u32 = 0;
-pub const _CRT_SECURE_CPP_OVERLOAD_SECURE_NAMES_MEMORY: u32 = 0;
-pub const EPERM: u32 = 1;
-pub const ENOENT: u32 = 2;
-pub const ESRCH: u32 = 3;
-pub const EINTR: u32 = 4;
-pub const EIO: u32 = 5;
-pub const ENXIO: u32 = 6;
-pub const E2BIG: u32 = 7;
-pub const ENOEXEC: u32 = 8;
-pub const EBADF: u32 = 9;
-pub const ECHILD: u32 = 10;
-pub const EAGAIN: u32 = 11;
-pub const ENOMEM: u32 = 12;
-pub const EACCES: u32 = 13;
-pub const EFAULT: u32 = 14;
-pub const EBUSY: u32 = 16;
-pub const EEXIST: u32 = 17;
-pub const EXDEV: u32 = 18;
-pub const ENODEV: u32 = 19;
-pub const ENOTDIR: u32 = 20;
-pub const EISDIR: u32 = 21;
-pub const ENFILE: u32 = 23;
-pub const EMFILE: u32 = 24;
-pub const ENOTTY: u32 = 25;
-pub const EFBIG: u32 = 27;
-pub const ENOSPC: u32 = 28;
-pub const ESPIPE: u32 = 29;
-pub const EROFS: u32 = 30;
-pub const EMLINK: u32 = 31;
-pub const EPIPE: u32 = 32;
-pub const EDOM: u32 = 33;
-pub const EDEADLK: u32 = 36;
-pub const ENAMETOOLONG: u32 = 38;
-pub const ENOLCK: u32 = 39;
-pub const ENOSYS: u32 = 40;
-pub const ENOTEMPTY: u32 = 41;
-pub const EINVAL: u32 = 22;
-pub const ERANGE: u32 = 34;
-pub const EILSEQ: u32 = 42;
-pub const STRUNCATE: u32 = 80;
-pub const EDEADLOCK: u32 = 36;
-pub const EADDRINUSE: u32 = 100;
-pub const EADDRNOTAVAIL: u32 = 101;
-pub const EAFNOSUPPORT: u32 = 102;
-pub const EALREADY: u32 = 103;
-pub const EBADMSG: u32 = 104;
-pub const ECANCELED: u32 = 105;
-pub const ECONNABORTED: u32 = 106;
-pub const ECONNREFUSED: u32 = 107;
-pub const ECONNRESET: u32 = 108;
-pub const EDESTADDRREQ: u32 = 109;
-pub const EHOSTUNREACH: u32 = 110;
-pub const EIDRM: u32 = 111;
-pub const EINPROGRESS: u32 = 112;
-pub const EISCONN: u32 = 113;
-pub const ELOOP: u32 = 114;
-pub const EMSGSIZE: u32 = 115;
-pub const ENETDOWN: u32 = 116;
-pub const ENETRESET: u32 = 117;
-pub const ENETUNREACH: u32 = 118;
-pub const ENOBUFS: u32 = 119;
-pub const ENODATA: u32 = 120;
-pub const ENOLINK: u32 = 121;
-pub const ENOMSG: u32 = 122;
-pub const ENOPROTOOPT: u32 = 123;
-pub const ENOSR: u32 = 124;
-pub const ENOSTR: u32 = 125;
-pub const ENOTCONN: u32 = 126;
-pub const ENOTRECOVERABLE: u32 = 127;
-pub const ENOTSOCK: u32 = 128;
-pub const ENOTSUP: u32 = 129;
-pub const EOPNOTSUPP: u32 = 130;
-pub const EOTHER: u32 = 131;
-pub const EOVERFLOW: u32 = 132;
-pub const EOWNERDEAD: u32 = 133;
-pub const EPROTO: u32 = 134;
-pub const EPROTONOSUPPORT: u32 = 135;
-pub const EPROTOTYPE: u32 = 136;
-pub const ETIME: u32 = 137;
-pub const ETIMEDOUT: u32 = 138;
-pub const ETXTBSY: u32 = 139;
-pub const EWOULDBLOCK: u32 = 140;
-pub const _NLSCMPERROR: u32 = 2147483647;
 pub type SpvId = ::std::os::raw::c_uint;
-pub const SpvMagicNumber: ::std::os::raw::c_uint = 119734787;
-pub const SpvVersion: ::std::os::raw::c_uint = 66304;
-pub const SpvRevision: ::std::os::raw::c_uint = 1;
-pub const SpvOpCodeMask: ::std::os::raw::c_uint = 65535;
-pub const SpvWordCountShift: ::std::os::raw::c_uint = 16;
 pub const SpvSourceLanguage__SpvSourceLanguageUnknown: SpvSourceLanguage_ = 0;
 pub const SpvSourceLanguage__SpvSourceLanguageESSL: SpvSourceLanguage_ = 1;
 pub const SpvSourceLanguage__SpvSourceLanguageGLSL: SpvSourceLanguage_ = 2;
@@ -122,7 +10,7 @@ pub const SpvSourceLanguage__SpvSourceLanguageOpenCL_C: SpvSourceLanguage_ = 3;
 pub const SpvSourceLanguage__SpvSourceLanguageOpenCL_CPP: SpvSourceLanguage_ = 4;
 pub const SpvSourceLanguage__SpvSourceLanguageHLSL: SpvSourceLanguage_ = 5;
 pub const SpvSourceLanguage__SpvSourceLanguageMax: SpvSourceLanguage_ = 2147483647;
-pub type SpvSourceLanguage_ = i32;
+pub type SpvSourceLanguage_ = u32;
 pub use self::SpvSourceLanguage_ as SpvSourceLanguage;
 pub const SpvExecutionModel__SpvExecutionModelVertex: SpvExecutionModel_ = 0;
 pub const SpvExecutionModel__SpvExecutionModelTessellationControl: SpvExecutionModel_ = 1;
@@ -132,19 +20,19 @@ pub const SpvExecutionModel__SpvExecutionModelFragment: SpvExecutionModel_ = 4;
 pub const SpvExecutionModel__SpvExecutionModelGLCompute: SpvExecutionModel_ = 5;
 pub const SpvExecutionModel__SpvExecutionModelKernel: SpvExecutionModel_ = 6;
 pub const SpvExecutionModel__SpvExecutionModelMax: SpvExecutionModel_ = 2147483647;
-pub type SpvExecutionModel_ = i32;
+pub type SpvExecutionModel_ = u32;
 pub use self::SpvExecutionModel_ as SpvExecutionModel;
 pub const SpvAddressingModel__SpvAddressingModelLogical: SpvAddressingModel_ = 0;
 pub const SpvAddressingModel__SpvAddressingModelPhysical32: SpvAddressingModel_ = 1;
 pub const SpvAddressingModel__SpvAddressingModelPhysical64: SpvAddressingModel_ = 2;
 pub const SpvAddressingModel__SpvAddressingModelMax: SpvAddressingModel_ = 2147483647;
-pub type SpvAddressingModel_ = i32;
+pub type SpvAddressingModel_ = u32;
 pub use self::SpvAddressingModel_ as SpvAddressingModel;
 pub const SpvMemoryModel__SpvMemoryModelSimple: SpvMemoryModel_ = 0;
 pub const SpvMemoryModel__SpvMemoryModelGLSL450: SpvMemoryModel_ = 1;
 pub const SpvMemoryModel__SpvMemoryModelOpenCL: SpvMemoryModel_ = 2;
 pub const SpvMemoryModel__SpvMemoryModelMax: SpvMemoryModel_ = 2147483647;
-pub type SpvMemoryModel_ = i32;
+pub type SpvMemoryModel_ = u32;
 pub use self::SpvMemoryModel_ as SpvMemoryModel;
 pub const SpvExecutionMode__SpvExecutionModeInvocations: SpvExecutionMode_ = 0;
 pub const SpvExecutionMode__SpvExecutionModeSpacingEqual: SpvExecutionMode_ = 1;
@@ -187,7 +75,7 @@ pub const SpvExecutionMode__SpvExecutionModeLocalSizeHintId: SpvExecutionMode_ =
 pub const SpvExecutionMode__SpvExecutionModePostDepthCoverage: SpvExecutionMode_ = 4446;
 pub const SpvExecutionMode__SpvExecutionModeStencilRefReplacingEXT: SpvExecutionMode_ = 5027;
 pub const SpvExecutionMode__SpvExecutionModeMax: SpvExecutionMode_ = 2147483647;
-pub type SpvExecutionMode_ = i32;
+pub type SpvExecutionMode_ = u32;
 pub use self::SpvExecutionMode_ as SpvExecutionMode;
 pub const SpvStorageClass__SpvStorageClassUniformConstant: SpvStorageClass_ = 0;
 pub const SpvStorageClass__SpvStorageClassInput: SpvStorageClass_ = 1;
@@ -203,7 +91,7 @@ pub const SpvStorageClass__SpvStorageClassAtomicCounter: SpvStorageClass_ = 10;
 pub const SpvStorageClass__SpvStorageClassImage: SpvStorageClass_ = 11;
 pub const SpvStorageClass__SpvStorageClassStorageBuffer: SpvStorageClass_ = 12;
 pub const SpvStorageClass__SpvStorageClassMax: SpvStorageClass_ = 2147483647;
-pub type SpvStorageClass_ = i32;
+pub type SpvStorageClass_ = u32;
 pub use self::SpvStorageClass_ as SpvStorageClass;
 pub const SpvDim__SpvDim1D: SpvDim_ = 0;
 pub const SpvDim__SpvDim2D: SpvDim_ = 1;
@@ -213,7 +101,7 @@ pub const SpvDim__SpvDimRect: SpvDim_ = 4;
 pub const SpvDim__SpvDimBuffer: SpvDim_ = 5;
 pub const SpvDim__SpvDimSubpassData: SpvDim_ = 6;
 pub const SpvDim__SpvDimMax: SpvDim_ = 2147483647;
-pub type SpvDim_ = i32;
+pub type SpvDim_ = u32;
 pub use self::SpvDim_ as SpvDim;
 pub const SpvSamplerAddressingMode__SpvSamplerAddressingModeNone: SpvSamplerAddressingMode_ = 0;
 pub const SpvSamplerAddressingMode__SpvSamplerAddressingModeClampToEdge: SpvSamplerAddressingMode_ =
@@ -224,12 +112,12 @@ pub const SpvSamplerAddressingMode__SpvSamplerAddressingModeRepeatMirrored:
     SpvSamplerAddressingMode_ = 4;
 pub const SpvSamplerAddressingMode__SpvSamplerAddressingModeMax: SpvSamplerAddressingMode_ =
     2147483647;
-pub type SpvSamplerAddressingMode_ = i32;
+pub type SpvSamplerAddressingMode_ = u32;
 pub use self::SpvSamplerAddressingMode_ as SpvSamplerAddressingMode;
 pub const SpvSamplerFilterMode__SpvSamplerFilterModeNearest: SpvSamplerFilterMode_ = 0;
 pub const SpvSamplerFilterMode__SpvSamplerFilterModeLinear: SpvSamplerFilterMode_ = 1;
 pub const SpvSamplerFilterMode__SpvSamplerFilterModeMax: SpvSamplerFilterMode_ = 2147483647;
-pub type SpvSamplerFilterMode_ = i32;
+pub type SpvSamplerFilterMode_ = u32;
 pub use self::SpvSamplerFilterMode_ as SpvSamplerFilterMode;
 pub const SpvImageFormat__SpvImageFormatUnknown: SpvImageFormat_ = 0;
 pub const SpvImageFormat__SpvImageFormatRgba32f: SpvImageFormat_ = 1;
@@ -272,7 +160,7 @@ pub const SpvImageFormat__SpvImageFormatRg8ui: SpvImageFormat_ = 37;
 pub const SpvImageFormat__SpvImageFormatR16ui: SpvImageFormat_ = 38;
 pub const SpvImageFormat__SpvImageFormatR8ui: SpvImageFormat_ = 39;
 pub const SpvImageFormat__SpvImageFormatMax: SpvImageFormat_ = 2147483647;
-pub type SpvImageFormat_ = i32;
+pub type SpvImageFormat_ = u32;
 pub use self::SpvImageFormat_ as SpvImageFormat;
 pub const SpvImageChannelOrder__SpvImageChannelOrderR: SpvImageChannelOrder_ = 0;
 pub const SpvImageChannelOrder__SpvImageChannelOrderA: SpvImageChannelOrder_ = 1;
@@ -295,7 +183,7 @@ pub const SpvImageChannelOrder__SpvImageChannelOrdersRGBA: SpvImageChannelOrder_
 pub const SpvImageChannelOrder__SpvImageChannelOrdersBGRA: SpvImageChannelOrder_ = 18;
 pub const SpvImageChannelOrder__SpvImageChannelOrderABGR: SpvImageChannelOrder_ = 19;
 pub const SpvImageChannelOrder__SpvImageChannelOrderMax: SpvImageChannelOrder_ = 2147483647;
-pub type SpvImageChannelOrder_ = i32;
+pub type SpvImageChannelOrder_ = u32;
 pub use self::SpvImageChannelOrder_ as SpvImageChannelOrder;
 pub const SpvImageChannelDataType__SpvImageChannelDataTypeSnormInt8: SpvImageChannelDataType_ = 0;
 pub const SpvImageChannelDataType__SpvImageChannelDataTypeSnormInt16: SpvImageChannelDataType_ = 1;
@@ -323,7 +211,7 @@ pub const SpvImageChannelDataType__SpvImageChannelDataTypeUnormInt101010_2:
     SpvImageChannelDataType_ = 16;
 pub const SpvImageChannelDataType__SpvImageChannelDataTypeMax: SpvImageChannelDataType_ =
     2147483647;
-pub type SpvImageChannelDataType_ = i32;
+pub type SpvImageChannelDataType_ = u32;
 pub use self::SpvImageChannelDataType_ as SpvImageChannelDataType;
 pub const SpvImageOperandsShift__SpvImageOperandsBiasShift: SpvImageOperandsShift_ = 0;
 pub const SpvImageOperandsShift__SpvImageOperandsLodShift: SpvImageOperandsShift_ = 1;
@@ -334,7 +222,7 @@ pub const SpvImageOperandsShift__SpvImageOperandsConstOffsetsShift: SpvImageOper
 pub const SpvImageOperandsShift__SpvImageOperandsSampleShift: SpvImageOperandsShift_ = 6;
 pub const SpvImageOperandsShift__SpvImageOperandsMinLodShift: SpvImageOperandsShift_ = 7;
 pub const SpvImageOperandsShift__SpvImageOperandsMax: SpvImageOperandsShift_ = 2147483647;
-pub type SpvImageOperandsShift_ = i32;
+pub type SpvImageOperandsShift_ = u32;
 pub use self::SpvImageOperandsShift_ as SpvImageOperandsShift;
 pub const SpvImageOperandsMask__SpvImageOperandsMaskNone: SpvImageOperandsMask_ = 0;
 pub const SpvImageOperandsMask__SpvImageOperandsBiasMask: SpvImageOperandsMask_ = 1;
@@ -345,7 +233,7 @@ pub const SpvImageOperandsMask__SpvImageOperandsOffsetMask: SpvImageOperandsMask
 pub const SpvImageOperandsMask__SpvImageOperandsConstOffsetsMask: SpvImageOperandsMask_ = 32;
 pub const SpvImageOperandsMask__SpvImageOperandsSampleMask: SpvImageOperandsMask_ = 64;
 pub const SpvImageOperandsMask__SpvImageOperandsMinLodMask: SpvImageOperandsMask_ = 128;
-pub type SpvImageOperandsMask_ = i32;
+pub type SpvImageOperandsMask_ = u32;
 pub use self::SpvImageOperandsMask_ as SpvImageOperandsMask;
 pub const SpvFPFastMathModeShift__SpvFPFastMathModeNotNaNShift: SpvFPFastMathModeShift_ = 0;
 pub const SpvFPFastMathModeShift__SpvFPFastMathModeNotInfShift: SpvFPFastMathModeShift_ = 1;
@@ -353,7 +241,7 @@ pub const SpvFPFastMathModeShift__SpvFPFastMathModeNSZShift: SpvFPFastMathModeSh
 pub const SpvFPFastMathModeShift__SpvFPFastMathModeAllowRecipShift: SpvFPFastMathModeShift_ = 3;
 pub const SpvFPFastMathModeShift__SpvFPFastMathModeFastShift: SpvFPFastMathModeShift_ = 4;
 pub const SpvFPFastMathModeShift__SpvFPFastMathModeMax: SpvFPFastMathModeShift_ = 2147483647;
-pub type SpvFPFastMathModeShift_ = i32;
+pub type SpvFPFastMathModeShift_ = u32;
 pub use self::SpvFPFastMathModeShift_ as SpvFPFastMathModeShift;
 pub const SpvFPFastMathModeMask__SpvFPFastMathModeMaskNone: SpvFPFastMathModeMask_ = 0;
 pub const SpvFPFastMathModeMask__SpvFPFastMathModeNotNaNMask: SpvFPFastMathModeMask_ = 1;
@@ -361,25 +249,25 @@ pub const SpvFPFastMathModeMask__SpvFPFastMathModeNotInfMask: SpvFPFastMathModeM
 pub const SpvFPFastMathModeMask__SpvFPFastMathModeNSZMask: SpvFPFastMathModeMask_ = 4;
 pub const SpvFPFastMathModeMask__SpvFPFastMathModeAllowRecipMask: SpvFPFastMathModeMask_ = 8;
 pub const SpvFPFastMathModeMask__SpvFPFastMathModeFastMask: SpvFPFastMathModeMask_ = 16;
-pub type SpvFPFastMathModeMask_ = i32;
+pub type SpvFPFastMathModeMask_ = u32;
 pub use self::SpvFPFastMathModeMask_ as SpvFPFastMathModeMask;
 pub const SpvFPRoundingMode__SpvFPRoundingModeRTE: SpvFPRoundingMode_ = 0;
 pub const SpvFPRoundingMode__SpvFPRoundingModeRTZ: SpvFPRoundingMode_ = 1;
 pub const SpvFPRoundingMode__SpvFPRoundingModeRTP: SpvFPRoundingMode_ = 2;
 pub const SpvFPRoundingMode__SpvFPRoundingModeRTN: SpvFPRoundingMode_ = 3;
 pub const SpvFPRoundingMode__SpvFPRoundingModeMax: SpvFPRoundingMode_ = 2147483647;
-pub type SpvFPRoundingMode_ = i32;
+pub type SpvFPRoundingMode_ = u32;
 pub use self::SpvFPRoundingMode_ as SpvFPRoundingMode;
 pub const SpvLinkageType__SpvLinkageTypeExport: SpvLinkageType_ = 0;
 pub const SpvLinkageType__SpvLinkageTypeImport: SpvLinkageType_ = 1;
 pub const SpvLinkageType__SpvLinkageTypeMax: SpvLinkageType_ = 2147483647;
-pub type SpvLinkageType_ = i32;
+pub type SpvLinkageType_ = u32;
 pub use self::SpvLinkageType_ as SpvLinkageType;
 pub const SpvAccessQualifier__SpvAccessQualifierReadOnly: SpvAccessQualifier_ = 0;
 pub const SpvAccessQualifier__SpvAccessQualifierWriteOnly: SpvAccessQualifier_ = 1;
 pub const SpvAccessQualifier__SpvAccessQualifierReadWrite: SpvAccessQualifier_ = 2;
 pub const SpvAccessQualifier__SpvAccessQualifierMax: SpvAccessQualifier_ = 2147483647;
-pub type SpvAccessQualifier_ = i32;
+pub type SpvAccessQualifier_ = u32;
 pub use self::SpvAccessQualifier_ as SpvAccessQualifier;
 pub const SpvFunctionParameterAttribute__SpvFunctionParameterAttributeZext:
     SpvFunctionParameterAttribute_ = 0;
@@ -399,7 +287,7 @@ pub const SpvFunctionParameterAttribute__SpvFunctionParameterAttributeNoReadWrit
     SpvFunctionParameterAttribute_ = 7;
 pub const SpvFunctionParameterAttribute__SpvFunctionParameterAttributeMax:
     SpvFunctionParameterAttribute_ = 2147483647;
-pub type SpvFunctionParameterAttribute_ = i32;
+pub type SpvFunctionParameterAttribute_ = u32;
 pub use self::SpvFunctionParameterAttribute_ as SpvFunctionParameterAttribute;
 pub const SpvDecoration__SpvDecorationRelaxedPrecision: SpvDecoration_ = 0;
 pub const SpvDecoration__SpvDecorationSpecId: SpvDecoration_ = 1;
@@ -455,7 +343,7 @@ pub const SpvDecoration__SpvDecorationSecondaryViewportRelativeNV: SpvDecoration
 pub const SpvDecoration__SpvDecorationHlslCounterBufferGOOGLE: SpvDecoration_ = 5634;
 pub const SpvDecoration__SpvDecorationHlslSemanticGOOGLE: SpvDecoration_ = 5635;
 pub const SpvDecoration__SpvDecorationMax: SpvDecoration_ = 2147483647;
-pub type SpvDecoration_ = i32;
+pub type SpvDecoration_ = u32;
 pub use self::SpvDecoration_ as SpvDecoration;
 pub const SpvBuiltIn__SpvBuiltInPosition: SpvBuiltIn_ = 0;
 pub const SpvBuiltIn__SpvBuiltInPointSize: SpvBuiltIn_ = 1;
@@ -528,46 +416,46 @@ pub const SpvBuiltIn__SpvBuiltInPositionPerViewNV: SpvBuiltIn_ = 5261;
 pub const SpvBuiltIn__SpvBuiltInViewportMaskPerViewNV: SpvBuiltIn_ = 5262;
 pub const SpvBuiltIn__SpvBuiltInFullyCoveredEXT: SpvBuiltIn_ = 5264;
 pub const SpvBuiltIn__SpvBuiltInMax: SpvBuiltIn_ = 2147483647;
-pub type SpvBuiltIn_ = i32;
+pub type SpvBuiltIn_ = u32;
 pub use self::SpvBuiltIn_ as SpvBuiltIn;
 pub const SpvSelectionControlShift__SpvSelectionControlFlattenShift: SpvSelectionControlShift_ = 0;
 pub const SpvSelectionControlShift__SpvSelectionControlDontFlattenShift: SpvSelectionControlShift_ =
     1;
 pub const SpvSelectionControlShift__SpvSelectionControlMax: SpvSelectionControlShift_ = 2147483647;
-pub type SpvSelectionControlShift_ = i32;
+pub type SpvSelectionControlShift_ = u32;
 pub use self::SpvSelectionControlShift_ as SpvSelectionControlShift;
 pub const SpvSelectionControlMask__SpvSelectionControlMaskNone: SpvSelectionControlMask_ = 0;
 pub const SpvSelectionControlMask__SpvSelectionControlFlattenMask: SpvSelectionControlMask_ = 1;
 pub const SpvSelectionControlMask__SpvSelectionControlDontFlattenMask: SpvSelectionControlMask_ = 2;
-pub type SpvSelectionControlMask_ = i32;
+pub type SpvSelectionControlMask_ = u32;
 pub use self::SpvSelectionControlMask_ as SpvSelectionControlMask;
 pub const SpvLoopControlShift__SpvLoopControlUnrollShift: SpvLoopControlShift_ = 0;
 pub const SpvLoopControlShift__SpvLoopControlDontUnrollShift: SpvLoopControlShift_ = 1;
 pub const SpvLoopControlShift__SpvLoopControlDependencyInfiniteShift: SpvLoopControlShift_ = 2;
 pub const SpvLoopControlShift__SpvLoopControlDependencyLengthShift: SpvLoopControlShift_ = 3;
 pub const SpvLoopControlShift__SpvLoopControlMax: SpvLoopControlShift_ = 2147483647;
-pub type SpvLoopControlShift_ = i32;
+pub type SpvLoopControlShift_ = u32;
 pub use self::SpvLoopControlShift_ as SpvLoopControlShift;
 pub const SpvLoopControlMask__SpvLoopControlMaskNone: SpvLoopControlMask_ = 0;
 pub const SpvLoopControlMask__SpvLoopControlUnrollMask: SpvLoopControlMask_ = 1;
 pub const SpvLoopControlMask__SpvLoopControlDontUnrollMask: SpvLoopControlMask_ = 2;
 pub const SpvLoopControlMask__SpvLoopControlDependencyInfiniteMask: SpvLoopControlMask_ = 4;
 pub const SpvLoopControlMask__SpvLoopControlDependencyLengthMask: SpvLoopControlMask_ = 8;
-pub type SpvLoopControlMask_ = i32;
+pub type SpvLoopControlMask_ = u32;
 pub use self::SpvLoopControlMask_ as SpvLoopControlMask;
 pub const SpvFunctionControlShift__SpvFunctionControlInlineShift: SpvFunctionControlShift_ = 0;
 pub const SpvFunctionControlShift__SpvFunctionControlDontInlineShift: SpvFunctionControlShift_ = 1;
 pub const SpvFunctionControlShift__SpvFunctionControlPureShift: SpvFunctionControlShift_ = 2;
 pub const SpvFunctionControlShift__SpvFunctionControlConstShift: SpvFunctionControlShift_ = 3;
 pub const SpvFunctionControlShift__SpvFunctionControlMax: SpvFunctionControlShift_ = 2147483647;
-pub type SpvFunctionControlShift_ = i32;
+pub type SpvFunctionControlShift_ = u32;
 pub use self::SpvFunctionControlShift_ as SpvFunctionControlShift;
 pub const SpvFunctionControlMask__SpvFunctionControlMaskNone: SpvFunctionControlMask_ = 0;
 pub const SpvFunctionControlMask__SpvFunctionControlInlineMask: SpvFunctionControlMask_ = 1;
 pub const SpvFunctionControlMask__SpvFunctionControlDontInlineMask: SpvFunctionControlMask_ = 2;
 pub const SpvFunctionControlMask__SpvFunctionControlPureMask: SpvFunctionControlMask_ = 4;
 pub const SpvFunctionControlMask__SpvFunctionControlConstMask: SpvFunctionControlMask_ = 8;
-pub type SpvFunctionControlMask_ = i32;
+pub type SpvFunctionControlMask_ = u32;
 pub use self::SpvFunctionControlMask_ as SpvFunctionControlMask;
 pub const SpvMemorySemanticsShift__SpvMemorySemanticsAcquireShift: SpvMemorySemanticsShift_ = 1;
 pub const SpvMemorySemanticsShift__SpvMemorySemanticsReleaseShift: SpvMemorySemanticsShift_ = 2;
@@ -588,7 +476,7 @@ pub const SpvMemorySemanticsShift__SpvMemorySemanticsAtomicCounterMemoryShift:
 pub const SpvMemorySemanticsShift__SpvMemorySemanticsImageMemoryShift: SpvMemorySemanticsShift_ =
     11;
 pub const SpvMemorySemanticsShift__SpvMemorySemanticsMax: SpvMemorySemanticsShift_ = 2147483647;
-pub type SpvMemorySemanticsShift_ = i32;
+pub type SpvMemorySemanticsShift_ = u32;
 pub use self::SpvMemorySemanticsShift_ as SpvMemorySemanticsShift;
 pub const SpvMemorySemanticsMask__SpvMemorySemanticsMaskNone: SpvMemorySemanticsMask_ = 0;
 pub const SpvMemorySemanticsMask__SpvMemorySemanticsAcquireMask: SpvMemorySemanticsMask_ = 2;
@@ -606,19 +494,19 @@ pub const SpvMemorySemanticsMask__SpvMemorySemanticsCrossWorkgroupMemoryMask:
 pub const SpvMemorySemanticsMask__SpvMemorySemanticsAtomicCounterMemoryMask:
     SpvMemorySemanticsMask_ = 1024;
 pub const SpvMemorySemanticsMask__SpvMemorySemanticsImageMemoryMask: SpvMemorySemanticsMask_ = 2048;
-pub type SpvMemorySemanticsMask_ = i32;
+pub type SpvMemorySemanticsMask_ = u32;
 pub use self::SpvMemorySemanticsMask_ as SpvMemorySemanticsMask;
 pub const SpvMemoryAccessShift__SpvMemoryAccessVolatileShift: SpvMemoryAccessShift_ = 0;
 pub const SpvMemoryAccessShift__SpvMemoryAccessAlignedShift: SpvMemoryAccessShift_ = 1;
 pub const SpvMemoryAccessShift__SpvMemoryAccessNontemporalShift: SpvMemoryAccessShift_ = 2;
 pub const SpvMemoryAccessShift__SpvMemoryAccessMax: SpvMemoryAccessShift_ = 2147483647;
-pub type SpvMemoryAccessShift_ = i32;
+pub type SpvMemoryAccessShift_ = u32;
 pub use self::SpvMemoryAccessShift_ as SpvMemoryAccessShift;
 pub const SpvMemoryAccessMask__SpvMemoryAccessMaskNone: SpvMemoryAccessMask_ = 0;
 pub const SpvMemoryAccessMask__SpvMemoryAccessVolatileMask: SpvMemoryAccessMask_ = 1;
 pub const SpvMemoryAccessMask__SpvMemoryAccessAlignedMask: SpvMemoryAccessMask_ = 2;
 pub const SpvMemoryAccessMask__SpvMemoryAccessNontemporalMask: SpvMemoryAccessMask_ = 4;
-pub type SpvMemoryAccessMask_ = i32;
+pub type SpvMemoryAccessMask_ = u32;
 pub use self::SpvMemoryAccessMask_ as SpvMemoryAccessMask;
 pub const SpvScope__SpvScopeCrossDevice: SpvScope_ = 0;
 pub const SpvScope__SpvScopeDevice: SpvScope_ = 1;
@@ -626,7 +514,7 @@ pub const SpvScope__SpvScopeWorkgroup: SpvScope_ = 2;
 pub const SpvScope__SpvScopeSubgroup: SpvScope_ = 3;
 pub const SpvScope__SpvScopeInvocation: SpvScope_ = 4;
 pub const SpvScope__SpvScopeMax: SpvScope_ = 2147483647;
-pub type SpvScope_ = i32;
+pub type SpvScope_ = u32;
 pub use self::SpvScope_ as SpvScope;
 pub const SpvGroupOperation__SpvGroupOperationReduce: SpvGroupOperation_ = 0;
 pub const SpvGroupOperation__SpvGroupOperationInclusiveScan: SpvGroupOperation_ = 1;
@@ -636,25 +524,25 @@ pub const SpvGroupOperation__SpvGroupOperationPartitionedReduceNV: SpvGroupOpera
 pub const SpvGroupOperation__SpvGroupOperationPartitionedInclusiveScanNV: SpvGroupOperation_ = 7;
 pub const SpvGroupOperation__SpvGroupOperationPartitionedExclusiveScanNV: SpvGroupOperation_ = 8;
 pub const SpvGroupOperation__SpvGroupOperationMax: SpvGroupOperation_ = 2147483647;
-pub type SpvGroupOperation_ = i32;
+pub type SpvGroupOperation_ = u32;
 pub use self::SpvGroupOperation_ as SpvGroupOperation;
 pub const SpvKernelEnqueueFlags__SpvKernelEnqueueFlagsNoWait: SpvKernelEnqueueFlags_ = 0;
 pub const SpvKernelEnqueueFlags__SpvKernelEnqueueFlagsWaitKernel: SpvKernelEnqueueFlags_ = 1;
 pub const SpvKernelEnqueueFlags__SpvKernelEnqueueFlagsWaitWorkGroup: SpvKernelEnqueueFlags_ = 2;
 pub const SpvKernelEnqueueFlags__SpvKernelEnqueueFlagsMax: SpvKernelEnqueueFlags_ = 2147483647;
-pub type SpvKernelEnqueueFlags_ = i32;
+pub type SpvKernelEnqueueFlags_ = u32;
 pub use self::SpvKernelEnqueueFlags_ as SpvKernelEnqueueFlags;
 pub const SpvKernelProfilingInfoShift__SpvKernelProfilingInfoCmdExecTimeShift:
     SpvKernelProfilingInfoShift_ = 0;
 pub const SpvKernelProfilingInfoShift__SpvKernelProfilingInfoMax: SpvKernelProfilingInfoShift_ =
     2147483647;
-pub type SpvKernelProfilingInfoShift_ = i32;
+pub type SpvKernelProfilingInfoShift_ = u32;
 pub use self::SpvKernelProfilingInfoShift_ as SpvKernelProfilingInfoShift;
 pub const SpvKernelProfilingInfoMask__SpvKernelProfilingInfoMaskNone: SpvKernelProfilingInfoMask_ =
     0;
 pub const SpvKernelProfilingInfoMask__SpvKernelProfilingInfoCmdExecTimeMask:
     SpvKernelProfilingInfoMask_ = 1;
-pub type SpvKernelProfilingInfoMask_ = i32;
+pub type SpvKernelProfilingInfoMask_ = u32;
 pub use self::SpvKernelProfilingInfoMask_ as SpvKernelProfilingInfoMask;
 pub const SpvCapability__SpvCapabilityMatrix: SpvCapability_ = 0;
 pub const SpvCapability__SpvCapabilityShader: SpvCapability_ = 1;
@@ -756,7 +644,7 @@ pub const SpvCapability__SpvCapabilitySubgroupShuffleINTEL: SpvCapability_ = 556
 pub const SpvCapability__SpvCapabilitySubgroupBufferBlockIOINTEL: SpvCapability_ = 5569;
 pub const SpvCapability__SpvCapabilitySubgroupImageBlockIOINTEL: SpvCapability_ = 5570;
 pub const SpvCapability__SpvCapabilityMax: SpvCapability_ = 2147483647;
-pub type SpvCapability_ = i32;
+pub type SpvCapability_ = u32;
 pub use self::SpvCapability_ as SpvCapability;
 pub const SpvOp__SpvOpNop: SpvOp_ = 0;
 pub const SpvOp__SpvOpUndef: SpvOp_ = 1;
@@ -1126,831 +1014,8 @@ pub const SpvOp__SpvOpSubgroupImageBlockWriteINTEL: SpvOp_ = 5578;
 pub const SpvOp__SpvOpDecorateStringGOOGLE: SpvOp_ = 5632;
 pub const SpvOp__SpvOpMemberDecorateStringGOOGLE: SpvOp_ = 5633;
 pub const SpvOp__SpvOpMax: SpvOp_ = 2147483647;
-pub type SpvOp_ = i32;
+pub type SpvOp_ = u32;
 pub use self::SpvOp_ as SpvOp;
-pub type va_list = *mut ::std::os::raw::c_char;
-extern "C" {
-    pub fn __va_start(arg1: *mut va_list, ...);
-}
-pub type __vcrt_bool = bool;
-pub type wchar_t = ::std::os::raw::c_ushort;
-extern "C" {
-    pub fn __security_init_cookie();
-}
-extern "C" {
-    pub fn __security_check_cookie(_StackCookie: usize);
-}
-extern "C" {
-    pub fn __report_gsfailure(_StackCookie: usize);
-}
-extern "C" {
-    #[link_name = "\u{1}__security_cookie"]
-    pub static mut __security_cookie: usize;
-}
-pub type int_least8_t = ::std::os::raw::c_schar;
-pub type int_least16_t = ::std::os::raw::c_short;
-pub type int_least32_t = ::std::os::raw::c_int;
-pub type int_least64_t = ::std::os::raw::c_longlong;
-pub type uint_least8_t = ::std::os::raw::c_uchar;
-pub type uint_least16_t = ::std::os::raw::c_ushort;
-pub type uint_least32_t = ::std::os::raw::c_uint;
-pub type uint_least64_t = ::std::os::raw::c_ulonglong;
-pub type int_fast8_t = ::std::os::raw::c_schar;
-pub type int_fast16_t = ::std::os::raw::c_int;
-pub type int_fast32_t = ::std::os::raw::c_int;
-pub type int_fast64_t = ::std::os::raw::c_longlong;
-pub type uint_fast8_t = ::std::os::raw::c_uchar;
-pub type uint_fast16_t = ::std::os::raw::c_uint;
-pub type uint_fast32_t = ::std::os::raw::c_uint;
-pub type uint_fast64_t = ::std::os::raw::c_ulonglong;
-pub type intmax_t = ::std::os::raw::c_longlong;
-pub type uintmax_t = ::std::os::raw::c_ulonglong;
-pub type __crt_bool = bool;
-extern "C" {
-    pub fn _invalid_parameter_noinfo();
-}
-extern "C" {
-    pub fn _invalid_parameter_noinfo_noreturn();
-}
-extern "C" {
-    pub fn _invoke_watson(
-        _Expression: *const wchar_t,
-        _FunctionName: *const wchar_t,
-        _FileName: *const wchar_t,
-        _LineNo: ::std::os::raw::c_uint,
-        _Reserved: usize,
-    );
-}
-pub type errno_t = ::std::os::raw::c_int;
-pub type wint_t = ::std::os::raw::c_ushort;
-pub type wctype_t = ::std::os::raw::c_ushort;
-pub type __time32_t = ::std::os::raw::c_long;
-pub type __time64_t = ::std::os::raw::c_longlong;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct __crt_locale_data_public {
-    pub _locale_pctype: *const ::std::os::raw::c_ushort,
-    pub _locale_mb_cur_max: ::std::os::raw::c_int,
-    pub _locale_lc_codepage: ::std::os::raw::c_uint,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct __crt_locale_pointers {
-    pub locinfo: *mut __crt_locale_data,
-    pub mbcinfo: *mut __crt_multibyte_data,
-}
-pub type _locale_t = *mut __crt_locale_pointers;
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct _Mbstatet {
-    pub _Wchar: ::std::os::raw::c_ulong,
-    pub _Byte: ::std::os::raw::c_ushort,
-    pub _State: ::std::os::raw::c_ushort,
-}
-pub type mbstate_t = _Mbstatet;
-pub type time_t = __time64_t;
-pub type rsize_t = usize;
-extern "C" {
-    pub fn _errno() -> *mut ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _set_errno(_Value: ::std::os::raw::c_int) -> errno_t;
-}
-extern "C" {
-    pub fn _get_errno(_Value: *mut ::std::os::raw::c_int) -> errno_t;
-}
-extern "C" {
-    pub fn __doserrno() -> *mut ::std::os::raw::c_ulong;
-}
-extern "C" {
-    pub fn _set_doserrno(_Value: ::std::os::raw::c_ulong) -> errno_t;
-}
-extern "C" {
-    pub fn _get_doserrno(_Value: *mut ::std::os::raw::c_ulong) -> errno_t;
-}
-extern "C" {
-    pub fn memchr(
-        _Buf: *const ::std::os::raw::c_void,
-        _Val: ::std::os::raw::c_int,
-        _MaxCount: usize,
-    ) -> *mut ::std::os::raw::c_void;
-}
-extern "C" {
-    pub fn memcmp(
-        _Buf1: *const ::std::os::raw::c_void,
-        _Buf2: *const ::std::os::raw::c_void,
-        _Size: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn memcpy(
-        _Dst: *mut ::std::os::raw::c_void,
-        _Src: *const ::std::os::raw::c_void,
-        _Size: usize,
-    ) -> *mut ::std::os::raw::c_void;
-}
-extern "C" {
-    pub fn memmove(
-        _Dst: *mut ::std::os::raw::c_void,
-        _Src: *const ::std::os::raw::c_void,
-        _Size: usize,
-    ) -> *mut ::std::os::raw::c_void;
-}
-extern "C" {
-    pub fn memset(
-        _Dst: *mut ::std::os::raw::c_void,
-        _Val: ::std::os::raw::c_int,
-        _Size: usize,
-    ) -> *mut ::std::os::raw::c_void;
-}
-extern "C" {
-    pub fn strchr(
-        _Str: *const ::std::os::raw::c_char,
-        _Val: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strrchr(
-        _Str: *const ::std::os::raw::c_char,
-        _Ch: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strstr(
-        _Str: *const ::std::os::raw::c_char,
-        _SubStr: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn wcschr(_Str: *const wchar_t, _Ch: wchar_t) -> *mut ::std::os::raw::c_ushort;
-}
-extern "C" {
-    pub fn wcsrchr(_Str: *const wchar_t, _Ch: wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcsstr(_Str: *const wchar_t, _SubStr: *const wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn _memicmp(
-        _Buf1: *const ::std::os::raw::c_void,
-        _Buf2: *const ::std::os::raw::c_void,
-        _Size: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _memicmp_l(
-        _Buf1: *const ::std::os::raw::c_void,
-        _Buf2: *const ::std::os::raw::c_void,
-        _Size: usize,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn memccpy(
-        _Dst: *mut ::std::os::raw::c_void,
-        _Src: *const ::std::os::raw::c_void,
-        _Val: ::std::os::raw::c_int,
-        _Size: usize,
-    ) -> *mut ::std::os::raw::c_void;
-}
-extern "C" {
-    pub fn memicmp(
-        _Buf1: *const ::std::os::raw::c_void,
-        _Buf2: *const ::std::os::raw::c_void,
-        _Size: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn wcscat_s(
-        _Destination: *mut wchar_t,
-        _SizeInWords: rsize_t,
-        _Source: *const wchar_t,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn wcscpy_s(
-        _Destination: *mut wchar_t,
-        _SizeInWords: rsize_t,
-        _Source: *const wchar_t,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn wcsncat_s(
-        _Destination: *mut wchar_t,
-        _SizeInWords: rsize_t,
-        _Source: *const wchar_t,
-        _MaxCount: rsize_t,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn wcsncpy_s(
-        _Destination: *mut wchar_t,
-        _SizeInWords: rsize_t,
-        _Source: *const wchar_t,
-        _MaxCount: rsize_t,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn wcstok_s(
-        _String: *mut wchar_t,
-        _Delimiter: *const wchar_t,
-        _Context: *mut *mut wchar_t,
-    ) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn _wcsdup(_String: *const wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcscat(_Destination: *mut wchar_t, _Source: *const wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcscmp(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn wcscpy(_Destination: *mut wchar_t, _Source: *const wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcscspn(_String: *const wchar_t, _Control: *const wchar_t) -> usize;
-}
-extern "C" {
-    pub fn wcslen(_String: *const wchar_t) -> ::std::os::raw::c_ulonglong;
-}
-extern "C" {
-    pub fn wcsnlen(_Source: *const wchar_t, _MaxCount: usize) -> usize;
-}
-extern "C" {
-    pub fn wcsncat(
-        _Destination: *mut wchar_t,
-        _Source: *const wchar_t,
-        _Count: usize,
-    ) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcsncmp(
-        _String1: *const wchar_t,
-        _String2: *const wchar_t,
-        _MaxCount: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn wcsncpy(
-        _Destination: *mut wchar_t,
-        _Source: *const wchar_t,
-        _Count: usize,
-    ) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcspbrk(_String: *const wchar_t, _Control: *const wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcsspn(_String: *const wchar_t, _Control: *const wchar_t) -> usize;
-}
-extern "C" {
-    pub fn wcstok(
-        _String: *mut wchar_t,
-        _Delimiter: *const wchar_t,
-        _Context: *mut *mut wchar_t,
-    ) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn _wcserror(_ErrorNumber: ::std::os::raw::c_int) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn _wcserror_s(
-        _Buffer: *mut wchar_t,
-        _SizeInWords: usize,
-        _ErrorNumber: ::std::os::raw::c_int,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn __wcserror(_String: *const wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn __wcserror_s(
-        _Buffer: *mut wchar_t,
-        _SizeInWords: usize,
-        _ErrorMessage: *const wchar_t,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn _wcsicmp(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _wcsicmp_l(
-        _String1: *const wchar_t,
-        _String2: *const wchar_t,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _wcsnicmp(
-        _String1: *const wchar_t,
-        _String2: *const wchar_t,
-        _MaxCount: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _wcsnicmp_l(
-        _String1: *const wchar_t,
-        _String2: *const wchar_t,
-        _MaxCount: usize,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _wcsnset_s(
-        _Destination: *mut wchar_t,
-        _SizeInWords: usize,
-        _Value: wchar_t,
-        _MaxCount: usize,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn _wcsnset(_String: *mut wchar_t, _Value: wchar_t, _MaxCount: usize) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn _wcsrev(_String: *mut wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn _wcsset_s(_Destination: *mut wchar_t, _SizeInWords: usize, _Value: wchar_t) -> errno_t;
-}
-extern "C" {
-    pub fn _wcsset(_String: *mut wchar_t, _Value: wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn _wcslwr_s(_String: *mut wchar_t, _SizeInWords: usize) -> errno_t;
-}
-extern "C" {
-    pub fn _wcslwr(_String: *mut wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn _wcslwr_s_l(_String: *mut wchar_t, _SizeInWords: usize, _Locale: _locale_t) -> errno_t;
-}
-extern "C" {
-    pub fn _wcslwr_l(_String: *mut wchar_t, _Locale: _locale_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn _wcsupr_s(_String: *mut wchar_t, _Size: usize) -> errno_t;
-}
-extern "C" {
-    pub fn _wcsupr(_String: *mut wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn _wcsupr_s_l(_String: *mut wchar_t, _Size: usize, _Locale: _locale_t) -> errno_t;
-}
-extern "C" {
-    pub fn _wcsupr_l(_String: *mut wchar_t, _Locale: _locale_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcsxfrm(_Destination: *mut wchar_t, _Source: *const wchar_t, _MaxCount: usize) -> usize;
-}
-extern "C" {
-    pub fn _wcsxfrm_l(
-        _Destination: *mut wchar_t,
-        _Source: *const wchar_t,
-        _MaxCount: usize,
-        _Locale: _locale_t,
-    ) -> usize;
-}
-extern "C" {
-    pub fn wcscoll(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _wcscoll_l(
-        _String1: *const wchar_t,
-        _String2: *const wchar_t,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _wcsicoll(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _wcsicoll_l(
-        _String1: *const wchar_t,
-        _String2: *const wchar_t,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _wcsncoll(
-        _String1: *const wchar_t,
-        _String2: *const wchar_t,
-        _MaxCount: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _wcsncoll_l(
-        _String1: *const wchar_t,
-        _String2: *const wchar_t,
-        _MaxCount: usize,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _wcsnicoll(
-        _String1: *const wchar_t,
-        _String2: *const wchar_t,
-        _MaxCount: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _wcsnicoll_l(
-        _String1: *const wchar_t,
-        _String2: *const wchar_t,
-        _MaxCount: usize,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn wcsdup(_String: *const wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcsicmp(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn wcsnicmp(
-        _String1: *const wchar_t,
-        _String2: *const wchar_t,
-        _MaxCount: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn wcsnset(_String: *mut wchar_t, _Value: wchar_t, _MaxCount: usize) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcsrev(_String: *mut wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcsset(_String: *mut wchar_t, _Value: wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcslwr(_String: *mut wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcsupr(_String: *mut wchar_t) -> *mut wchar_t;
-}
-extern "C" {
-    pub fn wcsicoll(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn strcpy_s(
-        _Destination: *mut ::std::os::raw::c_char,
-        _SizeInBytes: rsize_t,
-        _Source: *const ::std::os::raw::c_char,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn strcat_s(
-        _Destination: *mut ::std::os::raw::c_char,
-        _SizeInBytes: rsize_t,
-        _Source: *const ::std::os::raw::c_char,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn strerror_s(
-        _Buffer: *mut ::std::os::raw::c_char,
-        _SizeInBytes: usize,
-        _ErrorNumber: ::std::os::raw::c_int,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn strncat_s(
-        _Destination: *mut ::std::os::raw::c_char,
-        _SizeInBytes: rsize_t,
-        _Source: *const ::std::os::raw::c_char,
-        _MaxCount: rsize_t,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn strncpy_s(
-        _Destination: *mut ::std::os::raw::c_char,
-        _SizeInBytes: rsize_t,
-        _Source: *const ::std::os::raw::c_char,
-        _MaxCount: rsize_t,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn strtok_s(
-        _String: *mut ::std::os::raw::c_char,
-        _Delimiter: *const ::std::os::raw::c_char,
-        _Context: *mut *mut ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn _memccpy(
-        _Dst: *mut ::std::os::raw::c_void,
-        _Src: *const ::std::os::raw::c_void,
-        _Val: ::std::os::raw::c_int,
-        _MaxCount: usize,
-    ) -> *mut ::std::os::raw::c_void;
-}
-extern "C" {
-    pub fn strcat(
-        _Destination: *mut ::std::os::raw::c_char,
-        _Source: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strcmp(
-        _Str1: *const ::std::os::raw::c_char,
-        _Str2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _strcmpi(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn strcoll(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _strcoll_l(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn strcpy(
-        _Destination: *mut ::std::os::raw::c_char,
-        _Source: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strcspn(
-        _Str: *const ::std::os::raw::c_char,
-        _Control: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_ulonglong;
-}
-extern "C" {
-    pub fn _strdup(_Source: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn _strerror(_ErrorMessage: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn _strerror_s(
-        _Buffer: *mut ::std::os::raw::c_char,
-        _SizeInBytes: usize,
-        _ErrorMessage: *const ::std::os::raw::c_char,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn strerror(_ErrorMessage: ::std::os::raw::c_int) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn _stricmp(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _stricoll(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _stricoll_l(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _stricmp_l(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn strlen(_Str: *const ::std::os::raw::c_char) -> ::std::os::raw::c_ulonglong;
-}
-extern "C" {
-    pub fn _strlwr_s(_String: *mut ::std::os::raw::c_char, _Size: usize) -> errno_t;
-}
-extern "C" {
-    pub fn _strlwr(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn _strlwr_s_l(
-        _String: *mut ::std::os::raw::c_char,
-        _Size: usize,
-        _Locale: _locale_t,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn _strlwr_l(
-        _String: *mut ::std::os::raw::c_char,
-        _Locale: _locale_t,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strncat(
-        _Destination: *mut ::std::os::raw::c_char,
-        _Source: *const ::std::os::raw::c_char,
-        _Count: usize,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strncmp(
-        _Str1: *const ::std::os::raw::c_char,
-        _Str2: *const ::std::os::raw::c_char,
-        _MaxCount: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _strnicmp(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-        _MaxCount: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _strnicmp_l(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-        _MaxCount: usize,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _strnicoll(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-        _MaxCount: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _strnicoll_l(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-        _MaxCount: usize,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _strncoll(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-        _MaxCount: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _strncoll_l(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-        _MaxCount: usize,
-        _Locale: _locale_t,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn __strncnt(_String: *const ::std::os::raw::c_char, _Count: usize) -> usize;
-}
-extern "C" {
-    pub fn strncpy(
-        _Destination: *mut ::std::os::raw::c_char,
-        _Source: *const ::std::os::raw::c_char,
-        _Count: usize,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strnlen(_String: *const ::std::os::raw::c_char, _MaxCount: usize) -> usize;
-}
-extern "C" {
-    pub fn _strnset_s(
-        _String: *mut ::std::os::raw::c_char,
-        _SizeInBytes: usize,
-        _Value: ::std::os::raw::c_int,
-        _MaxCount: usize,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn _strnset(
-        _Destination: *mut ::std::os::raw::c_char,
-        _Value: ::std::os::raw::c_int,
-        _Count: usize,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strpbrk(
-        _Str: *const ::std::os::raw::c_char,
-        _Control: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn _strrev(_Str: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn _strset_s(
-        _Destination: *mut ::std::os::raw::c_char,
-        _DestinationSize: usize,
-        _Value: ::std::os::raw::c_int,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn _strset(
-        _Destination: *mut ::std::os::raw::c_char,
-        _Value: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strspn(
-        _Str: *const ::std::os::raw::c_char,
-        _Control: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_ulonglong;
-}
-extern "C" {
-    pub fn strtok(
-        _String: *mut ::std::os::raw::c_char,
-        _Delimiter: *const ::std::os::raw::c_char,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn _strupr_s(_String: *mut ::std::os::raw::c_char, _Size: usize) -> errno_t;
-}
-extern "C" {
-    pub fn _strupr(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn _strupr_s_l(
-        _String: *mut ::std::os::raw::c_char,
-        _Size: usize,
-        _Locale: _locale_t,
-    ) -> errno_t;
-}
-extern "C" {
-    pub fn _strupr_l(
-        _String: *mut ::std::os::raw::c_char,
-        _Locale: _locale_t,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strxfrm(
-        _Destination: *mut ::std::os::raw::c_char,
-        _Source: *const ::std::os::raw::c_char,
-        _MaxCount: usize,
-    ) -> ::std::os::raw::c_ulonglong;
-}
-extern "C" {
-    pub fn _strxfrm_l(
-        _Destination: *mut ::std::os::raw::c_char,
-        _Source: *const ::std::os::raw::c_char,
-        _MaxCount: usize,
-        _Locale: _locale_t,
-    ) -> usize;
-}
-extern "C" {
-    pub fn strdup(_String: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strcmpi(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn stricmp(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn strlwr(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strnicmp(
-        _String1: *const ::std::os::raw::c_char,
-        _String2: *const ::std::os::raw::c_char,
-        _MaxCount: usize,
-    ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn strnset(
-        _String: *mut ::std::os::raw::c_char,
-        _Value: ::std::os::raw::c_int,
-        _MaxCount: usize,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strrev(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strset(
-        _String: *mut ::std::os::raw::c_char,
-        _Value: ::std::os::raw::c_int,
-    ) -> *mut ::std::os::raw::c_char;
-}
-extern "C" {
-    pub fn strupr(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
-}
 pub const SpvReflectResult_SPV_REFLECT_RESULT_SUCCESS: SpvReflectResult = 0;
 pub const SpvReflectResult_SPV_REFLECT_RESULT_NOT_READY: SpvReflectResult = 1;
 pub const SpvReflectResult_SPV_REFLECT_RESULT_ERROR_PARSE_FAILED: SpvReflectResult = 2;
@@ -1972,7 +1037,7 @@ pub const SpvReflectResult_SPV_REFLECT_RESULT_ERROR_SPIRV_INVALID_STORAGE_CLASS:
     14;
 pub const SpvReflectResult_SPV_REFLECT_RESULT_ERROR_SPIRV_RECURSION: SpvReflectResult = 15;
 /// @enum SpvReflectResult
-pub type SpvReflectResult = i32;
+pub type SpvReflectResult = u32;
 pub const SpvReflectTypeFlagBits_SPV_REFLECT_TYPE_FLAG_UNDEFINED: SpvReflectTypeFlagBits = 0;
 pub const SpvReflectTypeFlagBits_SPV_REFLECT_TYPE_FLAG_VOID: SpvReflectTypeFlagBits = 1;
 pub const SpvReflectTypeFlagBits_SPV_REFLECT_TYPE_FLAG_BOOL: SpvReflectTypeFlagBits = 2;
@@ -1993,7 +1058,7 @@ pub const SpvReflectTypeFlagBits_SPV_REFLECT_TYPE_FLAG_EXTERNAL_MASK: SpvReflect
 pub const SpvReflectTypeFlagBits_SPV_REFLECT_TYPE_FLAG_STRUCT: SpvReflectTypeFlagBits = 268435456;
 pub const SpvReflectTypeFlagBits_SPV_REFLECT_TYPE_FLAG_ARRAY: SpvReflectTypeFlagBits = 536870912;
 /// @enum SpvReflectTypeFlagBits
-pub type SpvReflectTypeFlagBits = i32;
+pub type SpvReflectTypeFlagBits = u32;
 pub type SpvReflectTypeFlags = u32;
 pub const SpvReflectDecorationFlagBits_SPV_REFLECT_DECORATION_NONE: SpvReflectDecorationFlagBits =
     0;
@@ -2014,7 +1079,7 @@ pub const SpvReflectDecorationFlagBits_SPV_REFLECT_DECORATION_FLAT: SpvReflectDe
 pub const SpvReflectDecorationFlagBits_SPV_REFLECT_DECORATION_NON_WRITABLE:
     SpvReflectDecorationFlagBits = 128;
 /// @enum SpvReflectDecorationBits
-pub type SpvReflectDecorationFlagBits = i32;
+pub type SpvReflectDecorationFlagBits = u32;
 pub type SpvReflectDecorationFlags = u32;
 pub const SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_UNDEFINED: SpvReflectResourceType = 0;
 pub const SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_SAMPLER: SpvReflectResourceType = 1;
@@ -2022,7 +1087,7 @@ pub const SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_CBV: SpvReflectResour
 pub const SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_SRV: SpvReflectResourceType = 4;
 pub const SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_UAV: SpvReflectResourceType = 8;
 /// @enum SpvReflectResourceType
-pub type SpvReflectResourceType = i32;
+pub type SpvReflectResourceType = u32;
 pub const SpvReflectFormat_SPV_REFLECT_FORMAT_UNDEFINED: SpvReflectFormat = 0;
 pub const SpvReflectFormat_SPV_REFLECT_FORMAT_R32_UINT: SpvReflectFormat = 98;
 pub const SpvReflectFormat_SPV_REFLECT_FORMAT_R32_SINT: SpvReflectFormat = 99;
@@ -2037,7 +1102,7 @@ pub const SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_UINT: SpvReflectForma
 pub const SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_SINT: SpvReflectFormat = 108;
 pub const SpvReflectFormat_SPV_REFLECT_FORMAT_R32G32B32A32_SFLOAT: SpvReflectFormat = 109;
 /// @enum SpvReflectFormat
-pub type SpvReflectFormat = i32;
+pub type SpvReflectFormat = u32;
 pub const SpvReflectDescriptorType_SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER: SpvReflectDescriptorType =
     0;
 pub const SpvReflectDescriptorType_SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
@@ -2061,7 +1126,7 @@ pub const SpvReflectDescriptorType_SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER_DY
 pub const SpvReflectDescriptorType_SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT:
     SpvReflectDescriptorType = 10;
 /// @enum SpvReflectDescriptorType
-pub type SpvReflectDescriptorType = i32;
+pub type SpvReflectDescriptorType = u32;
 pub const SpvReflectShaderStageFlagBits_SPV_REFLECT_SHADER_STAGE_VERTEX_BIT:
     SpvReflectShaderStageFlagBits = 1;
 pub const SpvReflectShaderStageFlagBits_SPV_REFLECT_SHADER_STAGE_TESSELLATION_CONTROL_BIT:
@@ -2075,7 +1140,7 @@ pub const SpvReflectShaderStageFlagBits_SPV_REFLECT_SHADER_STAGE_FRAGMENT_BIT:
 pub const SpvReflectShaderStageFlagBits_SPV_REFLECT_SHADER_STAGE_COMPUTE_BIT:
     SpvReflectShaderStageFlagBits = 32;
 /// @enum SpvReflectShaderStageFlagBits
-pub type SpvReflectShaderStageFlagBits = i32;
+pub type SpvReflectShaderStageFlagBits = u32;
 pub const SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_LLVM_SPIRV_TRANSLATOR:
     SpvReflectGenerator = 6;
 pub const SpvReflectGenerator_SPV_REFLECT_GENERATOR_KHRONOS_SPIRV_TOOLS_ASSEMBLER:
@@ -2095,10 +1160,10 @@ pub const SpvReflectGenerator_SPV_REFLECT_GENERATOR_WINE_VKD3D_SHADER_COMPILER:
 pub const SpvReflectGenerator_SPV_REFLECT_GENERATOR_CLAY_CLAY_SHADER_COMPILER: SpvReflectGenerator =
     19;
 /// @enum SpvReflectGenerator
-pub type SpvReflectGenerator = i32;
+pub type SpvReflectGenerator = u32;
 pub const SPV_REFLECT_MAX_ARRAY_DIMS: _bindgen_ty_1 = 32;
 pub const SPV_REFLECT_MAX_DESCRIPTOR_SETS: _bindgen_ty_1 = 64;
-pub type _bindgen_ty_1 = i32;
+pub type _bindgen_ty_1 = u32;
 pub const SPV_REFLECT_BINDING_NUMBER_DONT_CHANGE: _bindgen_ty_2 = -1;
 pub const SPV_REFLECT_SET_NUMBER_DONT_CHANGE: _bindgen_ty_2 = -1;
 pub type _bindgen_ty_2 = i32;
@@ -2295,7 +1360,6 @@ pub struct SpvReflectShaderModule {
     pub _internal: *mut SpvReflectShaderModule_Internal,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct SpvReflectShaderModule_Internal {
     pub spirv_size: usize,
     pub spirv_code: *mut u32,
@@ -2310,6 +1374,7 @@ extern "C" {
     ///@param  p_code    Pointer to SPIR-V code.
     ///@param  p_module  Pointer to an instance of SpvReflectShaderModule.
     ///@return           SPV_REFLECT_RESULT_SUCCESS on success.
+    #[link_name = "\u{1}_spvReflectCreateShaderModule"]
     pub fn spvReflectCreateShaderModule(
         size: usize,
         p_code: *const ::std::os::raw::c_void,
@@ -2317,6 +1382,7 @@ extern "C" {
     ) -> SpvReflectResult;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetShaderModule"]
     pub fn spvReflectGetShaderModule(
         size: usize,
         p_code: *const ::std::os::raw::c_void,
@@ -2327,6 +1393,7 @@ extern "C" {
     /// @fn spvReflectDestroyShaderModule
     ///
     ///@param  p_module  Pointer to an instance of SpvReflectShaderModule.
+    #[link_name = "\u{1}_spvReflectDestroyShaderModule"]
     pub fn spvReflectDestroyShaderModule(p_module: *mut SpvReflectShaderModule);
 }
 extern "C" {
@@ -2334,6 +1401,7 @@ extern "C" {
     ///
     ///@param  p_module  Pointer to an instance of SpvReflectShaderModule.
     ///@return           Returns the size of the SPIR-V in bytes
+    #[link_name = "\u{1}_spvReflectGetCodeSize"]
     pub fn spvReflectGetCodeSize(p_module: *const SpvReflectShaderModule) -> u32;
 }
 extern "C" {
@@ -2341,6 +1409,7 @@ extern "C" {
     ///
     ///@param  p_module  Pointer to an instance of SpvReflectShaderModule.
     ///@return           Returns a const pointer to the compiled SPIR-V bytecode.
+    #[link_name = "\u{1}_spvReflectGetCode"]
     pub fn spvReflectGetCode(p_module: *const SpvReflectShaderModule) -> *const u32;
 }
 extern "C" {
@@ -2350,6 +1419,7 @@ extern "C" {
     ///@param  entry_point  Name of the requested entry point.
     ///@return              Returns a const pointer to the requested entry point,
     ///or NULL if it's not found.
+    #[link_name = "\u{1}_spvReflectGetEntryPoint"]
     pub fn spvReflectGetEntryPoint(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2372,6 +1442,7 @@ extern "C" {
     ///@return              If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
+    #[link_name = "\u{1}_spvReflectEnumerateDescriptorBindings"]
     pub fn spvReflectEnumerateDescriptorBindings(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -2397,6 +1468,7 @@ extern "C" {
     ///@return              If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
+    #[link_name = "\u{1}_spvReflectEnumerateEntryPointDescriptorBindings"]
     pub fn spvReflectEnumerateEntryPointDescriptorBindings(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2421,6 +1493,7 @@ extern "C" {
     ///@return           If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
+    #[link_name = "\u{1}_spvReflectEnumerateDescriptorSets"]
     pub fn spvReflectEnumerateDescriptorSets(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -2446,6 +1519,7 @@ extern "C" {
     ///@return             If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
+    #[link_name = "\u{1}_spvReflectEnumerateEntryPointDescriptorSets"]
     pub fn spvReflectEnumerateEntryPointDescriptorSets(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2471,6 +1545,7 @@ extern "C" {
     ///@return               If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
+    #[link_name = "\u{1}_spvReflectEnumerateInputVariables"]
     pub fn spvReflectEnumerateInputVariables(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -2495,6 +1570,7 @@ extern "C" {
     ///@return               If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
+    #[link_name = "\u{1}_spvReflectEnumerateEntryPointInputVariables"]
     pub fn spvReflectEnumerateEntryPointInputVariables(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2520,6 +1596,7 @@ extern "C" {
     ///@return               If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
+    #[link_name = "\u{1}_spvReflectEnumerateOutputVariables"]
     pub fn spvReflectEnumerateOutputVariables(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -2544,6 +1621,7 @@ extern "C" {
     ///@return               If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
+    #[link_name = "\u{1}_spvReflectEnumerateEntryPointOutputVariables"]
     pub fn spvReflectEnumerateEntryPointOutputVariables(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2570,6 +1648,7 @@ extern "C" {
     ///@return            If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
+    #[link_name = "\u{1}_spvReflectEnumeratePushConstantBlocks"]
     pub fn spvReflectEnumeratePushConstantBlocks(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -2577,6 +1656,7 @@ extern "C" {
     ) -> SpvReflectResult;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectEnumeratePushConstants"]
     pub fn spvReflectEnumeratePushConstants(
         p_module: *const SpvReflectShaderModule,
         p_count: *mut u32,
@@ -2602,6 +1682,7 @@ extern "C" {
     ///@return            If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of the
     ///failure.
+    #[link_name = "\u{1}_spvReflectEnumerateEntryPointPushConstantBlocks"]
     pub fn spvReflectEnumerateEntryPointPushConstantBlocks(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2630,6 +1711,7 @@ extern "C" {
     ///@note                    If the module contains multiple desriptor bindings
     ///with the same set and binding numbers, there are
     ///no guarantees about which binding will be returned.
+    #[link_name = "\u{1}_spvReflectGetDescriptorBinding"]
     pub fn spvReflectGetDescriptorBinding(
         p_module: *const SpvReflectShaderModule,
         binding_number: u32,
@@ -2661,6 +1743,7 @@ extern "C" {
     ///@note                    If the entry point contains multiple desriptor bindings
     ///with the same set and binding numbers, there are
     ///no guarantees about which binding will be returned.
+    #[link_name = "\u{1}_spvReflectGetEntryPointDescriptorBinding"]
     pub fn spvReflectGetEntryPointDescriptorBinding(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2684,6 +1767,7 @@ extern "C" {
     ///If no match can be found, or if an unrelated error
     ///occurs, the return value will be NULL. Detailed
     ///error results are written to *pResult.
+    #[link_name = "\u{1}_spvReflectGetDescriptorSet"]
     pub fn spvReflectGetDescriptorSet(
         p_module: *const SpvReflectShaderModule,
         set_number: u32,
@@ -2706,6 +1790,7 @@ extern "C" {
     ///If no match can be found, or if an unrelated error
     ///occurs, the return value will be NULL. Detailed
     ///error results are written to *pResult.
+    #[link_name = "\u{1}_spvReflectGetEntryPointDescriptorSet"]
     pub fn spvReflectGetEntryPointDescriptorSet(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2714,6 +1799,7 @@ extern "C" {
     ) -> *const SpvReflectDescriptorSet;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetInputVariableByLocation"]
     pub fn spvReflectGetInputVariableByLocation(
         p_module: *const SpvReflectShaderModule,
         location: u32,
@@ -2721,6 +1807,7 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetInputVariable"]
     pub fn spvReflectGetInputVariable(
         p_module: *const SpvReflectShaderModule,
         location: u32,
@@ -2728,6 +1815,7 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetEntryPointInputVariableByLocation"]
     pub fn spvReflectGetEntryPointInputVariableByLocation(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2736,6 +1824,7 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetInputVariableBySemantic"]
     pub fn spvReflectGetInputVariableBySemantic(
         p_module: *const SpvReflectShaderModule,
         semantic: *const ::std::os::raw::c_char,
@@ -2743,6 +1832,7 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetEntryPointInputVariableBySemantic"]
     pub fn spvReflectGetEntryPointInputVariableBySemantic(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2751,6 +1841,7 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetOutputVariableByLocation"]
     pub fn spvReflectGetOutputVariableByLocation(
         p_module: *const SpvReflectShaderModule,
         location: u32,
@@ -2758,6 +1849,7 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetOutputVariable"]
     pub fn spvReflectGetOutputVariable(
         p_module: *const SpvReflectShaderModule,
         location: u32,
@@ -2765,6 +1857,7 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetEntryPointOutputVariableByLocation"]
     pub fn spvReflectGetEntryPointOutputVariableByLocation(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2773,6 +1866,7 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetOutputVariableBySemantic"]
     pub fn spvReflectGetOutputVariableBySemantic(
         p_module: *const SpvReflectShaderModule,
         semantic: *const ::std::os::raw::c_char,
@@ -2780,6 +1874,7 @@ extern "C" {
     ) -> *const SpvReflectInterfaceVariable;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetEntryPointOutputVariableBySemantic"]
     pub fn spvReflectGetEntryPointOutputVariableBySemantic(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2803,6 +1898,7 @@ extern "C" {
     ///If no match can be found, or if an unrelated error
     ///occurs, the return value will be NULL. Detailed
     ///error results are written to *pResult.
+    #[link_name = "\u{1}_spvReflectGetPushConstantBlock"]
     pub fn spvReflectGetPushConstantBlock(
         p_module: *const SpvReflectShaderModule,
         index: u32,
@@ -2810,6 +1906,7 @@ extern "C" {
     ) -> *const SpvReflectBlockVariable;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectGetPushConstant"]
     pub fn spvReflectGetPushConstant(
         p_module: *const SpvReflectShaderModule,
         index: u32,
@@ -2834,6 +1931,7 @@ extern "C" {
     ///If no match can be found, or if an unrelated error
     ///occurs, the return value will be NULL. Detailed
     ///error results are written to *pResult.
+    #[link_name = "\u{1}_spvReflectGetEntryPointPushConstantBlock"]
     pub fn spvReflectGetEntryPointPushConstantBlock(
         p_module: *const SpvReflectShaderModule,
         entry_point: *const ::std::os::raw::c_char,
@@ -2863,6 +1961,7 @@ extern "C" {
     ///@return                     If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of
     ///the failure.
+    #[link_name = "\u{1}_spvReflectChangeDescriptorBindingNumbers"]
     pub fn spvReflectChangeDescriptorBindingNumbers(
         p_module: *mut SpvReflectShaderModule,
         p_binding: *const SpvReflectDescriptorBinding,
@@ -2871,6 +1970,7 @@ extern "C" {
     ) -> SpvReflectResult;
 }
 extern "C" {
+    #[link_name = "\u{1}_spvReflectChangeDescriptorBindingNumber"]
     pub fn spvReflectChangeDescriptorBindingNumber(
         p_module: *mut SpvReflectShaderModule,
         p_descriptor_binding: *const SpvReflectDescriptorBinding,
@@ -2900,6 +2000,7 @@ extern "C" {
     ///@return                 If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of
     ///the failure.
+    #[link_name = "\u{1}_spvReflectChangeDescriptorSetNumber"]
     pub fn spvReflectChangeDescriptorSetNumber(
         p_module: *mut SpvReflectShaderModule,
         p_set: *const SpvReflectDescriptorSet,
@@ -2922,6 +2023,7 @@ extern "C" {
     ///@return                   If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of
     ///the failure.
+    #[link_name = "\u{1}_spvReflectChangeInputVariableLocation"]
     pub fn spvReflectChangeInputVariableLocation(
         p_module: *mut SpvReflectShaderModule,
         p_input_variable: *const SpvReflectInterfaceVariable,
@@ -2944,6 +2046,7 @@ extern "C" {
     ///@return                   If successful, returns SPV_REFLECT_RESULT_SUCCESS.
     ///Otherwise, the error code indicates the cause of
     ///the failure.
+    #[link_name = "\u{1}_spvReflectChangeOutputVariableLocation"]
     pub fn spvReflectChangeOutputVariableLocation(
         p_module: *mut SpvReflectShaderModule,
         p_output_variable: *const SpvReflectInterfaceVariable,
@@ -2956,17 +2059,8 @@ extern "C" {
     ///@param  source_lang  The source language code.
     ///@return Returns string of source language specified in \a source_lang.
     ///The caller must not free the memory associated with this string.
+    #[link_name = "\u{1}_spvReflectSourceLanguage"]
     pub fn spvReflectSourceLanguage(
         source_lang: SpvSourceLanguage,
     ) -> *const ::std::os::raw::c_char;
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct __crt_locale_data {
-    pub _address: u8,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct __crt_multibyte_data {
-    pub _address: u8,
 }
