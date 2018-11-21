@@ -441,9 +441,31 @@ impl ShaderModule {
         }
     }
 
+    pub fn enumerate_entry_points(&self) -> Result<Vec<types::ReflectEntryPoint>, &str> {
+        if let Some(ref module) = self.module {
+            let ffi_entry_points = unsafe {
+                std::slice::from_raw_parts(module.entry_points, module.entry_point_count as usize)
+            };
+            let entry_points: Vec<types::ReflectEntryPoint> = ffi_entry_points
+                .iter()
+                .map(|&entry_point| convert::ffi_to_entry_point(&entry_point))
+                .collect();
+            Ok(entry_points)
+        } else {
+            Ok(Vec::new())
+        }
+    }
+
+    pub fn get_entry_point_name(&self) -> String {
+        match self.module {
+            Some(module) => ffi_to_string(module.entry_point_name),
+            None => String::new(),
+        }
+    }
+
     pub fn change_descriptor_binding_numbers(
         &mut self,
-        binding: types::descriptor::ReflectDescriptorBinding,
+        binding: &types::descriptor::ReflectDescriptorBinding,
         new_binding: u32,
         new_set: Option<u32>,
     ) -> Result<(), &str> {
@@ -469,7 +491,7 @@ impl ShaderModule {
 
     pub fn change_descriptor_set_number(
         &mut self,
-        set: types::descriptor::ReflectDescriptorSet,
+        set: &types::descriptor::ReflectDescriptorSet,
         new_set: u32,
     ) -> Result<(), &str> {
         match self.module {
@@ -533,28 +555,6 @@ impl ShaderModule {
                 }
             }
             None => Ok(()),
-        }
-    }
-
-    pub fn get_entry_point_name(&self) -> String {
-        match self.module {
-            Some(module) => ffi_to_string(module.entry_point_name),
-            None => String::new(),
-        }
-    }
-
-    pub fn enumerate_entry_points(&self) -> Result<Vec<types::ReflectEntryPoint>, &str> {
-        if let Some(ref module) = self.module {
-            let ffi_entry_points = unsafe {
-                std::slice::from_raw_parts(module.entry_points, module.entry_point_count as usize)
-            };
-            let entry_points: Vec<types::ReflectEntryPoint> = ffi_entry_points
-                .iter()
-                .map(|&entry_point| convert::ffi_to_entry_point(&entry_point))
-                .collect();
-            Ok(entry_points)
-        } else {
-            Ok(Vec::new())
         }
     }
 }

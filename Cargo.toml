@@ -1,6 +1,6 @@
 [package]
 name = "spirv-reflect"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["Graham Wihlidal <graham@wihlidal.ca>"]
 description = "Reflection API in rust for SPIR-V shader byte code, intended for Vulkan applications."
 homepage = "https://github.com/gwihlidal/spirv-reflect-rs"
