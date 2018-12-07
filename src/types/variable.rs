@@ -36,12 +36,12 @@ bitflags! {
         const VECTOR = 256;
         const MATRIX = 512;
         const EXTERNAL_IMAGE = 65536;
-        const EXTERNAL_SAMPLER = 131072;
-        const EXTERNAL_SAMPLED_IMAGE = 262144;
-        const EXTERNAL_BLOCK = 524288;
-        const EXTERNAL_MASK = 983040;
-        const STRUCT = 268435456;
-        const ARRAY = 536870912;
+        const EXTERNAL_SAMPLER = 131_072;
+        const EXTERNAL_SAMPLED_IMAGE = 262_144;
+        const EXTERNAL_BLOCK = 524_288;
+        const EXTERNAL_MASK = 983_040;
+        const STRUCT = 268_435_456;
+        const ARRAY = 536_870_912;
     }
 }
 
@@ -54,13 +54,13 @@ impl Default for ReflectTypeFlags {
 bitflags! {
     #[derive(Serialize)]
     pub struct ReflectShaderStageFlags: u32 {
-        const UNDEFINED = 0x00000000;
-        const VERTEX = 0x00000001;
-        const TESSELLATION_CONTROL = 0x00000002;
-        const TESSELLATION_EVALUATION = 0x00000004;
-        const GEOMETRY = 0x00000008;
-        const FRAGMENT = 0x00000010;
-        const COMPUTE = 0x00000020;
+        const UNDEFINED = 0x0000_0000;
+        const VERTEX = 0x0000_0001;
+        const TESSELLATION_CONTROL = 0x0000_0002;
+        const TESSELLATION_EVALUATION = 0x0000_0004;
+        const GEOMETRY = 0x0000_0008;
+        const FRAGMENT = 0x0000_0010;
+        const COMPUTE = 0x0000_0020;
     }
 }
 

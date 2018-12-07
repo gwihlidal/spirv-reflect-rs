@@ -77,11 +77,12 @@ pub(crate) fn ffi_to_interface_variable(
         array: ffi_to_array_traits(ffi_type.array),
         members,
         format: ffi_to_format(ffi_type.format),
-        type_description: match ffi_type.type_description.is_null() {
-            true => None,
-            false => Some(ffi_to_type_description(unsafe {
+        type_description: if ffi_type.type_description.is_null() {
+            None
+        } else {
+            Some(ffi_to_type_description(unsafe {
                 &*ffi_type.type_description
-            })),
+            }))
         },
         word_offset: ffi_type.word_offset.location,
         internal_data: ffi_type_ptr,
@@ -145,17 +146,19 @@ pub(crate) fn ffi_to_descriptor_binding(
         array: ffi_to_binding_array_traits(ffi_type.array),
         count: ffi_type.count,
         uav_counter_id: ffi_type.uav_counter_id,
-        uav_counter_binding: match ffi_type.uav_counter_binding.is_null() {
-            true => None,
-            false => Some(Box::new(ffi_to_descriptor_binding(
+        uav_counter_binding: if ffi_type.uav_counter_binding.is_null() {
+            None
+        } else {
+            Some(Box::new(ffi_to_descriptor_binding(
                 ffi_type.uav_counter_binding,
-            ))),
+            )))
         },
-        type_description: match ffi_type.type_description.is_null() {
-            true => None,
-            false => Some(ffi_to_type_description(unsafe {
+        type_description: if ffi_type.type_description.is_null() {
+            None
+        } else {
+            Some(ffi_to_type_description(unsafe {
                 &*ffi_type.type_description
-            })),
+            }))
         },
         word_offset: (ffi_type.word_offset.binding, ffi_type.word_offset.set),
         internal_data: ffi_type_ptr,
@@ -464,11 +467,12 @@ pub(crate) fn ffi_to_block_variable(
         numeric: ffi_to_numeric_traits(ffi_type.numeric),
         array: ffi_to_array_traits(ffi_type.array),
         members,
-        type_description: match ffi_type.type_description.is_null() {
-            true => None,
-            false => Some(ffi_to_type_description(unsafe {
+        type_description: if ffi_type.type_description.is_null() {
+            None
+        } else {
+            Some(ffi_to_type_description(unsafe {
                 &*ffi_type.type_description
-            })),
+            }))
         },
     }
 }
