@@ -1,7 +1,7 @@
 use crate::ffi;
+use crate::types::*;
 use num_traits::cast::FromPrimitive;
 use spirv_headers;
-use crate::types::*;
 
 pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> ReflectEntryPoint {
     ReflectEntryPoint {
@@ -19,7 +19,8 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
                 ffi_type.input_variables,
                 ffi_type.input_variable_count as usize,
             )
-        }.iter()
+        }
+        .iter()
         .map(|&var| ffi_to_interface_variable(&var))
         .collect(),
         output_variables: unsafe {
@@ -27,7 +28,8 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
                 ffi_type.output_variables,
                 ffi_type.output_variable_count as usize,
             )
-        }.iter()
+        }
+        .iter()
         .map(|&var| ffi_to_interface_variable(&var))
         .collect(),
         descriptor_sets: unsafe {
@@ -35,18 +37,21 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
                 ffi_type.descriptor_sets,
                 ffi_type.descriptor_set_count as usize,
             )
-        }.iter()
+        }
+        .iter()
         .map(|&set| ffi_to_descriptor_set(&set))
         .collect(),
         used_uniforms: unsafe {
             std::slice::from_raw_parts(ffi_type.used_uniforms, ffi_type.used_uniform_count as usize)
-        }.to_vec(),
+        }
+        .to_vec(),
         used_push_constants: unsafe {
             std::slice::from_raw_parts(
                 ffi_type.used_push_constants,
                 ffi_type.used_push_constant_count as usize,
             )
-        }.to_vec(),
+        }
+        .to_vec(),
     }
 }
 
