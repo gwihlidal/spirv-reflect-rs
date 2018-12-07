@@ -1,7 +1,7 @@
-use ffi;
+use crate::ffi;
 use num_traits::cast::FromPrimitive;
 use spirv_headers;
-use types::*;
+use crate::types::*;
 
 pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> ReflectEntryPoint {
     ReflectEntryPoint {

@@ -1,5 +1,5 @@
-use ffi;
-use types::{
+use crate::ffi;
+use crate::types::{
     ReflectBindingArrayTraits, ReflectBlockVariable, ReflectImageTraits, ReflectResourceType,
     ReflectTypeDescription,
 };

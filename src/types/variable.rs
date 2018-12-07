@@ -1,8 +1,8 @@
-use ffi;
-use types::descriptor::ReflectDescriptorSet;
-use types::image::ReflectFormat;
-use types::op::{ReflectBuiltIn, ReflectOp};
-use types::traits::*;
+use crate::ffi;
+use crate::types::descriptor::ReflectDescriptorSet;
+use crate::types::image::ReflectFormat;
+use crate::types::op::{ReflectBuiltIn, ReflectOp};
+use crate::types::traits::*;
 
 bitflags! {
     #[derive(Serialize)]

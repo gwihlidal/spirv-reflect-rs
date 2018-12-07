@@ -1,5 +1,5 @@
-use types::image::ReflectImageFormat;
-use types::ReflectDimension;
+use crate::types::image::ReflectImageFormat;
+use crate::types::ReflectDimension;
 
 #[derive(Debug, Default, Clone, Serialize, PartialEq)]
 pub struct ReflectBindingArrayTraits {
