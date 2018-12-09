@@ -17,12 +17,7 @@ pub fn ffi_to_string(ffi: *const ::std::os::raw::c_char) -> String {
     if ffi.is_null() {
         String::new()
     } else {
-        let c_str: &std::ffi::CStr = unsafe { std::ffi::CStr::from_ptr(ffi) };
-        let str_slice: &str = match c_str.to_str() {
-            Ok(c_str) => c_str,
-            Err(_) => &"",
-        };
-        str_slice.to_owned()
+        unsafe { std::ffi::CStr::from_ptr(ffi).to_string_lossy().into_owned() }
     }
 }
 
@@ -55,36 +50,34 @@ impl ShaderModule {
         Ok(create_shader_module(u8_data)?)
     }
 
-    pub fn get_code_size(&self) -> usize {
+    pub fn get_code(&self) -> Vec<u32> {
         match self.module {
-            Some(module) => unsafe { ffi::spvReflectGetCodeSize(&module) as usize },
-            None => 0,
+            Some(ref module) => {
+                let code_size = unsafe { ffi::spvReflectGetCodeSize(module) as usize };
+                let code_slice = unsafe { std::slice::from_raw_parts(ffi::spvReflectGetCode(module), code_size / 4) };
+                code_slice.to_owned()
+            },
+            None => Vec::new(),
         }
-    }
-
-    pub fn get_code_slice(&self) -> &[u32] {
-        let code_size = self.get_code_size();
-        let module = self.module.unwrap();
-        unsafe { std::slice::from_raw_parts(ffi::spvReflectGetCode(&module), code_size / 4) }
     }
 
     pub fn get_generator(&self) -> types::ReflectGenerator {
         match self.module {
-            Some(module) => convert::ffi_to_generator(module.generator),
+            Some(ref module) => convert::ffi_to_generator(module.generator),
             None => types::ReflectGenerator::Unknown,
         }
     }
 
     pub fn get_shader_stage(&self) -> types::ReflectShaderStageFlags {
         match self.module {
-            Some(module) => convert::ffi_to_shader_stage_flags(module.shader_stage),
+            Some(ref module) => convert::ffi_to_shader_stage_flags(module.shader_stage),
             None => types::ReflectShaderStageFlags::UNDEFINED,
         }
     }
 
     pub fn get_source_language(&self) -> spirv_headers::SourceLanguage {
         match self.module {
-            Some(module) => match spirv_headers::SourceLanguage::from_u32(module.source_language) {
+            Some(ref module) => match spirv_headers::SourceLanguage::from_u32(module.source_language) {
                 Some(language) => language,
                 None => spirv_headers::SourceLanguage::Unknown,
             },
@@ -94,28 +87,28 @@ impl ShaderModule {
 
     pub fn get_source_language_version(&self) -> u32 {
         match self.module {
-            Some(module) => module.source_language_version,
+            Some(ref module) => module.source_language_version,
             None => 0,
         }
     }
 
     pub fn get_source_file(&self) -> String {
         match self.module {
-            Some(module) => ffi_to_string(module.source_file),
+            Some(ref module) => ffi_to_string(module.source_file),
             None => String::new(),
         }
     }
 
     pub fn get_source_text(&self) -> String {
         match self.module {
-            Some(module) => ffi_to_string(module.source_source),
+            Some(ref module) => ffi_to_string(module.source_source),
             None => String::new(),
         }
     }
 
     pub fn get_spirv_execution_model(&self) -> spirv_headers::ExecutionModel {
         match self.module {
-            Some(module) => {
+            Some(ref module) => {
                 match spirv_headers::ExecutionModel::from_u32(module.spirv_execution_model) {
                     Some(model) => model,
                     None => spirv_headers::ExecutionModel::Vertex,
@@ -449,7 +442,7 @@ impl ShaderModule {
             };
             let entry_points: Vec<types::ReflectEntryPoint> = ffi_entry_points
                 .iter()
-                .map(|&entry_point| convert::ffi_to_entry_point(&entry_point))
+                .map(|entry_point| convert::ffi_to_entry_point(entry_point))
                 .collect();
             Ok(entry_points)
         } else {
@@ -459,7 +452,7 @@ impl ShaderModule {
 
     pub fn get_entry_point_name(&self) -> String {
         match self.module {
-            Some(module) => ffi_to_string(module.entry_point_name),
+            Some(ref module) => ffi_to_string(module.entry_point_name),
             None => String::new(),
         }
     }
@@ -471,11 +464,11 @@ impl ShaderModule {
         new_set: Option<u32>,
     ) -> Result<(), &str> {
         match self.module {
-            Some(mut module) => {
+            Some(ref mut module) => {
                 let new_set = new_set.unwrap_or(ffi::SPV_REFLECT_SET_NUMBER_DONT_CHANGE as u32);
                 let result = unsafe {
                     ffi::spvReflectChangeDescriptorBindingNumbers(
-                        &mut module as *mut ffi::SpvReflectShaderModule,
+                        module as *mut ffi::SpvReflectShaderModule,
                         binding.internal_data,
                         new_binding,
                         new_set,
@@ -496,10 +489,10 @@ impl ShaderModule {
         new_set: u32,
     ) -> Result<(), &str> {
         match self.module {
-            Some(mut module) => {
+            Some(ref mut module) => {
                 let result = unsafe {
                     ffi::spvReflectChangeDescriptorSetNumber(
-                        &mut module as *mut ffi::SpvReflectShaderModule,
+                        module as *mut ffi::SpvReflectShaderModule,
                         set.internal_data,
                         new_set,
                     )
@@ -519,10 +512,10 @@ impl ShaderModule {
         new_location: u32,
     ) -> Result<(), &str> {
         match self.module {
-            Some(mut module) => {
+            Some(ref mut module) => {
                 let result = unsafe {
                     ffi::spvReflectChangeInputVariableLocation(
-                        &mut module as *mut ffi::SpvReflectShaderModule,
+                        module as *mut ffi::SpvReflectShaderModule,
                         variable.internal_data,
                         new_location,
                     )
@@ -542,10 +535,10 @@ impl ShaderModule {
         new_location: u32,
     ) -> Result<(), &str> {
         match self.module {
-            Some(mut module) => {
+            Some(ref mut module) => {
                 let result = unsafe {
                     ffi::spvReflectChangeOutputVariableLocation(
-                        &mut module as *mut ffi::SpvReflectShaderModule,
+                        module as *mut ffi::SpvReflectShaderModule,
                         variable.internal_data,
                         new_location,
                     )
@@ -562,10 +555,9 @@ impl ShaderModule {
 
 impl Drop for ShaderModule {
     fn drop(&mut self) {
-        println!("Called drop for ShaderModule");
-        if let Some(mut module) = self.module {
+        if let Some(ref mut module) = self.module {
             unsafe {
-                ffi::spvReflectDestroyShaderModule(&mut module);
+                ffi::spvReflectDestroyShaderModule(module);
             }
         }
     }

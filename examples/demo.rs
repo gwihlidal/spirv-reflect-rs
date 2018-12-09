@@ -5,7 +5,7 @@ fn main() {
     let spv_data = include_bytes!("./sample.spv");
 
     match ShaderModule::load_u8_data(spv_data) {
-        Ok(mut module) => {
+        Ok(ref mut module) => {
             let _entry_point_name = module.get_entry_point_name();
             let _generator = module.get_generator();
             let _shader_stage = module.get_shader_stage();
@@ -47,8 +47,7 @@ fn main() {
                 println!("{}", output);
             }
 
-            let _code_size = module.get_code_size();
-            let _code_slice = module.get_code_slice();
+            let _code = module.get_code();
         }
         Err(err) => {
             panic!("Error occurred - {:?}", err);

@@ -1217,7 +1217,7 @@ pub struct SpvReflectBindingArrayTraits {
 }
 /// @struct SpvReflectTypeDescription
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct SpvReflectTypeDescription {
     pub id: u32,
     pub op: SpvOp,
@@ -1239,7 +1239,7 @@ pub struct SpvReflectTypeDescription_Traits {
 }
 /// @struct SpvReflectInterfaceVariable
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct SpvReflectInterfaceVariable {
     pub spirv_id: u32,
     pub name: *const ::std::os::raw::c_char,
@@ -1263,7 +1263,7 @@ pub struct SpvReflectInterfaceVariable__bindgen_ty_1 {
 }
 /// @struct SpvReflectBlockVariable
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct SpvReflectBlockVariable {
     pub spirv_id: u32,
     pub name: *const ::std::os::raw::c_char,
@@ -1280,7 +1280,7 @@ pub struct SpvReflectBlockVariable {
 }
 /// @struct SpvReflectDescriptorBinding
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct SpvReflectDescriptorBinding {
     pub spirv_id: u32,
     pub name: *const ::std::os::raw::c_char,
@@ -1306,7 +1306,7 @@ pub struct SpvReflectDescriptorBinding__bindgen_ty_1 {
 }
 /// @struct SpvReflectDescriptorSet
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct SpvReflectDescriptorSet {
     pub set: u32,
     pub binding_count: u32,
@@ -1315,7 +1315,7 @@ pub struct SpvReflectDescriptorSet {
 /// @struct SpvReflectEntryPoint
 ///
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct SpvReflectEntryPoint {
     pub name: *const ::std::os::raw::c_char,
     pub id: u32,
@@ -1334,7 +1334,7 @@ pub struct SpvReflectEntryPoint {
 }
 /// @struct SpvReflectShaderModule
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct SpvReflectShaderModule {
     pub generator: SpvReflectGenerator,
     pub entry_point_name: *const ::std::os::raw::c_char,
@@ -1360,7 +1360,7 @@ pub struct SpvReflectShaderModule {
     pub _internal: *mut SpvReflectShaderModule_Internal,
 }
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct SpvReflectShaderModule_Internal {
     pub spirv_size: usize,
     pub spirv_code: *mut u32,

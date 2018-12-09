@@ -21,7 +21,7 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
             )
         }
         .iter()
-        .map(|&var| ffi_to_interface_variable(&var))
+        .map(|var| ffi_to_interface_variable(var))
         .collect(),
         output_variables: unsafe {
             std::slice::from_raw_parts(
@@ -30,7 +30,7 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
             )
         }
         .iter()
-        .map(|&var| ffi_to_interface_variable(&var))
+        .map(|var| ffi_to_interface_variable(var))
         .collect(),
         descriptor_sets: unsafe {
             std::slice::from_raw_parts(
@@ -39,7 +39,7 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
             )
         }
         .iter()
-        .map(|&set| ffi_to_descriptor_set(&set))
+        .map(|set| ffi_to_descriptor_set(set))
         .collect(),
         used_uniforms: unsafe {
             std::slice::from_raw_parts(ffi_type.used_uniforms, ffi_type.used_uniform_count as usize)
@@ -63,7 +63,7 @@ pub(crate) fn ffi_to_interface_variable(
         unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
     let members: Vec<ReflectInterfaceVariable> = ffi_members
         .iter()
-        .map(|&member| ffi_to_interface_variable(&member))
+        .map(|member| ffi_to_interface_variable(member))
         .collect();
     ReflectInterfaceVariable {
         spirv_id: ffi_type.spirv_id,
@@ -96,7 +96,7 @@ pub(crate) fn ffi_to_type_description(
         unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
     let members: Vec<ReflectTypeDescription> = ffi_members
         .iter()
-        .map(|&member| ffi_to_type_description(&member))
+        .map(|member| ffi_to_type_description(member))
         .collect();
     ReflectTypeDescription {
         id: ffi_type.id,
@@ -454,7 +454,7 @@ pub(crate) fn ffi_to_block_variable(
         unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
     let members: Vec<ReflectBlockVariable> = ffi_members
         .iter()
-        .map(|&member| ffi_to_block_variable(&member))
+        .map(|member| ffi_to_block_variable(member))
         .collect();
     ReflectBlockVariable {
         spirv_id: ffi_type.spirv_id,
