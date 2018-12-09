@@ -562,6 +562,7 @@ impl ShaderModule {
 
 impl Drop for ShaderModule {
     fn drop(&mut self) {
+        println!("Called drop for ShaderModule");
         if let Some(mut module) = self.module {
             unsafe {
                 ffi::spvReflectDestroyShaderModule(&mut module);
