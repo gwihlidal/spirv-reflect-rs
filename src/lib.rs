@@ -54,9 +54,11 @@ impl ShaderModule {
         match self.module {
             Some(ref module) => {
                 let code_size = unsafe { ffi::spvReflectGetCodeSize(module) as usize };
-                let code_slice = unsafe { std::slice::from_raw_parts(ffi::spvReflectGetCode(module), code_size / 4) };
+                let code_slice = unsafe {
+                    std::slice::from_raw_parts(ffi::spvReflectGetCode(module), code_size / 4)
+                };
                 code_slice.to_owned()
-            },
+            }
             None => Vec::new(),
         }
     }
@@ -77,10 +79,12 @@ impl ShaderModule {
 
     pub fn get_source_language(&self) -> spirv_headers::SourceLanguage {
         match self.module {
-            Some(ref module) => match spirv_headers::SourceLanguage::from_u32(module.source_language) {
-                Some(language) => language,
-                None => spirv_headers::SourceLanguage::Unknown,
-            },
+            Some(ref module) => {
+                match spirv_headers::SourceLanguage::from_u32(module.source_language) {
+                    Some(language) => language,
+                    None => spirv_headers::SourceLanguage::Unknown,
+                }
+            }
             None => spirv_headers::SourceLanguage::Unknown,
         }
     }

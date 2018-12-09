@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(Windows) Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/deps/mod-f4d2a2bf6729388d.exe",
+            "args": ["--nocapture"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/target/debug",
+            "environment": [],
+            "externalConsole": true
+        }
+    ]
+}

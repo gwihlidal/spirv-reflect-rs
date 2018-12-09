@@ -1,8 +1,18 @@
 # Changes
 
+## 0.1.8 (2018-12-09)
+
+* Removed get_code_size/get_code_slice in favour of get_code (lifetime safety)
+* Numerous optimizations (excessive copies)
+* Fixed some FFI memory crashes
+
+## 0.1.7 (2018-12-08)
+
+* Rust 2018 Edition
+
 ## 0.1.6 (2018-11-21)
 
-Correct struct by-ref passing for the change_* methods.
+* Correct struct by-ref passing for the change_* methods.
 
 ## 0.1.5 (2018-11-21)
 
