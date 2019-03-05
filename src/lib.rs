@@ -45,7 +45,7 @@ impl ShaderModule {
 
     pub fn load_u32_data(spv_data: &[u32]) -> Result<ShaderModule, &str> {
         let u8_data: &[u8] = unsafe {
-            std::slice::from_raw_parts(spv_data.as_ptr() as *const u8, std::mem::size_of::<u32>())
+            std::slice::from_raw_parts(spv_data.as_ptr() as *const u8, spv_data.len() * std::mem::size_of::<u32>())
         };
         Ok(create_shader_module(u8_data)?)
     }
