@@ -8,7 +8,7 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
         name: super::ffi_to_string(ffi_type.name),
         id: ffi_type.id,
         spirv_execution_model: match spirv_headers::ExecutionModel::from_u32(
-            ffi_type.spirv_execution_model,
+            ffi_type.spirv_execution_model as u32,
         ) {
             Some(model) => model,
             None => spirv_headers::ExecutionModel::Vertex,
@@ -104,7 +104,7 @@ pub(crate) fn ffi_to_type_description(
         type_name: super::ffi_to_string(ffi_type.type_name),
         struct_member_name: super::ffi_to_string(ffi_type.struct_member_name),
         storage_class: ffi_to_storage_class(ffi_type.storage_class),
-        type_flags: ffi_to_type_flags(ffi_type.type_flags),
+        type_flags: ffi_to_type_flags(ffi_type.type_flags as i32),
         decoration_flags: ffi_to_decoration_flags(ffi_type.decoration_flags),
         traits: ffi_to_type_description_traits(ffi_type.traits),
         members,
@@ -237,6 +237,9 @@ pub(crate) fn ffi_to_descriptor_type(
         }
         ffi::SpvReflectDescriptorType_SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT => {
             ReflectDescriptorType::InputAttachment
+        }
+        ffi::SpvReflectDescriptorType_SPV_REFLECT_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV => {
+            ReflectDescriptorType::AccelerationStructureNV
         }
         _ => unimplemented!(),
     }
@@ -371,6 +374,10 @@ pub(crate) fn ffi_to_format(ffi_type: ffi::SpvReflectFormat) -> ReflectFormat {
 }
 
 pub(crate) fn ffi_to_storage_class(ffi_type: ffi::SpvStorageClass) -> ReflectStorageClass {
+    if ffi_type as u32 == std::u32::MAX {
+        return ReflectStorageClass::Undefined
+    }
+
     match ffi_type {
         ffi::SpvStorageClass__SpvStorageClassUniformConstant => {
             ReflectStorageClass::UniformConstant
@@ -387,8 +394,9 @@ pub(crate) fn ffi_to_storage_class(ffi_type: ffi::SpvStorageClass) -> ReflectSto
         ffi::SpvStorageClass__SpvStorageClassAtomicCounter => ReflectStorageClass::AtomicCounter,
         ffi::SpvStorageClass__SpvStorageClassImage => ReflectStorageClass::Image,
         ffi::SpvStorageClass__SpvStorageClassStorageBuffer => ReflectStorageClass::StorageBuffer,
-        ffi::SpvStorageClass__SpvStorageClassMax | std::u32::MAX => ReflectStorageClass::Undefined,
+        ffi::SpvStorageClass__SpvStorageClassMax => ReflectStorageClass::Undefined,
         _ => {
+
             println!("value is {}", ffi_type);
             unimplemented!()
         }
