@@ -379,7 +379,7 @@ pub(crate) fn ffi_to_format(ffi_type: ffi::SpvReflectFormat) -> ReflectFormat {
 
 pub(crate) fn ffi_to_storage_class(ffi_type: ffi::SpvStorageClass) -> ReflectStorageClass {
     if ffi_type as u32 == std::u32::MAX {
-        return ReflectStorageClass::Undefined
+        return ReflectStorageClass::Undefined;
     }
 
     match ffi_type {
@@ -400,7 +400,6 @@ pub(crate) fn ffi_to_storage_class(ffi_type: ffi::SpvStorageClass) -> ReflectSto
         ffi::SpvStorageClass__SpvStorageClassStorageBuffer => ReflectStorageClass::StorageBuffer,
         ffi::SpvStorageClass__SpvStorageClassMax => ReflectStorageClass::Undefined,
         _ => {
-
             println!("value is {}", ffi_type);
             unimplemented!()
         }
