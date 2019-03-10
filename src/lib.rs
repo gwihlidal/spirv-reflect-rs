@@ -82,7 +82,7 @@ impl ShaderModule {
     pub fn get_source_language(&self) -> spirv_headers::SourceLanguage {
         match self.module {
             Some(ref module) => {
-                match spirv_headers::SourceLanguage::from_u32(module.source_language) {
+                match spirv_headers::SourceLanguage::from_u32(module.source_language as u32) {
                     Some(language) => language,
                     None => spirv_headers::SourceLanguage::Unknown,
                 }
@@ -115,7 +115,7 @@ impl ShaderModule {
     pub fn get_spirv_execution_model(&self) -> spirv_headers::ExecutionModel {
         match self.module {
             Some(ref module) => {
-                match spirv_headers::ExecutionModel::from_u32(module.spirv_execution_model) {
+                match spirv_headers::ExecutionModel::from_u32(module.spirv_execution_model as u32) {
                     Some(model) => model,
                     None => spirv_headers::ExecutionModel::Vertex,
                 }

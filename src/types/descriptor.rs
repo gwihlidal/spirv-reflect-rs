@@ -18,6 +18,7 @@ pub enum ReflectDescriptorType {
     UniformBufferDynamic,
     StorageBufferDynamic,
     InputAttachment,
+    AccelerationStructureNV,
 }
 
 impl Default for ReflectDescriptorType {
