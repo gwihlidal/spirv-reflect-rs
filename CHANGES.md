@@ -1,14 +1,21 @@
 # Changes
 
+## 0.1.9 (2019-03-10)
+
+* Updated all dependencies.
+* Added support for NV_ray_tracing (Jasper Bekkers and Nuno Subtil).
+* Support glsl uniform sampler2D type (Paweł Grabarz).
+* Removed unused dependency, and load_u32_data fix (Benjamin Saunders).
+
 ## 0.1.8 (2018-12-09)
 
-* Removed get_code_size/get_code_slice in favour of get_code (lifetime safety)
-* Numerous optimizations (excessive copies)
-* Fixed some FFI memory crashes
+* Removed get_code_size/get_code_slice in favour of get_code (lifetime safety).
+* Numerous optimizations (excessive copies).
+* Fixed some FFI memory crashes.
 
 ## 0.1.7 (2018-12-08)
 
-* Rust 2018 Edition
+* Rust 2018 Edition.
 
 ## 0.1.6 (2018-11-21)
 
