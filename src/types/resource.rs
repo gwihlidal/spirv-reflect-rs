@@ -2,6 +2,7 @@
 pub enum ReflectResourceType {
     Undefined,
     Sampler,
+    CombinedImageSampler,
     ConstantBufferView,
     ShaderResourceView,
     UnorderedAccessView,
