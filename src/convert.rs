@@ -246,8 +246,9 @@ pub(crate) fn ffi_to_descriptor_type(
 }
 
 pub(crate) fn ffi_to_resource_type(ffi_type: ffi::SpvReflectResourceType) -> ReflectResourceType {
-    const COMBINED: u32 = ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_SAMPLER
-        | ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_SRV;
+    const COMBINED: ffi::SpvReflectResourceType =
+        ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_SAMPLER
+            | ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_SRV;
 
     match ffi_type {
         ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_UNDEFINED => {
