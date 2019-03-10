@@ -68,6 +68,11 @@ at your option.
 - [Hai Nguyen](https://github.com/chaoticbob) (Author of C/C++ library)
 - [Cort Stratton](https://github.com/cdwfs) (Author of C/C++ library)
 - [Daniel Collin](https://github.com/emoon) (Code Review)
+- [Alexandru Ene](https://github.com/AlexEne) (Contribution)
+- [Jasper Bekkers](https://github.com/Jasper-Bekkers) (Contribution)
+- [Benjamin Saunders](https://github.com/Ralith) (Contribution)
+- [Nuno Subtil](https://github.com/nsubtil) (Contribution)
+- [Paweł Grabarz](https://github.com/Frizi) (Contribution)
 
 ## Contribution
 
