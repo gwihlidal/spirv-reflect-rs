@@ -243,6 +243,9 @@ pub(crate) fn ffi_to_descriptor_type(
 }
 
 pub(crate) fn ffi_to_resource_type(ffi_type: ffi::SpvReflectResourceType) -> ReflectResourceType {
+    const COMBINED: u32 = ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_SAMPLER
+        | ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_SRV;
+
     match ffi_type {
         ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_UNDEFINED => {
             ReflectResourceType::Undefined
@@ -250,6 +253,7 @@ pub(crate) fn ffi_to_resource_type(ffi_type: ffi::SpvReflectResourceType) -> Ref
         ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_SAMPLER => {
             ReflectResourceType::Sampler
         }
+        COMBINED => ReflectResourceType::CombinedImageSampler,
         ffi::SpvReflectResourceType_SPV_REFLECT_RESOURCE_FLAG_CBV => {
             ReflectResourceType::ConstantBufferView
         }
