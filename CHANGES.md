@@ -1,5 +1,14 @@
 # Changes
 
+## 0.2.1 (2019-03-29)
+
+* Minor improvements.
+* Updated all dependencies.
+
+## 0.2.0 (2019-03-25)
+
+* Fixed a crash when reflecting optimized SPIR-V which has no name descriptors (Walter Pearce).
+
 ## 0.1.9 (2019-03-10)
 
 * Updated all dependencies.
