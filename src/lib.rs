@@ -11,8 +11,7 @@ pub mod convert;
 pub mod ffi;
 pub mod types;
 
-#[allow(clippy::not_unsafe_ptr_arg_deref)]
-pub fn ffi_to_string(ffi: *const ::std::os::raw::c_char) -> String {
+pub(crate) fn ffi_to_string(ffi: *const ::std::os::raw::c_char) -> String {
     if ffi.is_null() {
         String::new()
     } else {
