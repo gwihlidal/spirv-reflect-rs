@@ -1,6 +1,6 @@
 [package]
 name = "spirv-reflect"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Graham Wihlidal <graham@wihlidal.ca>"]
 description = "Reflection API in rust for SPIR-V shader byte code, intended for Vulkan applications."
 homepage = "https://github.com/gwihlidal/spirv-reflect-rs"
@@ -36,20 +36,20 @@ travis-ci = { repository = "gwihlidal/spirv-reflect-rs" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-bitflags = "1.0.4"
+bitflags = "1.2.1"
 spirv_headers = { version = "1.3.4", git = "https://github.com/gfx-rs/rspirv", rev = "7612ee7d9fbcf27c88d26e313bf6db4c1dbeb9a3" }
-num-traits = "0.2.6"
+num-traits = "0.2.8"
 serde = "1.0"
-serde_derive = "1.0.89"
+serde_derive = "1.0.102"
 
 [dev-dependencies]
-serde_yaml = "0.8.8"
+serde_yaml = "0.8.11"
 
 [build-dependencies]
-cc = { version = "1.0.32", features = ["parallel"] }
+cc = "1.0.46"
 
 [build-dependencies.bindgen]
-version = "0.49.0"
+version = "0.51.1"
 optional = true
 
 [profile.release]

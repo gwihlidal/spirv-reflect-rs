@@ -1,5 +1,12 @@
 # Changes
 
+## 0.2.2 (2019-11-02)
+
+* Upgraded all dependencies.
+* Removed "parallel" feature from `cc` dependency.
+* No longer expose ffi_to_string as it is unsound (can easily cause undefined behavior in safe code).
+* Upgraded string slice error lifetimes to 'static.
+
 ## 0.2.1 (2019-03-29)
 
 * Minor improvements.

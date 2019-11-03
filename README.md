@@ -37,7 +37,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-spirv-reflect = "0.2.1"
+spirv-reflect = "0.2.2"
 ```
 
 and add this to your crate root:
@@ -74,6 +74,8 @@ at your option.
 - [Nuno Subtil](https://github.com/nsubtil) (Contribution)
 - [Paweł Grabarz](https://github.com/Frizi) (Contribution)
 - [Walter Pearce](https://github.com/jaynus) (Contribution)
+- [Bastian Kauschke](https://github.com/lcnr) (Contribution)
+- [Lukas Wirth](https://github.com/Veykril) (Contribution)
 
 ## Contribution
 
