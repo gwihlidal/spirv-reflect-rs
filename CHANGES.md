@@ -1,5 +1,9 @@
 # Changes
 
+## 0.2.3 (2019-11-03)
+
+* Use spirv_headers from git without `num-derive` dependency (commit hash `7612ee7d9fbcf27c88d26e313bf6db4c1dbeb9a3`).
+
 ## 0.2.2 (2019-11-02)
 
 * Upgraded all dependencies.
