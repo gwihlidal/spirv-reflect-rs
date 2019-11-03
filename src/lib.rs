@@ -37,11 +37,11 @@ pub struct ShaderModule {
 }
 
 impl ShaderModule {
-    pub fn load_u8_data(spv_data: &[u8]) -> Result<ShaderModule, &str> {
+    pub fn load_u8_data(spv_data: &[u8]) -> Result<ShaderModule, &'static str> {
         Ok(create_shader_module(spv_data)?)
     }
 
-    pub fn load_u32_data(spv_data: &[u32]) -> Result<ShaderModule, &str> {
+    pub fn load_u32_data(spv_data: &[u32]) -> Result<ShaderModule, &'static str> {
         let u8_data: &[u8] = unsafe {
             std::slice::from_raw_parts(
                 spv_data.as_ptr() as *const u8,
@@ -126,7 +126,7 @@ impl ShaderModule {
     pub fn enumerate_input_variables(
         &self,
         entry_point: Option<&str>,
-    ) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
+    ) -> Result<Vec<types::ReflectInterfaceVariable>, &'static str> {
         if let Some(ref module) = self.module {
             let mut count: u32 = 0;
             let result = unsafe {
@@ -190,7 +190,7 @@ impl ShaderModule {
     pub fn enumerate_output_variables(
         &self,
         entry_point: Option<&str>,
-    ) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
+    ) -> Result<Vec<types::ReflectInterfaceVariable>, &'static str> {
         if let Some(ref module) = self.module {
             let mut count: u32 = 0;
             let result = unsafe {
@@ -254,7 +254,7 @@ impl ShaderModule {
     pub fn enumerate_descriptor_bindings(
         &self,
         entry_point: Option<&str>,
-    ) -> Result<Vec<types::ReflectDescriptorBinding>, &str> {
+    ) -> Result<Vec<types::ReflectDescriptorBinding>, &'static str> {
         if let Some(ref module) = self.module {
             let mut count: u32 = 0;
             let result = unsafe {
@@ -318,7 +318,7 @@ impl ShaderModule {
     pub fn enumerate_descriptor_sets(
         &self,
         entry_point: Option<&str>,
-    ) -> Result<Vec<types::ReflectDescriptorSet>, &str> {
+    ) -> Result<Vec<types::ReflectDescriptorSet>, &'static str> {
         if let Some(ref module) = self.module {
             let mut count: u32 = 0;
             let result = unsafe {
@@ -379,7 +379,7 @@ impl ShaderModule {
     pub fn enumerate_push_constant_blocks(
         &self,
         entry_point: Option<&str>,
-    ) -> Result<Vec<types::ReflectBlockVariable>, &str> {
+    ) -> Result<Vec<types::ReflectBlockVariable>, &'static str> {
         if let Some(ref module) = self.module {
             let mut count: u32 = 0;
             let result = unsafe {
@@ -440,7 +440,7 @@ impl ShaderModule {
         }
     }
 
-    pub fn enumerate_entry_points(&self) -> Result<Vec<types::ReflectEntryPoint>, &str> {
+    pub fn enumerate_entry_points(&self) -> Result<Vec<types::ReflectEntryPoint>, &'static str> {
         if let Some(ref module) = self.module {
             let ffi_entry_points = unsafe {
                 std::slice::from_raw_parts(module.entry_points, module.entry_point_count as usize)
@@ -467,7 +467,7 @@ impl ShaderModule {
         binding: &types::descriptor::ReflectDescriptorBinding,
         new_binding: u32,
         new_set: Option<u32>,
-    ) -> Result<(), &str> {
+    ) -> Result<(), &'static str> {
         match self.module {
             Some(ref mut module) => {
                 let new_set = new_set.unwrap_or(ffi::SPV_REFLECT_SET_NUMBER_DONT_CHANGE as u32);
@@ -492,7 +492,7 @@ impl ShaderModule {
         &mut self,
         set: &types::descriptor::ReflectDescriptorSet,
         new_set: u32,
-    ) -> Result<(), &str> {
+    ) -> Result<(), &'static str> {
         match self.module {
             Some(ref mut module) => {
                 let result = unsafe {
@@ -515,7 +515,7 @@ impl ShaderModule {
         &mut self,
         variable: &types::variable::ReflectInterfaceVariable,
         new_location: u32,
-    ) -> Result<(), &str> {
+    ) -> Result<(), &'static str> {
         match self.module {
             Some(ref mut module) => {
                 let result = unsafe {
@@ -538,7 +538,7 @@ impl ShaderModule {
         &mut self,
         variable: &types::variable::ReflectInterfaceVariable,
         new_location: u32,
-    ) -> Result<(), &str> {
+    ) -> Result<(), &'static str> {
         match self.module {
             Some(ref mut module) => {
                 let result = unsafe {
@@ -582,7 +582,7 @@ impl From<&[u8]> for ShaderModule {
     }
 }*/
 
-pub fn create_shader_module(spv_data: &[u8]) -> Result<ShaderModule, &str> {
+pub fn create_shader_module(spv_data: &[u8]) -> Result<ShaderModule, &'static str> {
     let mut module: ffi::SpvReflectShaderModule = unsafe { std::mem::zeroed() };
     let result: ffi::SpvReflectResult = unsafe {
         ffi::spvReflectCreateShaderModule(
