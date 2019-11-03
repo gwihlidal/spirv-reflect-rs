@@ -1,5 +1,10 @@
 # Changes
 
+## 0.2.2 (2019-11-02)
+
+* Upgraded all dependencies.
+* Removed "parallel" feature from `cc` dependency.
+
 ## 0.2.1 (2019-03-29)
 
 * Minor improvements.
