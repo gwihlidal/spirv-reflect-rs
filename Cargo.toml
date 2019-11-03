@@ -37,7 +37,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 bitflags = "1.2.1"
-spirv_headers = { version = "1.3.4", git = "https://github.com/gfx-rs/rspirv", rev = "7612ee7d9fbcf27c88d26e313bf6db4c1dbeb9a3" }
+spirv_headers = { path = "spirv/spirv", version = "1.3.4" }
 num-traits = "0.2.8"
 serde = "1.0"
 serde_derive = "1.0.102"
