@@ -1,6 +1,6 @@
 [package]
 name = "spirv-reflect"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["Graham Wihlidal <graham@wihlidal.ca>"]
 description = "Reflection API in rust for SPIR-V shader byte code, intended for Vulkan applications."
 homepage = "https://github.com/gwihlidal/spirv-reflect-rs"
@@ -10,25 +10,6 @@ readme = "README.md"
 keywords = ["shader", "spirv", "glsl", "hlsl", "reflect"]
 categories = ["rendering", "rendering::engine", ]
 license = "MIT/Apache-2.0"
-build = "build.rs"
-include = [
-    "src/types/descriptor.rs",
-    "src/types/image.rs",
-    "src/types/mod.rs",
-    "src/types/op.rs",
-    "src/types/resource.rs",
-    "src/types/traits.rs",
-    "src/types/variable.rs",
-    "src/convert.rs",
-    "src/ffi.rs",
-    "src/lib.rs",
-    "gen/bindings.rs",
-    "build.rs",
-    "Cargo.toml",
-    "vendor/spirv_reflect.h",
-    "vendor/spirv_reflect.c",
-    "vendor/include/spirv/unified1/spirv.h",
-]
 edition = "2018"
 
 [badges]
@@ -37,25 +18,15 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 bitflags = "1.2.1"
-spirv_headers = { path = "spirv/spirv", version = "1.3.4" }
-num-traits = "0.2.8"
+spirv_headers = "1.3.4"
+num-traits = "0.2.10"
 serde = "1.0"
-serde_derive = "1.0.102"
+serde_derive = "1.0.103"
 
 [dev-dependencies]
 serde_yaml = "0.8.11"
-
-[build-dependencies]
-cc = "1.0.46"
-
-[build-dependencies.bindgen]
-version = "0.51.1"
-optional = true
 
 [profile.release]
 lto = true
 opt-level = 3
 codegen-units = 1
-
-[features]
-generate_bindings=["bindgen"]

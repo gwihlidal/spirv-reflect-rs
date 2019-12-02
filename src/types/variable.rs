@@ -1,4 +1,3 @@
-use crate::ffi;
 use crate::types::descriptor::ReflectDescriptorSet;
 use crate::types::image::ReflectFormat;
 use crate::types::op::{ReflectBuiltIn, ReflectOp};
@@ -98,8 +97,8 @@ impl Default for ReflectDimension {
 #[derive(Default, Debug, Clone, Serialize, PartialEq)]
 pub struct ReflectTypeDescription {
     pub id: u32,
-    #[serde(skip_serializing)]
-    pub op: ReflectOp, // TODO: Serialization support
+    //#[serde(skip_serializing)]
+    //pub op: ReflectOp, // TODO: Serialization support
     pub type_name: String,
     pub struct_member_name: String,
     pub storage_class: ReflectStorageClass,
@@ -156,24 +155,24 @@ pub struct ReflectInterfaceVariable {
     pub storage_class: ReflectStorageClass,
     pub semantic: String,
     pub decoration_flags: ReflectDecorationFlags,
-    #[serde(skip_serializing)]
-    pub built_in: ReflectBuiltIn, // TODO: Serialization support
+    //#[serde(skip_serializing)]
+    //pub built_in: ReflectBuiltIn, // TODO: Serialization support
     pub numeric: ReflectNumericTraits,
     pub array: ReflectArrayTraits,
     pub members: Vec<ReflectInterfaceVariable>,
     pub format: ReflectFormat,
     pub type_description: Option<ReflectTypeDescription>,
     pub word_offset: u32,
-    #[serde(skip_serializing)]
-    pub(crate) internal_data: *const ffi::SpvReflectInterfaceVariable,
+    //#[serde(skip_serializing)]
+    //pub(crate) internal_data: *const ffi::SpvReflectInterfaceVariable,
 }
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ReflectEntryPoint {
     pub name: String,
     pub id: u32,
-    #[serde(skip_serializing)]
-    pub spirv_execution_model: spirv_headers::ExecutionModel, // TODO: Serialization support
+    //#[serde(skip_serializing)]
+    //pub spirv_execution_model: spirv_headers::ExecutionModel, // TODO: Serialization support
     pub shader_stage: ReflectShaderStageFlags,
     pub input_variables: Vec<ReflectInterfaceVariable>,
     pub output_variables: Vec<ReflectInterfaceVariable>,

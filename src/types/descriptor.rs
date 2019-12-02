@@ -1,4 +1,4 @@
-use crate::ffi;
+//use crate::ffi;
 use crate::types::{
     ReflectBindingArrayTraits, ReflectBlockVariable, ReflectImageTraits, ReflectResourceType,
     ReflectTypeDescription,
@@ -48,14 +48,14 @@ pub struct ReflectDescriptorBinding {
     pub uav_counter_binding: Option<Box<ReflectDescriptorBinding>>,
     pub type_description: Option<ReflectTypeDescription>,
     pub word_offset: ReflectDescriptorBindingSet,
-    #[serde(skip_serializing)]
-    pub(crate) internal_data: *const ffi::SpvReflectDescriptorBinding,
+    //#[serde(skip_serializing)]
+    //pub(crate) internal_data: *const ffi::SpvReflectDescriptorBinding,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct ReflectDescriptorSet {
     pub set: u32,
     pub bindings: Vec<ReflectDescriptorBinding>,
-    #[serde(skip_serializing)]
-    pub(crate) internal_data: *const ffi::SpvReflectDescriptorSet,
+    //#[serde(skip_serializing)]
+    //pub(crate) internal_data: *const ffi::SpvReflectDescriptorSet,
 }
