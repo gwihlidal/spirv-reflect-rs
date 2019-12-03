@@ -1,0 +1,46 @@
+use crate::types::*;
+
+#[derive(Debug, Clone)]
+pub struct ReflectShaderModule {
+    pub generator: ReflectGenerator,
+    pub entry_point_name: String,
+    pub entry_point_id: u32,
+    pub entry_points: Vec<ReflectEntryPoint>,
+    pub source_language: spirv_headers::SourceLanguage,
+    pub source_language_version: u32,
+    pub source_file: String,
+    pub source_text: String,
+    pub spirv_execution_model: spirv_headers::ExecutionModel,
+    pub shader_stage: ReflectShaderStageFlags,
+    pub descriptor_bindings: Vec<ReflectDescriptorBinding>,
+    pub descriptor_sets: Vec<ReflectDescriptorSet>,
+    pub input_variables: Vec<ReflectInterfaceVariable>,
+    pub output_variables: Vec<ReflectInterfaceVariable>,
+    pub push_constant_blocks: Vec<ReflectBlockVariable>,
+    pub spirv_code: Vec<u32>,
+    pub type_descriptions: Vec<ReflectTypeDescription>,
+}
+
+impl Default for ReflectShaderModule {
+    fn default() -> ReflectShaderModule {
+        ReflectShaderModule {
+            generator: ReflectGenerator::Unknown,
+            entry_point_name: String::new(),
+            entry_point_id: 0,
+            entry_points: Vec::new(),
+            source_language: spirv_headers::SourceLanguage::Unknown,
+            source_language_version: 0,
+            source_file: String::new(),
+            source_text: String::new(),
+            spirv_execution_model: spirv_headers::ExecutionModel::Vertex,
+            shader_stage: ReflectShaderStageFlags::UNDEFINED,
+            descriptor_bindings: Vec::new(),
+            descriptor_sets: Vec::new(),
+            input_variables: Vec::new(),
+            output_variables: Vec::new(),
+            push_constant_blocks: Vec::new(),
+            spirv_code: Vec::new(),
+            type_descriptions: Vec::new(),
+        }
+    }
+}

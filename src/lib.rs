@@ -10,53 +10,56 @@ extern crate serde_derive;
 pub mod types;
 
 #[derive(Default, Clone)]
-pub struct ShaderModule {}
+pub struct ShaderModule {
+    internal: types::ReflectShaderModule,
+}
 
 impl ShaderModule {
     pub fn load_u8_data(spv_data: &[u8]) -> Result<ShaderModule, &str> {
-        Ok(create_shader_module(spv_data)?)
-    }
-
-    pub fn load_u32_data(spv_data: &[u32]) -> Result<ShaderModule, &str> {
-        let u8_data: &[u8] = unsafe {
+        assert_eq!(spv_data.len() % std::mem::size_of::<u32>(), 0); // TODO: Nice error
+        let u32_data: &[u32] = unsafe {
             std::slice::from_raw_parts(
-                spv_data.as_ptr() as *const u8,
-                spv_data.len() * std::mem::size_of::<u32>(),
+                spv_data.as_ptr() as *const u32,
+                spv_data.len() / std::mem::size_of::<u32>(),
             )
         };
-        Ok(create_shader_module(u8_data)?)
+        Ok(create_shader_module(u32_data)?)
     }
 
-    pub fn get_code(&self) -> Vec<u32> {
-        Vec::new()
+    pub fn load_u32_data(spv_words: &[u32]) -> Result<ShaderModule, &str> {
+        Ok(create_shader_module(spv_words)?)
+    }
+
+    pub fn get_code(&self) -> &[u32] {
+        &self.internal.spirv_code
     }
 
     pub fn get_generator(&self) -> types::ReflectGenerator {
-        types::ReflectGenerator::default()
+        self.internal.generator
     }
 
     pub fn get_shader_stage(&self) -> types::ReflectShaderStageFlags {
-        types::ReflectShaderStageFlags::UNDEFINED
+        self.internal.shader_stage
     }
 
     pub fn get_source_language(&self) -> spirv_headers::SourceLanguage {
-        spirv_headers::SourceLanguage::Unknown
+        self.internal.source_language
     }
 
     pub fn get_source_language_version(&self) -> u32 {
-        0
+        self.internal.source_language_version
     }
 
-    pub fn get_source_file(&self) -> String {
-        String::new()
+    pub fn get_source_file(&self) -> &str {
+        &self.internal.source_file
     }
 
-    pub fn get_source_text(&self) -> String {
-        String::new()
+    pub fn get_source_text(&self) -> &str {
+        &self.internal.source_text
     }
 
     pub fn get_spirv_execution_model(&self) -> spirv_headers::ExecutionModel {
-        spirv_headers::ExecutionModel::Vertex
+        self.internal.spirv_execution_model
     }
 
     pub fn enumerate_input_variables(
@@ -98,8 +101,8 @@ impl ShaderModule {
         Ok(Vec::new())
     }
 
-    pub fn get_entry_point_name(&self) -> String {
-        String::new()
+    pub fn get_entry_point_name(&self) -> &str {
+        &self.internal.entry_point_name
     }
 
     pub fn change_descriptor_binding_numbers(
@@ -136,6 +139,6 @@ impl ShaderModule {
     }
 }
 
-pub fn create_shader_module(spv_data: &[u8]) -> Result<ShaderModule, &str> {
+pub fn create_shader_module(spv_words: &[u32]) -> Result<ShaderModule, &str> {
     Ok(ShaderModule::default())
 }
