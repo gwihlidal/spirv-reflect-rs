@@ -117,15 +117,22 @@ impl Default for ParserNode {
 }*/
 
 #[derive(Default)]
+pub(crate) struct ParserString {
+    pub result_id: u32,
+    pub string: String,
+}
+
+#[derive(Default)]
 pub(crate) struct Parser {
     pub nodes: Vec<ParserNode>,
+    pub strings: Vec<ParserString>,
 
-    pub string_count: u32,
-    pub type_count: u32,
-    pub descriptor_count: u32,
-    pub push_constant_count: u32,
-    pub entry_point_count: u32,
-    pub function_count: u32,
+    pub string_count: usize,
+    pub type_count: usize,
+    pub descriptor_count: usize,
+    pub push_constant_count: usize,
+    pub entry_point_count: usize,
+    pub function_count: usize,
 }
 
 impl Parser {
@@ -401,8 +408,36 @@ impl Parser {
     fn parse_strings(
         &mut self,
         spv_words: &[u32],
-        module: &mut super::ShaderModule,
+        _: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        if self.string_count > 0 && spv_words.len() > 0 && self.nodes.len() > 0 {
+            self.strings.reserve(self.string_count);
+            for node in &self.nodes {
+                if let Some(op) = node.op {
+                    if op != spirv_headers::Op::String {
+                        continue;
+                    }
+
+                    if self.strings.len() >= self.string_count {
+                        return Err("Count mismatch while parsing strings.".into());
+                    }
+
+                    let string_start = node.word_offset as usize + 2;
+                    let string_value = unsafe {
+                        let string_ptr =
+                            spv_words.as_ptr().offset(string_start as isize) as *const c_char;
+                        let string_str = CStr::from_ptr(string_ptr);
+                        string_str.to_str().unwrap().to_owned()
+                    };
+
+                    self.strings.push(ParserString {
+                        result_id: spv_words[node.word_offset as usize + 1],
+                        string: string_value,
+                    });
+                }
+            }
+        }
+
         Ok(())
     }
 
