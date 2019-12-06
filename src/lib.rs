@@ -7,6 +7,7 @@ extern crate serde_derive;
 
 //use num_traits::cast::FromPrimitive;
 
+pub(crate) mod parser;
 pub mod types;
 
 #[derive(Default, Clone)]
@@ -15,7 +16,7 @@ pub struct ShaderModule {
 }
 
 impl ShaderModule {
-    pub fn load_u8_data(spv_data: &[u8]) -> Result<ShaderModule, &str> {
+    pub fn load_u8_data(spv_data: &[u8]) -> Result<ShaderModule, String> {
         assert_eq!(spv_data.len() % std::mem::size_of::<u32>(), 0); // TODO: Nice error
         let u32_data: &[u32] = unsafe {
             std::slice::from_raw_parts(
@@ -26,7 +27,7 @@ impl ShaderModule {
         Ok(create_shader_module(u32_data)?)
     }
 
-    pub fn load_u32_data(spv_words: &[u32]) -> Result<ShaderModule, &str> {
+    pub fn load_u32_data(spv_words: &[u32]) -> Result<ShaderModule, String> {
         Ok(create_shader_module(spv_words)?)
     }
 
@@ -42,7 +43,7 @@ impl ShaderModule {
         self.internal.shader_stage
     }
 
-    pub fn get_source_language(&self) -> spirv_headers::SourceLanguage {
+    pub fn get_source_language(&self) -> Option<spirv_headers::SourceLanguage> {
         self.internal.source_language
     }
 
@@ -139,6 +140,9 @@ impl ShaderModule {
     }
 }
 
-pub fn create_shader_module(spv_words: &[u32]) -> Result<ShaderModule, &str> {
-    Ok(ShaderModule::default())
+pub fn create_shader_module(spv_words: &[u32]) -> Result<ShaderModule, String> {
+    let mut module = ShaderModule::default();
+    let mut parser = parser::Parser::default();
+    parser.parse(spv_words, &mut module)?;
+    Ok(module)
 }
