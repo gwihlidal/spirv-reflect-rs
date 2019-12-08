@@ -458,8 +458,39 @@ impl Parser {
     fn parse_member_counts(
         &mut self,
         spv_words: &[u32],
-        module: &mut super::ShaderModule,
+        _: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        for node_index in 0..self.nodes.len() {
+            let op = &self.nodes[node_index].op;
+            if op != &Some(spirv_headers::Op::MemberName)
+                && op != &Some(spirv_headers::Op::MemberDecorate)
+            {
+                continue;
+            }
+
+            let word_offset = self.nodes[node_index].word_offset as usize;
+            let target_id = spv_words[word_offset + 1];
+            let member_index = spv_words[word_offset + 2];
+
+            // Not all nodes are parsed
+            if let Some(target_node_index) = self.find_node(target_id) {
+                let mut target_node = &mut self.nodes[target_node_index];
+                target_node.member_count =
+                    std::cmp::max(target_node.member_count, member_index + 1);
+            }
+        }
+
+        for node in &mut self.nodes {
+            if node.member_count == 0 {
+                continue;
+            }
+
+            node.member_names
+                .resize(node.member_count as usize, String::new());
+            node.member_decorations
+                .resize(node.member_count as usize, Decorations::default());
+        }
+
         Ok(())
     }
 
@@ -533,5 +564,16 @@ impl Parser {
         module: &mut super::ShaderModule,
     ) -> Result<(), String> {
         Ok(())
+    }
+
+    fn find_node(&self, result_id: u32) -> Option<usize> {
+        for node_index in 0..self.nodes.len() {
+            let node = &self.nodes[node_index];
+            if node.result_id == result_id {
+                return Some(node_index);
+            }
+        }
+
+        None
     }
 }
