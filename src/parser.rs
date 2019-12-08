@@ -167,7 +167,6 @@ impl Parser {
 
         self.parse_nodes(spv_words, module)?;
         self.parse_strings(spv_words, module)?;
-        self.parse_source(spv_words, module)?;
         self.parse_functions(spv_words, module)?;
         self.parse_member_counts(spv_words, module)?;
         self.parse_names(spv_words, module)?;
@@ -408,7 +407,7 @@ impl Parser {
     fn parse_strings(
         &mut self,
         spv_words: &[u32],
-        _: &mut super::ShaderModule,
+        module: &mut super::ShaderModule,
     ) -> Result<(), String> {
         if self.string_count > 0 && spv_words.len() > 0 && self.nodes.len() > 0 {
             self.strings.reserve(self.string_count);
@@ -436,16 +435,15 @@ impl Parser {
                     });
                 }
             }
+
+            for string in &self.strings {
+                if string.result_id == module.internal.source_file_id {
+                    module.internal.source_file = string.string.to_owned();
+                    break;
+                }
+            }
         }
 
-        Ok(())
-    }
-
-    fn parse_source(
-        &mut self,
-        spv_words: &[u32],
-        module: &mut super::ShaderModule,
-    ) -> Result<(), String> {
         Ok(())
     }
 
