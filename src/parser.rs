@@ -563,6 +563,38 @@ impl Parser {
         spv_words: &[u32],
         module: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        module.internal.entry_points.reserve(self.entry_point_count);
+        let uniforms = Self::enumerate_all_uniforms(module);
+        //let push_constants = Self::enumerate_all_push_constants(module);
+
+        for node in &self.nodes {
+            let word_offset = node.word_offset as usize;
+            if let Some(spirv_execution_model) = spirv_headers::ExecutionModel::from_u32(spv_words[word_offset + 1]) {
+              let entry_point = crate::types::variable::ReflectEntryPoint {
+                  spirv_execution_model,
+                  id: spv_words[word_offset + 2],
+                  shader_stage: match spirv_execution_model {
+                      spirv_headers::ExecutionModel::Vertex => crate::types::ReflectShaderStageFlags::VERTEX,
+                      spirv_headers::ExecutionModel::TessellationControl => crate::types::ReflectShaderStageFlags::TESSELLATION_CONTROL,
+                      spirv_headers::ExecutionModel::TessellationEvaluation => crate::types::ReflectShaderStageFlags::TESSELLATION_EVALUATION,
+                      spirv_headers::ExecutionModel::Geometry => crate::types::ReflectShaderStageFlags::GEOMETRY,
+                      spirv_headers::ExecutionModel::Fragment => crate::types::ReflectShaderStageFlags::FRAGMENT,
+                      spirv_headers::ExecutionModel::GLCompute => crate::types::ReflectShaderStageFlags::COMPUTE,
+                      // TODO:
+                      /*spirv_headers::ExecutionModel::RayGenerationNV => crate::types::ReflectShaderStageFlags::RAYGEN_BIT_NV,
+                      spirv_headers::ExecutionModel::IntersectionNV => crate::types::ReflectShaderStageFlags::INTERSECTION_BIT_NV,
+                      spirv_headers::ExecutionModel::AnyHitNV => crate::types::ReflectShaderStageFlags::ANY_HIT_BIT_NV,
+                      spirv_headers::ExecutionModel::ClosestHitNV => crate::types::ReflectShaderStageFlags::CLOSEST_HIT_BIT_NV,
+                      spirv_headers::ExecutionModel::MissNV => crate::types::ReflectShaderStageFlags::MISS_BIT_NV,
+                      spirv_headers::ExecutionModel::CallableNV => crate::types::ReflectShaderStageFlags::CALLABLE_BIT_NV,*/
+
+                  }
+              };
+
+              module.internal.entry_points.push(entry_point);
+            }
+        }
+
         Ok(())
     }
 
@@ -575,5 +607,20 @@ impl Parser {
         }
 
         None
+    }
+
+    fn enumerate_all_uniforms(module: &super::ShaderModule) -> Vec<u32> {
+        let mut uniforms: Vec<u32> = Vec::new();
+        
+        if module.internal.descriptor_bindings.len() > 0 {
+            uniforms.reserve(module.internal.descriptor_bindings.len());
+            for descriptor_binding in &module.internal.descriptor_bindings {
+                uniforms.push(descriptor_binding.spirv_id);
+            }
+
+            uniforms.sort_by(|a, b| a.cmp(b));
+        }
+
+        uniforms
     }
 }
