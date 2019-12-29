@@ -152,7 +152,7 @@ impl Parser {
 
         // Determine generator
         let generator: u32 = (spv_words[2] & 0xFFFF0000) >> 16u32;
-        let generator = match generator {
+        let _generator = match generator {
             6 => types::ReflectGenerator::KhronosLlvmSpirvTranslator,
             7 => types::ReflectGenerator::KhronosSpirvToolsAssembler,
             8 => types::ReflectGenerator::KhronosGlslangReferenceFrontEnd,
@@ -173,6 +173,8 @@ impl Parser {
         self.parse_names(spv_words, module)?;
         self.parse_decorations(spv_words, module)?;
 
+        // TODO:
+
         /*
           // Zero out descriptor set data
           p_module->descriptor_set_count = 0;
@@ -190,6 +192,8 @@ impl Parser {
         self.parse_descriptor_blocks(spv_words, module)?;
         self.parse_push_constant_blocks(spv_words, module)?;
         self.parse_entry_points(spv_words, module)?;
+
+        // TODO:
 
         /*if module.entry_points.len() > 0 {
             SpvReflectEntryPoint* p_entry = &(p_module->entry_points[0]);
@@ -450,9 +454,10 @@ impl Parser {
 
     fn parse_functions(
         &mut self,
-        spv_words: &[u32],
-        module: &mut super::ShaderModule,
+        _spv_words: &[u32],
+        _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_functions");
         Ok(())
     }
 
@@ -497,65 +502,73 @@ impl Parser {
 
     fn parse_names(
         &mut self,
-        spv_words: &[u32],
-        module: &mut super::ShaderModule,
+        _spv_words: &[u32],
+        _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_names");
         Ok(())
     }
 
     fn parse_decorations(
         &mut self,
-        spv_words: &[u32],
-        module: &mut super::ShaderModule,
+        _spv_words: &[u32],
+        _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_decorations");
         Ok(())
     }
 
     fn parse_types(
         &mut self,
-        spv_words: &[u32],
-        module: &mut super::ShaderModule,
+        _spv_words: &[u32],
+        _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_types");
         Ok(())
     }
 
     fn parse_descriptor_bindings(
         &mut self,
-        spv_words: &[u32],
-        module: &mut super::ShaderModule,
+        _spv_words: &[u32],
+        _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_descriptor_bindings");
         Ok(())
     }
 
     fn parse_descriptor_type(
         &mut self,
-        spv_words: &[u32],
-        module: &mut super::ShaderModule,
+        _spv_words: &[u32],
+        _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_descriptor_type");
         Ok(())
     }
 
     fn parse_counter_bindings(
         &mut self,
-        spv_words: &[u32],
-        module: &mut super::ShaderModule,
+        _spv_words: &[u32],
+        _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_counter_bindings");
         Ok(())
     }
 
     fn parse_descriptor_blocks(
         &mut self,
-        spv_words: &[u32],
-        module: &mut super::ShaderModule,
+        _spv_words: &[u32],
+        _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_descriptor_blocks");
         Ok(())
     }
 
     fn parse_push_constant_blocks(
         &mut self,
-        spv_words: &[u32],
-        module: &mut super::ShaderModule,
+        _spv_words: &[u32],
+        _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_push_constant_blocks");
         Ok(())
     }
 
@@ -571,12 +584,13 @@ impl Parser {
 
     fn parse_static_resources(
         &self,
-        spv_words: &[u32],
-        module: &mut super::ShaderModule,
-        uniforms: &[u32],
-        push_constants: &[u32],
-        entry_point: &mut crate::types::variable::ReflectEntryPoint,
+        _spv_words: &[u32],
+        _module: &mut super::ShaderModule,
+        _uniforms: &[u32],
+        _push_constants: &[u32],
+        _entry_point: &mut crate::types::variable::ReflectEntryPoint,
     ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_static_resources");
         Ok(())
     }
 
@@ -618,6 +632,7 @@ impl Parser {
                 Some(spirv_headers::ExecutionModel::GLCompute) => {
                     crate::types::ReflectShaderStageFlags::COMPUTE
                 }
+                // TODO:
                 /*spirv_headers::ExecutionModel::RayGenerationNV => crate::types::ReflectShaderStageFlags::RAYGEN_BIT_NV,
                 spirv_headers::ExecutionModel::IntersectionNV => crate::types::ReflectShaderStageFlags::INTERSECTION_BIT_NV,
                 spirv_headers::ExecutionModel::AnyHitNV => crate::types::ReflectShaderStageFlags::ANY_HIT_BIT_NV,
@@ -717,7 +732,8 @@ impl Parser {
         uniforms
     }
 
-    fn enumerate_all_push_constants(module: &super::ShaderModule) -> Vec<u32> {
+    fn enumerate_all_push_constants(_module: &super::ShaderModule) -> Vec<u32> {
+        println!("UNIMPLEMENTED - enumerate_all_push_constants");
         Vec::new()
     }
 }

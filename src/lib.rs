@@ -65,40 +65,46 @@ impl ShaderModule {
 
     pub fn enumerate_input_variables(
         &self,
-        entry_point: Option<&str>,
+        _entry_point: Option<&str>,
     ) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
+        println!("UNIMPLEMENTED - enumerate_input_variables");
         Ok(Vec::new())
     }
 
     pub fn enumerate_output_variables(
         &self,
-        entry_point: Option<&str>,
+        _entry_point: Option<&str>,
     ) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
+        println!("UNIMPLEMENTED - enumerate_output_variables");
         Ok(Vec::new())
     }
 
     pub fn enumerate_descriptor_bindings(
         &self,
-        entry_point: Option<&str>,
+        _entry_point: Option<&str>,
     ) -> Result<Vec<types::ReflectDescriptorBinding>, &str> {
+        println!("UNIMPLEMENTED - enumerate_descriptor_bindings");
         Ok(Vec::new())
     }
 
     pub fn enumerate_descriptor_sets(
         &self,
-        entry_point: Option<&str>,
+        _entry_point: Option<&str>,
     ) -> Result<Vec<types::ReflectDescriptorSet>, &str> {
+        println!("UNIMPLEMENTED - enumerate_descriptor_sets");
         Ok(Vec::new())
     }
 
     pub fn enumerate_push_constant_blocks(
         &self,
-        entry_point: Option<&str>,
+        _entry_point: Option<&str>,
     ) -> Result<Vec<types::ReflectBlockVariable>, &str> {
+        println!("UNIMPLEMENTED - enumerate_push_constant_blocks");
         Ok(Vec::new())
     }
 
     pub fn enumerate_entry_points(&self) -> Result<Vec<types::ReflectEntryPoint>, &str> {
+        println!("UNIMPLEMENTED - enumerate_entry_points");
         Ok(Vec::new())
     }
 
@@ -108,34 +114,38 @@ impl ShaderModule {
 
     pub fn change_descriptor_binding_numbers(
         &mut self,
-        binding: &types::descriptor::ReflectDescriptorBinding,
-        new_binding: u32,
-        new_set: Option<u32>,
+        _binding: &types::descriptor::ReflectDescriptorBinding,
+        _new_binding: u32,
+        _new_set: Option<u32>,
     ) -> Result<(), &str> {
+        println!("UNIMPLEMENTED - change_descriptor_binding_numbers");
         Ok(())
     }
 
     pub fn change_descriptor_set_number(
         &mut self,
-        set: &types::descriptor::ReflectDescriptorSet,
-        new_set: u32,
+        _set: &types::descriptor::ReflectDescriptorSet,
+        _new_set: u32,
     ) -> Result<(), &str> {
+        println!("UNIMPLEMENTED - change_descriptor_set_number");
         Ok(())
     }
 
     pub fn change_input_variable_location(
         &mut self,
-        variable: &types::variable::ReflectInterfaceVariable,
-        new_location: u32,
+        _variable: &types::variable::ReflectInterfaceVariable,
+        _new_location: u32,
     ) -> Result<(), &str> {
+        println!("UNIMPLEMENTED - change_input_variable_location");
         Ok(())
     }
 
     pub fn change_output_variable_location(
         &mut self,
-        variable: &types::variable::ReflectInterfaceVariable,
-        new_location: u32,
+        _variable: &types::variable::ReflectInterfaceVariable,
+        _new_location: u32,
     ) -> Result<(), &str> {
+        println!("UNIMPLEMENTED - change_output_variable_location");
         Ok(())
     }
 }
