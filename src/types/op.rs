@@ -4,7 +4,7 @@ use spirv_headers;
 use std::ops::Deref;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub struct ReflectOp(spirv_headers::Op);
+pub struct ReflectOp(pub(crate) spirv_headers::Op);
 
 impl Default for ReflectOp {
     fn default() -> Self {
@@ -29,7 +29,7 @@ impl Deref for ReflectOp {
 }*/
 
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub struct ReflectBuiltIn(spirv_headers::BuiltIn);
+pub struct ReflectBuiltIn(pub(crate) spirv_headers::BuiltIn);
 
 impl Default for ReflectBuiltIn {
     fn default() -> Self {

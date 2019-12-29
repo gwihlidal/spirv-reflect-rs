@@ -147,7 +147,7 @@ impl Default for ReflectStorageClass {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Default, Clone, Serialize)]
 pub struct ReflectInterfaceVariable {
     pub spirv_id: u32,
     pub name: String,
@@ -163,8 +163,6 @@ pub struct ReflectInterfaceVariable {
     pub format: ReflectFormat,
     pub type_description: Option<ReflectTypeDescription>,
     pub word_offset: u32,
-    //#[serde(skip_serializing)]
-    //pub(crate) internal_data: *const ffi::SpvReflectInterfaceVariable,
 }
 
 #[derive(Debug, Clone, Serialize)]

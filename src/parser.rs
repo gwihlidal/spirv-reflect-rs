@@ -24,7 +24,7 @@ pub(crate) struct Decorations {
     pub is_buffer_block: bool,
     pub is_row_major: bool,
     pub is_column_major: bool,
-    pub is_built_in: bool,
+    //pub is_built_in: bool,
     pub is_noperspective: bool,
     pub is_flat: bool,
     pub is_non_writable: bool,
@@ -572,13 +572,125 @@ impl Parser {
         Ok(())
     }
 
+    fn parse_interface_variable(
+        &self,
+        _module: &super::ShaderModule,
+        _built_in: &mut bool,
+        _type_decorations: &Decorations,
+        _type_description: &crate::types::ReflectTypeDescription,
+    ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_interface_variable");
+        Ok(())
+    }
+
     fn parse_interface_variables(
         &self,
-        spv_words: &[u32],
+        _spv_words: &[u32],
         module: &mut super::ShaderModule,
         interface_vars: &[u32],
         entry_point: &mut crate::types::variable::ReflectEntryPoint,
     ) -> Result<(), String> {
+        if interface_vars.len() > 0 {
+            let mut input_count = 0;
+            let mut output_count = 0;
+            for var_id in interface_vars {
+                if let Some(node_index) = self.find_node(*var_id) {
+                    let node = &self.nodes[node_index];
+                    match node.storage_class {
+                        Some(spirv_headers::StorageClass::Input) => input_count += 1,
+                        Some(spirv_headers::StorageClass::Output) => output_count += 1,
+                        _ => {}
+                    }
+                } else {
+                    return Err("Invalid SPIR-V ID reference".into());
+                }
+            }
+
+            entry_point.input_variables.reserve(input_count);
+            entry_point.output_variables.reserve(output_count);
+
+            for var_id in interface_vars {
+                if let Some(node_index) = self.find_node(*var_id) {
+                    let node = &self.nodes[node_index];
+                    if let Some(type_index) = module.internal.find_type(node.type_id) {
+                        let mut type_description = &module.internal.type_descriptions[type_index];
+
+                        // Resolve pointer types
+                        if *type_description.op == spirv_headers::Op::TypePointer {
+                            if let Some(type_node_index) = self.find_node(type_description.id) {
+                                let type_node = &self.nodes[type_node_index];
+                                if let Some(pointer_type_index) =
+                                    module.internal.find_type(type_node.type_id)
+                                {
+                                    type_description =
+                                        &module.internal.type_descriptions[pointer_type_index];
+                                } else {
+                                    return Err("Invalid SPIR-V ID reference".into());
+                                }
+                            } else {
+                                return Err("Invalid SPIR-V ID reference".into());
+                            }
+                        }
+
+                        if let Some(type_node_index) = self.find_node(type_description.id) {
+                            let type_node = &self.nodes[type_node_index];
+                            let type_decorations = &type_node.decorations;
+
+                            let mut variable =
+                                crate::types::variable::ReflectInterfaceVariable::default();
+                            match node.storage_class {
+                                Some(spirv_headers::StorageClass::Input) => {
+                                    variable.storage_class =
+                                        crate::types::ReflectStorageClass::Input
+                                }
+                                Some(spirv_headers::StorageClass::Output) => {
+                                    variable.storage_class =
+                                        crate::types::ReflectStorageClass::Output
+                                }
+                                _ => return Err("Invalid SPIR-V ID storage class".into()),
+                            }
+
+                            let mut built_in = node.decorations.built_in.is_some();
+                            self.parse_interface_variable(
+                                &module,
+                                &mut built_in,
+                                &type_decorations,
+                                &type_description,
+                            )?;
+
+                            variable.spirv_id = node.result_id;
+                            variable.name = node.name.to_owned();
+                            variable.semantic = node.decorations.semantic.value.to_owned();
+                            if built_in {
+                                variable.decoration_flags |=
+                                    crate::types::ReflectDecorationFlags::BUILT_IN;
+                            }
+                            variable.location = node.decorations.location.value;
+                            variable.word_offset = node.decorations.location.word_offset;
+                            if let Some(built_in) = node.decorations.built_in {
+                                variable.built_in = crate::types::ReflectBuiltIn(built_in);
+                            }
+
+                            match variable.storage_class {
+                                crate::types::ReflectStorageClass::Input => {
+                                    entry_point.input_variables.push(variable)
+                                }
+                                crate::types::ReflectStorageClass::Output => {
+                                    entry_point.output_variables.push(variable)
+                                }
+                                _ => {}
+                            }
+                        } else {
+                            return Err("Invalid SPIR-V ID reference".into());
+                        }
+                    } else {
+                        return Err("Invalid SPIR-V ID reference".into());
+                    }
+                } else {
+                    return Err("Invalid SPIR-V ID reference".into());
+                }
+            }
+        }
         Ok(())
     }
 

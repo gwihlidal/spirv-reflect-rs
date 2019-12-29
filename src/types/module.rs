@@ -46,3 +46,16 @@ impl Default for ReflectShaderModule {
         }
     }
 }
+
+impl ReflectShaderModule {
+    pub(crate) fn find_type(&self, type_id: u32) -> Option<usize> {
+        for type_index in 0..self.type_descriptions.len() {
+            let type_description = &self.type_descriptions[type_index];
+            if type_description.id == type_id {
+                return Some(type_index);
+            }
+        }
+
+        None
+    }
+}
