@@ -766,9 +766,10 @@ impl Parser {
                 // it is a valid null terminated string.
                 let name_ptr = spv_words.as_ptr().offset(name_offset as isize) as *const _;
                 let name_slice = std::slice::from_raw_parts(name_ptr, word_count * SPIRV_WORD_SIZE);
+                let name_slice_end = name_slice.iter().position(|&b| b == 0).map_or(0, |i| i + 1);
 
                 // Convert the slice to a string (if it's corectly null terminated).
-                let name_str = CStr::from_bytes_with_nul(name_slice);
+                let name_str = CStr::from_bytes_with_nul(&name_slice[..name_slice_end]);
                 if name_str.is_err() {
                     return Err("Entry point name is not a valid string.".into());
                 }
