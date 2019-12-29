@@ -117,13 +117,13 @@ impl Default for ParserNode {
     }
 }*/
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub(crate) struct ParserString {
     pub result_id: u32,
     pub string: String,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub(crate) struct Parser {
     pub nodes: Vec<ParserNode>,
     pub strings: Vec<ParserString>,
@@ -518,12 +518,33 @@ impl Parser {
         Ok(())
     }
 
+    fn parse_type(
+        &mut self,
+        _module: &mut super::ShaderModule,
+        _node_index: usize,
+        _struct_member_decorations: Option<&Decorations>,
+        _type_description: &mut crate::types::ReflectTypeDescription,
+    ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_type");
+        //self.parse_type(&mut module, &node, None, &mut type_description)?;
+        Ok(())
+    }
+
     fn parse_types(
         &mut self,
         _spv_words: &[u32],
-        _module: &mut super::ShaderModule,
+        module: &mut super::ShaderModule,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_types");
+        module.internal.type_descriptions.reserve(self.type_count);
+        for node_index in 0..self.nodes.len() {
+            if !self.nodes[node_index].is_type {
+                continue;
+            }
+
+            let mut type_description = crate::types::ReflectTypeDescription::default();
+            self.parse_type(module, node_index, None, &mut type_description)?;
+            module.internal.type_descriptions.push(type_description);
+        }
         Ok(())
     }
 
