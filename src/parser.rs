@@ -4,6 +4,7 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 
 pub const STARTING_WORD: usize = 5;
+pub const SPIRV_WORD_SIZE: usize = std::mem::size_of::<u32>();
 
 #[derive(Default, Debug, Clone, Serialize, PartialEq)]
 pub(crate) struct NumberDecoration {
@@ -558,6 +559,27 @@ impl Parser {
         Ok(())
     }
 
+    fn parse_interface_variables(
+        &self,
+        spv_words: &[u32],
+        module: &mut super::ShaderModule,
+        interface_vars: &[u32],
+        entry_point: &mut crate::types::variable::ReflectEntryPoint,
+    ) -> Result<(), String> {
+        Ok(())
+    }
+
+    fn parse_static_resources(
+        &self,
+        spv_words: &[u32],
+        module: &mut super::ShaderModule,
+        uniforms: &[u32],
+        push_constants: &[u32],
+        entry_point: &mut crate::types::variable::ReflectEntryPoint,
+    ) -> Result<(), String> {
+        Ok(())
+    }
+
     fn parse_entry_points(
         &mut self,
         spv_words: &[u32],
@@ -565,34 +587,105 @@ impl Parser {
     ) -> Result<(), String> {
         module.internal.entry_points.reserve(self.entry_point_count);
         let uniforms = Self::enumerate_all_uniforms(module);
-        //let push_constants = Self::enumerate_all_push_constants(module);
+        let push_constants = Self::enumerate_all_push_constants(module);
 
         for node in &self.nodes {
-            let word_offset = node.word_offset as usize;
-            if let Some(spirv_execution_model) = spirv_headers::ExecutionModel::from_u32(spv_words[word_offset + 1]) {
-              let entry_point = crate::types::variable::ReflectEntryPoint {
-                  spirv_execution_model,
-                  id: spv_words[word_offset + 2],
-                  shader_stage: match spirv_execution_model {
-                      spirv_headers::ExecutionModel::Vertex => crate::types::ReflectShaderStageFlags::VERTEX,
-                      spirv_headers::ExecutionModel::TessellationControl => crate::types::ReflectShaderStageFlags::TESSELLATION_CONTROL,
-                      spirv_headers::ExecutionModel::TessellationEvaluation => crate::types::ReflectShaderStageFlags::TESSELLATION_EVALUATION,
-                      spirv_headers::ExecutionModel::Geometry => crate::types::ReflectShaderStageFlags::GEOMETRY,
-                      spirv_headers::ExecutionModel::Fragment => crate::types::ReflectShaderStageFlags::FRAGMENT,
-                      spirv_headers::ExecutionModel::GLCompute => crate::types::ReflectShaderStageFlags::COMPUTE,
-                      // TODO:
-                      /*spirv_headers::ExecutionModel::RayGenerationNV => crate::types::ReflectShaderStageFlags::RAYGEN_BIT_NV,
-                      spirv_headers::ExecutionModel::IntersectionNV => crate::types::ReflectShaderStageFlags::INTERSECTION_BIT_NV,
-                      spirv_headers::ExecutionModel::AnyHitNV => crate::types::ReflectShaderStageFlags::ANY_HIT_BIT_NV,
-                      spirv_headers::ExecutionModel::ClosestHitNV => crate::types::ReflectShaderStageFlags::CLOSEST_HIT_BIT_NV,
-                      spirv_headers::ExecutionModel::MissNV => crate::types::ReflectShaderStageFlags::MISS_BIT_NV,
-                      spirv_headers::ExecutionModel::CallableNV => crate::types::ReflectShaderStageFlags::CALLABLE_BIT_NV,*/
-
-                  }
-              };
-
-              module.internal.entry_points.push(entry_point);
+            if node.op != Some(spirv_headers::Op::EntryPoint) {
+                continue;
             }
+
+            let word_offset = node.word_offset as usize;
+            let word_count = node.word_count as usize;
+
+            let spirv_execution_model =
+                spirv_headers::ExecutionModel::from_u32(spv_words[word_offset + 1]);
+            let shader_stage = match spirv_execution_model {
+                Some(spirv_headers::ExecutionModel::Vertex) => {
+                    crate::types::ReflectShaderStageFlags::VERTEX
+                }
+                Some(spirv_headers::ExecutionModel::TessellationControl) => {
+                    crate::types::ReflectShaderStageFlags::TESSELLATION_CONTROL
+                }
+                Some(spirv_headers::ExecutionModel::TessellationEvaluation) => {
+                    crate::types::ReflectShaderStageFlags::TESSELLATION_EVALUATION
+                }
+                Some(spirv_headers::ExecutionModel::Geometry) => {
+                    crate::types::ReflectShaderStageFlags::GEOMETRY
+                }
+                Some(spirv_headers::ExecutionModel::Fragment) => {
+                    crate::types::ReflectShaderStageFlags::FRAGMENT
+                }
+                Some(spirv_headers::ExecutionModel::GLCompute) => {
+                    crate::types::ReflectShaderStageFlags::COMPUTE
+                }
+                /*spirv_headers::ExecutionModel::RayGenerationNV => crate::types::ReflectShaderStageFlags::RAYGEN_BIT_NV,
+                spirv_headers::ExecutionModel::IntersectionNV => crate::types::ReflectShaderStageFlags::INTERSECTION_BIT_NV,
+                spirv_headers::ExecutionModel::AnyHitNV => crate::types::ReflectShaderStageFlags::ANY_HIT_BIT_NV,
+                spirv_headers::ExecutionModel::ClosestHitNV => crate::types::ReflectShaderStageFlags::CLOSEST_HIT_BIT_NV,
+                spirv_headers::ExecutionModel::MissNV => crate::types::ReflectShaderStageFlags::MISS_BIT_NV,
+                spirv_headers::ExecutionModel::CallableNV => crate::types::ReflectShaderStageFlags::CALLABLE_BIT_NV,*/
+                _ => crate::types::ReflectShaderStageFlags::UNDEFINED,
+            };
+
+            // The name string length determines the next operand offset.
+            let name_start_offset = 3;
+            let name = unsafe {
+                let name_offset = word_offset + name_start_offset;
+                if name_offset + word_count >= spv_words.len() {
+                    return Err("Count mismatch while parsing strings.".into());
+                }
+
+                // We want to take a byte slice of the valid name string range, since we can't assume
+                // it is a valid null terminated string.
+                let name_ptr = spv_words.as_ptr().offset(name_offset as isize) as *const _;
+                let name_slice = std::slice::from_raw_parts(name_ptr, word_count * SPIRV_WORD_SIZE);
+
+                // Convert the slice to a string (if it's corectly null terminated).
+                let name_str = CStr::from_bytes_with_nul(name_slice);
+                if name_str.is_err() {
+                    return Err("Entry point name is not a valid string.".into());
+                }
+                let name_str = name_str.unwrap();
+
+                // Convert ffi to string
+                name_str.to_str().unwrap().to_owned()
+            };
+
+            let name_length_with_null = name.len() + 1;
+            let name_word_count =
+                (name_length_with_null + SPIRV_WORD_SIZE - 1) & !(SPIRV_WORD_SIZE - 1);
+            let name_word_count = name_word_count / SPIRV_WORD_SIZE;
+
+            let mut entry_point = crate::types::variable::ReflectEntryPoint {
+                name,
+                spirv_execution_model,
+                id: spv_words[word_offset + 2],
+                shader_stage,
+                input_variables: Vec::new(),
+                output_variables: Vec::new(),
+                descriptor_sets: Vec::new(),
+                used_uniforms: Vec::new(),
+                used_push_constants: Vec::new(),
+            };
+
+            let interface_var_count = word_count - (name_start_offset + name_word_count);
+            let interface_var_offset = name_start_offset + name_word_count;
+            let mut interface_vars = Vec::with_capacity(interface_var_count);
+            for var_index in 0..interface_var_count {
+                let var_offset = interface_var_offset + var_index;
+                interface_vars.push(spv_words[word_offset + var_offset]);
+            }
+
+            self.parse_interface_variables(spv_words, module, &interface_vars, &mut entry_point)?;
+            self.parse_static_resources(
+                spv_words,
+                module,
+                &uniforms,
+                &push_constants,
+                &mut entry_point,
+            )?;
+
+            module.internal.entry_points.push(entry_point);
         }
 
         Ok(())
@@ -611,7 +704,7 @@ impl Parser {
 
     fn enumerate_all_uniforms(module: &super::ShaderModule) -> Vec<u32> {
         let mut uniforms: Vec<u32> = Vec::new();
-        
+
         if module.internal.descriptor_bindings.len() > 0 {
             uniforms.reserve(module.internal.descriptor_bindings.len());
             for descriptor_binding in &module.internal.descriptor_bindings {
@@ -622,5 +715,9 @@ impl Parser {
         }
 
         uniforms
+    }
+
+    fn enumerate_all_push_constants(module: &super::ShaderModule) -> Vec<u32> {
+        Vec::new()
     }
 }

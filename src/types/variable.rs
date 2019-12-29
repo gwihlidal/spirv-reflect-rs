@@ -172,7 +172,7 @@ pub struct ReflectEntryPoint {
     pub name: String,
     pub id: u32,
     #[serde(skip_serializing)]
-    pub spirv_execution_model: spirv_headers::ExecutionModel, // TODO: Serialization support
+    pub spirv_execution_model: Option<spirv_headers::ExecutionModel>, // TODO: Serialization support
     pub shader_stage: ReflectShaderStageFlags,
     pub input_variables: Vec<ReflectInterfaceVariable>,
     pub output_variables: Vec<ReflectInterfaceVariable>,
