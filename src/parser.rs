@@ -1574,8 +1574,18 @@ impl Parser {
         uniforms
     }
 
-    fn enumerate_all_push_constants(_module: &super::ShaderModule) -> Vec<u32> {
-        println!("UNIMPLEMENTED - enumerate_all_push_constants");
-        Vec::new()
+    fn enumerate_all_push_constants(module: &super::ShaderModule) -> Vec<u32> {
+        let mut push_constants: Vec<u32> = Vec::new();
+
+        if module.internal.push_constant_blocks.len() > 0 {
+            push_constants.reserve(module.internal.push_constant_blocks.len());
+            for push_constant_block in &module.internal.push_constant_blocks {
+                push_constants.push(push_constant_block.spirv_id);
+            }
+
+            push_constants.sort_by(|a, b| a.cmp(b));
+        }
+
+        push_constants
     }
 }
