@@ -6,10 +6,19 @@ use std::os::raw::c_char;
 pub const STARTING_WORD: usize = 5;
 pub const SPIRV_WORD_SIZE: usize = std::mem::size_of::<u32>();
 
-#[derive(Default, Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub(crate) struct NumberDecoration {
     pub word_offset: u32,
     pub value: u32,
+}
+
+impl Default for NumberDecoration {
+    fn default() -> NumberDecoration {
+        Self {
+            word_offset: 0,
+            value: std::u32::MAX,
+        }
+    }
 }
 
 #[derive(Default, Debug, Clone, Serialize, PartialEq)]
@@ -932,9 +941,116 @@ impl Parser {
     fn parse_descriptor_bindings(
         &mut self,
         _spv_words: &[u32],
-        _module: &mut super::ShaderModule,
+        module: &mut super::ShaderModule,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_descriptor_bindings");
+        let mut binding_nodes = Vec::with_capacity(16);
+
+        for node_index in 0..self.nodes.len() {
+            let node = &self.nodes[node_index];
+            if node.op != spirv_headers::Op::Variable
+                || (node.storage_class != spirv_headers::StorageClass::Uniform
+                    && node.storage_class != spirv_headers::StorageClass::UniformConstant)
+            {
+                continue;
+            }
+
+            if node.decorations.set.value == std::u32::MAX
+                || node.decorations.binding.value == std::u32::MAX
+            {
+                continue;
+            }
+
+            binding_nodes.push(node_index);
+        }
+
+        if binding_nodes.len() > 0 {
+            module
+                .internal
+                .descriptor_bindings
+                .reserve(binding_nodes.len());
+            for node_index in binding_nodes {
+                if let Some(type_index) = module.internal.find_type(self.nodes[node_index].type_id)
+                {
+                    // Resolve pointer types
+                    let resolved_type_index = if *module.internal.type_descriptions[type_index].op
+                        == spirv_headers::Op::TypePointer
+                    {
+                        if let Some(type_node_index) =
+                            self.find_node(module.internal.type_descriptions[type_index].id)
+                        {
+                            let type_node = &self.nodes[type_node_index];
+                            if let Some(pointer_type_index) =
+                                module.internal.find_type(type_node.type_id)
+                            {
+                                pointer_type_index
+                            } else {
+                                return Err("Invalid SPIR-V ID reference".into());
+                            }
+                        } else {
+                            return Err("Invalid SPIR-V ID reference".into());
+                        }
+                    } else {
+                        type_index
+                    };
+
+                    let type_description = &module.internal.type_descriptions[resolved_type_index];
+
+                    let mut count = 1;
+                    for dim_index in 0..type_description.traits.array.dims.len() {
+                        count *= type_description.traits.array.dims[dim_index];
+                    }
+
+                    let is_sampled_image = (type_description.type_flags
+                        & crate::types::ReflectTypeFlags::SAMPLED_MASK)
+                        == crate::types::ReflectTypeFlags::SAMPLED_MASK;
+                    let is_external_image = (type_description.type_flags
+                        & crate::types::ReflectTypeFlags::EXTERNAL_MASK)
+                        == crate::types::ReflectTypeFlags::EXTERNAL_IMAGE;
+
+                    let node = &self.nodes[node_index];
+                    module.internal.descriptor_bindings.push(
+                        crate::types::ReflectDescriptorBinding {
+                            spirv_id: node.result_id,
+                            word_offset: (
+                                node.decorations.binding.word_offset,
+                                node.decorations.set.word_offset,
+                            ),
+                            name: node.name.to_owned(),
+                            descriptor_type: crate::types::ReflectDescriptorType::Undefined,
+                            binding: node.decorations.binding.value,
+                            input_attachment_index: node.decorations.input_attachment_index.value,
+                            set: node.decorations.set.value,
+                            count,
+                            uav_counter_id: node.decorations.uav_counter_buffer.value,
+                            //type_description: Some(type_description.clone()),
+                            type_description: Some(resolved_type_index),
+                            resource_type: crate::types::ReflectResourceTypeFlags::UNDEFINED,
+                            block: crate::types::ReflectBlockVariable::default(),
+                            image: if is_external_image || is_sampled_image {
+                                type_description.traits.image.clone()
+                            } else {
+                                crate::types::ReflectImageTraits::default()
+                            },
+                            array: crate::types::ReflectBindingArrayTraits {
+                                dims: type_description.traits.array.dims.clone(),
+                            },
+                            uav_counter_binding: None,
+                        },
+                    );
+                } else {
+                    return Err("Invalid SPIR-V ID reference".into());
+                }
+            }
+
+            module.internal.descriptor_bindings.sort_by(|a, b| {
+                let a_binding = a.binding as i32;
+                let b_binding = b.binding as i32;
+                let a_spirv_id = a.spirv_id as i32;
+                let b_spirv_id = b.spirv_id as i32;
+                Ord::cmp(&a_binding, &b_binding).then(Ord::cmp(&a_spirv_id, &b_spirv_id))
+            });
+        }
+
         Ok(())
     }
 
