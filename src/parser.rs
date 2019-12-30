@@ -541,6 +541,15 @@ impl Parser {
             crate::types::ReflectTypeDescription::default(),
         );
 
+        if type_description.id == std::u32::MAX {
+            type_description.id = self.nodes[node_index].result_id;
+            type_description.op = crate::types::ReflectOp(self.nodes[node_index].op);
+            type_description.decoration_flags = crate::types::ReflectDecorationFlags::NONE;
+        }
+
+        // TODO
+        //type_description.decoration_flags |= self.apply_decorations(&self.nodes[node_index].decorations)?;
+
         match self.nodes[node_index].op {
             spirv_headers::Op::TypeOpaque => {}
             spirv_headers::Op::TypeVoid => {

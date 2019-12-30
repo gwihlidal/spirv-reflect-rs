@@ -9,7 +9,7 @@ mod tests {
         let ps_data = include_bytes!("./ImGuiPs.spirv");
         ShaderModule::load_u8_data(ps_data).unwrap();
     }
-
+    /*
     #[test]
     fn enumerate_sets() {
         let ps_data = include_bytes!("./ImGuiPs.spirv");
@@ -32,5 +32,5 @@ mod tests {
         let _module = ShaderModule::load_u8_data(ps_data).unwrap();
 
         //
-    }
+    }*/
 }

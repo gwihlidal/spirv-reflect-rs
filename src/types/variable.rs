@@ -110,7 +110,7 @@ impl From<Option<spirv_headers::Dim>> for ReflectDimension {
     }
 }
 
-#[derive(Default, Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct ReflectTypeDescription {
     pub id: u32,
     #[serde(skip_serializing)]
@@ -122,6 +122,22 @@ pub struct ReflectTypeDescription {
     pub decoration_flags: ReflectDecorationFlags,
     pub traits: ReflectTypeDescriptionTraits,
     pub members: Vec<ReflectTypeDescription>,
+}
+
+impl Default for ReflectTypeDescription {
+    fn default() -> Self {
+        ReflectTypeDescription {
+            id: std::u32::MAX,
+            op: ReflectOp::default(),
+            type_name: String::new(),
+            struct_member_name: String::new(),
+            storage_class: ReflectStorageClass::default(),
+            type_flags: ReflectTypeFlags::default(),
+            decoration_flags: ReflectDecorationFlags::default(),
+            traits: ReflectTypeDescriptionTraits::default(),
+            members: Vec::new(),
+        }
+    }
 }
 
 #[derive(Default, Debug, Clone, Serialize, PartialEq)]
