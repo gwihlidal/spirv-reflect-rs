@@ -213,7 +213,7 @@ pub struct ReflectInterfaceVariable {
     pub semantic: String,
     pub decoration_flags: ReflectDecorationFlags,
     #[serde(skip_serializing)]
-    pub built_in: ReflectBuiltIn, // TODO: Serialization support
+    pub built_in: Option<ReflectBuiltIn>, // TODO: Serialization support
     pub numeric: ReflectNumericTraits,
     pub array: ReflectArrayTraits,
     pub members: Vec<ReflectInterfaceVariable>,

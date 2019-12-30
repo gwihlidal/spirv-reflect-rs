@@ -879,12 +879,46 @@ impl Parser {
 
     fn parse_interface_variable(
         &self,
-        _module: &super::ShaderModule,
-        _built_in: &mut bool,
-        _type_decorations: &Decorations,
-        _type_description: &crate::types::ReflectTypeDescription,
+        module: &super::ShaderModule,
+        built_in: &mut bool,
+        variable: &mut crate::types::variable::ReflectInterfaceVariable,
+        type_decorations: &Decorations,
+        type_description: &crate::types::ReflectTypeDescription,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_interface_variable");
+        if let Some(type_node_index) = self.find_node(type_description.id) {
+            let type_node = &self.nodes[type_node_index];
+
+            variable.members.reserve(type_description.members.len());
+            for member_index in 0..type_node.member_count as usize {
+                let member_decorations = &type_node.member_decorations[member_index];
+                let member_type = &type_description.members[member_index];
+                let mut member_variable = crate::types::ReflectInterfaceVariable::default();
+                self.parse_interface_variable(
+                    &module,
+                    built_in,
+                    &mut member_variable,
+                    &member_decorations,
+                    &member_type,
+                )?;
+                variable.members.push(member_variable);
+            }
+
+            if *type_description.op == spirv_headers::Op::TypeArray {
+                variable.array = type_description.traits.array.clone();
+            }
+
+            if let Some(ref built_in) = type_decorations.built_in {
+                variable.built_in = Some(crate::types::ReflectBuiltIn(*built_in));
+            }
+
+            variable.name = type_node.name.to_owned();
+            variable.decoration_flags = Self::apply_decorations(&type_decorations)?;
+            variable.numeric = type_description.traits.numeric.clone();
+            variable.format = Self::parse_format(&type_description)?;
+        } else {
+            return Err("Invalid SPIR-V ID reference".into());
+        }
+
         Ok(())
     }
 
@@ -973,7 +1007,7 @@ impl Parser {
                             variable.location = node.decorations.location.value;
                             variable.word_offset = node.decorations.location.word_offset;
                             if let Some(built_in) = node.decorations.built_in {
-                                variable.built_in = crate::types::ReflectBuiltIn(built_in);
+                                variable.built_in = Some(crate::types::ReflectBuiltIn(built_in));
                             }
 
                             match variable.storage_class {
