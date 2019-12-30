@@ -39,7 +39,7 @@ impl ShaderModule {
         self.internal.generator
     }
 
-    pub fn get_shader_stage(&self) -> types::ReflectShaderStageFlags {
+    pub fn get_shader_stage(&self) -> types::ReflectShaderStage {
         self.internal.shader_stage
     }
 

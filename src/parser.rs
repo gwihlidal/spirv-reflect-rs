@@ -748,31 +748,41 @@ impl Parser {
                 spirv_headers::ExecutionModel::from_u32(spv_words[word_offset + 1]);
             let shader_stage = match spirv_execution_model {
                 Some(spirv_headers::ExecutionModel::Vertex) => {
-                    crate::types::ReflectShaderStageFlags::VERTEX
+                    crate::types::ReflectShaderStage::Vertex
                 }
                 Some(spirv_headers::ExecutionModel::TessellationControl) => {
-                    crate::types::ReflectShaderStageFlags::TESSELLATION_CONTROL
+                    crate::types::ReflectShaderStage::TessellationControl
                 }
                 Some(spirv_headers::ExecutionModel::TessellationEvaluation) => {
-                    crate::types::ReflectShaderStageFlags::TESSELLATION_EVALUATION
+                    crate::types::ReflectShaderStage::TessellationEvaluation
                 }
                 Some(spirv_headers::ExecutionModel::Geometry) => {
-                    crate::types::ReflectShaderStageFlags::GEOMETRY
+                    crate::types::ReflectShaderStage::Geometry
                 }
                 Some(spirv_headers::ExecutionModel::Fragment) => {
-                    crate::types::ReflectShaderStageFlags::FRAGMENT
+                    crate::types::ReflectShaderStage::Fragment
                 }
                 Some(spirv_headers::ExecutionModel::GLCompute) => {
-                    crate::types::ReflectShaderStageFlags::COMPUTE
+                    crate::types::ReflectShaderStage::Compute
                 }
-                // TODO:
-                /*spirv_headers::ExecutionModel::RayGenerationNV => crate::types::ReflectShaderStageFlags::RAYGEN_BIT_NV,
-                spirv_headers::ExecutionModel::IntersectionNV => crate::types::ReflectShaderStageFlags::INTERSECTION_BIT_NV,
-                spirv_headers::ExecutionModel::AnyHitNV => crate::types::ReflectShaderStageFlags::ANY_HIT_BIT_NV,
-                spirv_headers::ExecutionModel::ClosestHitNV => crate::types::ReflectShaderStageFlags::CLOSEST_HIT_BIT_NV,
-                spirv_headers::ExecutionModel::MissNV => crate::types::ReflectShaderStageFlags::MISS_BIT_NV,
-                spirv_headers::ExecutionModel::CallableNV => crate::types::ReflectShaderStageFlags::CALLABLE_BIT_NV,*/
-                _ => crate::types::ReflectShaderStageFlags::UNDEFINED,
+                Some(spirv_headers::ExecutionModel::Kernel) => {
+                    crate::types::ReflectShaderStage::Kernel
+                }
+                _ => {
+                    // TODO: Get NV support in spirv_headers. For now, parse it directly from raw
+                    // https://www.khronos.org/registry/spir-v/specs/unified1/SPIRV.html#_a_id_execution_model_a_execution_model
+                    match spv_words[word_offset + 1] {
+                        5267 => crate::types::ReflectShaderStage::TaskNV,
+                        5268 => crate::types::ReflectShaderStage::MeshNV,
+                        5313 => crate::types::ReflectShaderStage::RayGenerationNV,
+                        5314 => crate::types::ReflectShaderStage::IntersectionNV,
+                        5315 => crate::types::ReflectShaderStage::AnyHitNV,
+                        5316 => crate::types::ReflectShaderStage::ClosestHitNV,
+                        5317 => crate::types::ReflectShaderStage::MissNV,
+                        5318 => crate::types::ReflectShaderStage::CallableNV,
+                        _ => crate::types::ReflectShaderStage::Undefined,
+                    }
+                }
             };
 
             // The name string length determines the next operand offset.

@@ -51,28 +51,29 @@ impl Default for ReflectTypeFlags {
     }
 }
 
-bitflags! {
-    #[derive(Serialize)]
-    pub struct ReflectShaderStageFlags: u32 {
-        const UNDEFINED = 0x0000_0000;
-        const VERTEX = 0x0000_0001;
-        const TESSELLATION_CONTROL = 0x0000_0002;
-        const TESSELLATION_EVALUATION = 0x0000_0004;
-        const GEOMETRY = 0x0000_0008;
-        const FRAGMENT = 0x0000_0010;
-        const COMPUTE = 0x0000_0020;
-        const RAYGEN_BIT_NV = 256;
-        const ANY_HIT_BIT_NV = 512;
-        const CLOSEST_HIT_BIT_NV = 1024;
-        const MISS_BIT_NV = 2048;
-        const INTERSECTION_BIT_NV = 4096;
-        const CALLABLE_BIT_NV = 8192;
-    }
+#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
+pub enum ReflectShaderStage {
+    Undefined,
+    Vertex,
+    TessellationControl,
+    TessellationEvaluation,
+    Geometry,
+    Fragment,
+    Compute,
+    Kernel,
+    TaskNV,
+    MeshNV,
+    RayGenerationNV,
+    IntersectionNV,
+    AnyHitNV,
+    ClosestHitNV,
+    MissNV,
+    CallableNV,
 }
 
-impl Default for ReflectShaderStageFlags {
+impl Default for ReflectShaderStage {
     fn default() -> Self {
-        ReflectShaderStageFlags::UNDEFINED
+        ReflectShaderStage::Undefined
     }
 }
 
@@ -171,7 +172,7 @@ pub struct ReflectEntryPoint {
     pub id: u32,
     #[serde(skip_serializing)]
     pub spirv_execution_model: Option<spirv_headers::ExecutionModel>, // TODO: Serialization support
-    pub shader_stage: ReflectShaderStageFlags,
+    pub shader_stage: ReflectShaderStage,
     pub input_variables: Vec<ReflectInterfaceVariable>,
     pub output_variables: Vec<ReflectInterfaceVariable>,
     pub descriptor_sets: Vec<ReflectDescriptorSet>,
