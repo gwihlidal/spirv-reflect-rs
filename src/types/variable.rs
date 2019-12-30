@@ -95,6 +95,21 @@ impl Default for ReflectDimension {
     }
 }
 
+impl From<Option<spirv_headers::Dim>> for ReflectDimension {
+    fn from(raw: Option<spirv_headers::Dim>) -> ReflectDimension {
+        match raw {
+            Some(spirv_headers::Dim::Dim1D) => ReflectDimension::Type1d,
+            Some(spirv_headers::Dim::Dim2D) => ReflectDimension::Type2d,
+            Some(spirv_headers::Dim::Dim3D) => ReflectDimension::Type3d,
+            Some(spirv_headers::Dim::DimCube) => ReflectDimension::Cube,
+            Some(spirv_headers::Dim::DimRect) => ReflectDimension::Rect,
+            Some(spirv_headers::Dim::DimBuffer) => ReflectDimension::Buffer,
+            Some(spirv_headers::Dim::DimSubpassData) => ReflectDimension::SubPassData,
+            _ => ReflectDimension::Undefined,
+        }
+    }
+}
+
 #[derive(Default, Debug, Clone, Serialize, PartialEq)]
 pub struct ReflectTypeDescription {
     pub id: u32,
@@ -145,6 +160,31 @@ pub enum ReflectStorageClass {
 impl Default for ReflectStorageClass {
     fn default() -> Self {
         ReflectStorageClass::Undefined
+    }
+}
+
+impl From<Option<spirv_headers::StorageClass>> for ReflectStorageClass {
+    fn from(raw: Option<spirv_headers::StorageClass>) -> ReflectStorageClass {
+        match raw {
+            Some(spirv_headers::StorageClass::UniformConstant) => {
+                ReflectStorageClass::UniformConstant
+            }
+            Some(spirv_headers::StorageClass::Input) => ReflectStorageClass::Input,
+            Some(spirv_headers::StorageClass::Uniform) => ReflectStorageClass::Uniform,
+            Some(spirv_headers::StorageClass::Output) => ReflectStorageClass::Output,
+            Some(spirv_headers::StorageClass::Workgroup) => ReflectStorageClass::WorkGroup,
+            Some(spirv_headers::StorageClass::CrossWorkgroup) => {
+                ReflectStorageClass::CrossWorkGroup
+            }
+            Some(spirv_headers::StorageClass::Private) => ReflectStorageClass::Private,
+            Some(spirv_headers::StorageClass::Function) => ReflectStorageClass::Function,
+            Some(spirv_headers::StorageClass::Generic) => ReflectStorageClass::Generic,
+            Some(spirv_headers::StorageClass::PushConstant) => ReflectStorageClass::PushConstant,
+            Some(spirv_headers::StorageClass::AtomicCounter) => ReflectStorageClass::AtomicCounter,
+            Some(spirv_headers::StorageClass::Image) => ReflectStorageClass::Image,
+            Some(spirv_headers::StorageClass::StorageBuffer) => ReflectStorageClass::StorageBuffer,
+            _ => ReflectStorageClass::Undefined,
+        }
     }
 }
 

@@ -529,19 +529,180 @@ impl Parser {
 
     fn parse_type(
         &mut self,
-        _module: &mut super::ShaderModule,
-        _node_index: usize,
-        _struct_member_decorations: Option<&Decorations>,
-        _type_description: &mut crate::types::ReflectTypeDescription,
+        spv_words: &[u32],
+        module: &mut super::ShaderModule,
+        node_index: usize,
+        struct_member_decorations: Option<(/* node */ usize, /* member */ usize)>,
+        type_description: &mut crate::types::ReflectTypeDescription,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_type");
-        //self.parse_type(&mut module, &node, None, &mut type_description)?;
+        let word_offset = self.nodes[node_index].word_offset as usize;
+        type_description.members.resize(
+            self.nodes[node_index].member_count as usize,
+            crate::types::ReflectTypeDescription::default(),
+        );
+
+        match self.nodes[node_index].op {
+            spirv_headers::Op::TypeOpaque => {}
+            spirv_headers::Op::TypeVoid => {
+                type_description.type_flags |= crate::types::ReflectTypeFlags::VOID
+            }
+            spirv_headers::Op::TypeBool => {
+                type_description.type_flags |= crate::types::ReflectTypeFlags::BOOL
+            }
+            spirv_headers::Op::TypeSampler => {
+                type_description.type_flags |= crate::types::ReflectTypeFlags::EXTERNAL_SAMPLER
+            }
+            spirv_headers::Op::TypeInt => {
+                type_description.type_flags |= crate::types::ReflectTypeFlags::INT;
+                type_description.traits.numeric.scalar.width = spv_words[word_offset + 2];
+                type_description.traits.numeric.scalar.signedness = spv_words[word_offset + 3];
+            }
+            spirv_headers::Op::TypeFloat => {
+                type_description.type_flags |= crate::types::ReflectTypeFlags::FLOAT;
+                type_description.traits.numeric.scalar.width = spv_words[word_offset + 2];
+            }
+            spirv_headers::Op::TypeVector => {
+                type_description.type_flags |= crate::types::ReflectTypeFlags::VECTOR;
+                let component_type_id = spv_words[word_offset + 2];
+                type_description.traits.numeric.vector.component_count = spv_words[word_offset + 3];
+                if let Some(next_node_index) = self.find_node(component_type_id) {
+                    self.parse_type(&spv_words, module, next_node_index, None, type_description)?;
+                } else {
+                    return Err("Invalid SPIR-V ID reference".into());
+                }
+            }
+            spirv_headers::Op::TypeMatrix => {
+                type_description.type_flags |= crate::types::ReflectTypeFlags::MATRIX;
+                let column_type_id = spv_words[word_offset + 2];
+                type_description.traits.numeric.matrix.column_count = spv_words[word_offset + 3];
+                if let Some(next_node_index) = self.find_node(column_type_id) {
+                    self.parse_type(&spv_words, module, next_node_index, None, type_description)?;
+                } else {
+                    return Err("Invalid SPIR-V ID reference".into());
+                }
+                type_description.traits.numeric.matrix.row_count =
+                    type_description.traits.numeric.vector.component_count;
+                if let Some(ref struct_member_index) = struct_member_decorations {
+                    let member_node = &self.nodes[struct_member_index.0];
+                    let member_decorations = &member_node.member_decorations[struct_member_index.1];
+                    type_description.traits.numeric.matrix.stride =
+                        member_decorations.matrix_stride;
+                } else {
+                    type_description.traits.numeric.matrix.stride =
+                        self.nodes[node_index].decorations.matrix_stride;
+                }
+            }
+            spirv_headers::Op::TypeImage => {
+                type_description.type_flags |= crate::types::ReflectTypeFlags::EXTERNAL_IMAGE;
+                type_description.traits.image.dim =
+                    spirv_headers::Dim::from_u32(spv_words[word_offset + 3]).into();
+                type_description.traits.image.depth = spv_words[word_offset + 4];
+                type_description.traits.image.arrayed = spv_words[word_offset + 5];
+                type_description.traits.image.ms = spv_words[word_offset + 6];
+                type_description.traits.image.sampled = spv_words[word_offset + 7];
+                type_description.traits.image.image_format =
+                    spirv_headers::ImageFormat::from_u32(spv_words[word_offset + 8]).into();
+            }
+            spirv_headers::Op::TypeSampledImage => {
+                type_description.type_flags |=
+                    crate::types::ReflectTypeFlags::EXTERNAL_SAMPLED_IMAGE;
+                let image_type_id = spv_words[word_offset + 2];
+                if let Some(next_node_index) = self.find_node(image_type_id) {
+                    self.parse_type(&spv_words, module, next_node_index, None, type_description)?;
+                } else {
+                    return Err("Invalid SPIR-V ID reference".into());
+                }
+            }
+            spirv_headers::Op::TypeArray => {
+                type_description.type_flags |= crate::types::ReflectTypeFlags::ARRAY;
+                let element_type_id = spv_words[word_offset + 2];
+                let length_id = spv_words[word_offset + 3];
+                type_description.traits.array.stride =
+                    self.nodes[node_index].decorations.array_stride;
+                if let Some(length_node_index) = self.find_node(length_id) {
+                    let length = spv_words[self.nodes[length_node_index].word_offset as usize + 3];
+                    type_description.traits.array.dims.push(length);
+                    if let Some(next_node_index) = self.find_node(element_type_id) {
+                        self.parse_type(
+                            &spv_words,
+                            module,
+                            next_node_index,
+                            None,
+                            type_description,
+                        )?;
+                    } else {
+                        return Err("Invalid SPIR-V ID reference".into());
+                    }
+                } else {
+                    return Err("Invalid SPIR-V ID reference".into());
+                }
+            }
+            spirv_headers::Op::TypeRuntimeArray => {
+                let element_type_id = spv_words[word_offset + 2];
+                if let Some(next_node_index) = self.find_node(element_type_id) {
+                    self.parse_type(&spv_words, module, next_node_index, None, type_description)?;
+                } else {
+                    return Err("Invalid SPIR-V ID reference".into());
+                }
+            }
+            spirv_headers::Op::TypeStruct => {
+                type_description.type_flags |= crate::types::ReflectTypeFlags::STRUCT
+                    | crate::types::ReflectTypeFlags::EXTERNAL_BLOCK;
+                let mut member_index = 0;
+                for word_index in 2..self.nodes[node_index].word_count as usize {
+                    let member_id = spv_words[word_offset + word_index];
+                    if let Some(member_node_index) = self.find_node(member_id) {
+                        dbg!(&type_description.members);
+                        assert!(member_index < type_description.members.len());
+                        let mut member_type_description =
+                            &mut type_description.members[member_index];
+                        member_type_description.id = member_id;
+                        member_type_description.op =
+                            crate::types::ReflectOp(self.nodes[member_node_index].op);
+                        self.parse_type(
+                            &spv_words,
+                            module,
+                            member_node_index,
+                            Some((node_index, member_node_index)),
+                            &mut member_type_description,
+                        )?;
+                        member_type_description.struct_member_name =
+                            self.nodes[node_index].member_names[member_index].to_owned();
+                    } else {
+                        return Err("Invalid SPIR-V ID reference".into());
+                    }
+
+                    member_index += 1;
+                }
+            }
+            spirv_headers::Op::TypePointer => {
+                type_description.type_flags |= crate::types::ReflectTypeFlags::STRUCT
+                    | crate::types::ReflectTypeFlags::EXTERNAL_BLOCK;
+                type_description.storage_class =
+                    spirv_headers::StorageClass::from_u32(spv_words[word_offset + 2]).into();
+                if type_description.storage_class == crate::types::ReflectStorageClass::Undefined {
+                    return Err("Invalid SPIR-V ID reference".into());
+                }
+                let type_id = spv_words[word_offset + 3];
+                if let Some(next_node_index) = self.find_node(type_id) {
+                    self.parse_type(&spv_words, module, next_node_index, None, type_description)?;
+                } else {
+                    return Err("Invalid SPIR-V ID reference".into());
+                }
+            }
+            _ => {}
+        }
+
+        if type_description.type_name.is_empty() {
+            type_description.type_name = self.nodes[node_index].name.to_owned();
+        }
+
         Ok(())
     }
 
     fn parse_types(
         &mut self,
-        _spv_words: &[u32],
+        spv_words: &[u32],
         module: &mut super::ShaderModule,
     ) -> Result<(), String> {
         module.internal.type_descriptions.reserve(self.type_count);
@@ -549,9 +710,8 @@ impl Parser {
             if !self.nodes[node_index].is_type {
                 continue;
             }
-
             let mut type_description = crate::types::ReflectTypeDescription::default();
-            self.parse_type(module, node_index, None, &mut type_description)?;
+            self.parse_type(&spv_words, module, node_index, None, &mut type_description)?;
             module.internal.type_descriptions.push(type_description);
         }
         Ok(())
