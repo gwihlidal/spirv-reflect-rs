@@ -811,6 +811,72 @@ impl Parser {
         Ok(())
     }
 
+    fn parse_format(
+        type_description: &crate::types::ReflectTypeDescription,
+    ) -> Result<crate::types::ReflectFormat, String> {
+        let is_signed = type_description.traits.numeric.scalar.signedness > 0;
+        let is_int_type = type_description
+            .type_flags
+            .contains(crate::types::ReflectTypeFlags::INT)
+            | type_description
+                .type_flags
+                .contains(crate::types::ReflectTypeFlags::BOOL);
+        if type_description
+            .type_flags
+            .contains(crate::types::ReflectTypeFlags::VECTOR)
+        {
+            let component_count = type_description.traits.numeric.vector.component_count;
+            if type_description
+                .type_flags
+                .contains(crate::types::ReflectTypeFlags::FLOAT)
+            {
+                match component_count {
+                    4 => {
+                        return Ok(crate::types::ReflectFormat::R32G32B32A32_SFLOAT);
+                    }
+                    3 => {
+                        return Ok(crate::types::ReflectFormat::R32G32B32_SFLOAT);
+                    }
+                    2 => {
+                        return Ok(crate::types::ReflectFormat::R32G32_SFLOAT);
+                    }
+                    _ => {}
+                }
+            } else if is_int_type {
+                match component_count {
+                    4 => {
+                        return Ok(crate::types::ReflectFormat::R32G32B32A32_UINT);
+                    }
+                    3 => {
+                        return Ok(crate::types::ReflectFormat::R32G32B32_UINT);
+                    }
+                    2 => {
+                        return Ok(crate::types::ReflectFormat::R32G32_UINT);
+                    }
+                    _ => {}
+                }
+            }
+        } else if type_description
+            .type_flags
+            .contains(crate::types::ReflectTypeFlags::FLOAT)
+        {
+            return Ok(crate::types::ReflectFormat::R32_SFLOAT);
+        } else if is_int_type {
+            if is_signed {
+                return Ok(crate::types::ReflectFormat::R32_SINT);
+            } else {
+                return Ok(crate::types::ReflectFormat::R32_UINT);
+            }
+        } else if type_description
+            .type_flags
+            .contains(crate::types::ReflectTypeFlags::STRUCT)
+        {
+            return Ok(crate::types::ReflectFormat::Undefined);
+        }
+
+        Err("Invalid type format".into())
+    }
+
     fn parse_interface_variable(
         &self,
         _module: &super::ShaderModule,
