@@ -73,13 +73,13 @@ impl Default for ParserImageTraits {
 }
 */
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub(crate) struct ParserNode {
     pub result_id: u32,
-    pub op: Option<spirv_headers::Op>,
+    pub op: spirv_headers::Op,
     pub result_type_id: u32,
     pub type_id: u32,
-    pub storage_class: Option<spirv_headers::StorageClass>,
+    pub storage_class: spirv_headers::StorageClass,
     pub word_offset: u32,
     pub word_count: u32,
     pub is_type: bool,
@@ -93,29 +93,28 @@ pub(crate) struct ParserNode {
     pub member_decorations: Vec<Decorations>,
 }
 
-/*
 impl Default for ParserNode {
     fn default() -> ParserNode {
         Self {
             result_id: 0,
-            op: None,
+            op: spirv_headers::Op::Undef,
             result_type_id: 0,
             type_id: 0,
-            storage_class: None,
+            storage_class: spirv_headers::StorageClass::UniformConstant,
             word_offset: 0,
             word_count: 0,
             is_type: false,
-            array_traits: types::ReflectArrayTraits::default(),
-            image_traits: types::ReflectImageTraits::default(),
+            array_traits: ParserArrayTraits::default(),
+            image_traits: ParserImageTraits::default(),
             image_type_id: 0,
             name: String::new(),
-            decorations:
+            decorations: Decorations::default(),
             member_count: 0,
             member_names: Vec::new(),
             member_decorations: Vec::new(),
         }
     }
-}*/
+}
 
 #[derive(Default, Debug)]
 pub(crate) struct ParserString {
@@ -253,149 +252,163 @@ impl Parser {
                 let mut node = &mut self.nodes[node_index];
                 node.word_count = (word >> 16u32) & 0x0000FFFF;
                 node.word_offset = word_index as u32;
-                node.op = spirv_headers::Op::from_u32(word & 0x0000FFFF);
+                if let Some(op) = spirv_headers::Op::from_u32(word & 0x0000FFFF) {
+                    node.op = op;
+                } else {
+                    return Err("Invalid SPIR-V op!".into());
+                }
             }
 
-            if let Some(op) = self.nodes[node_index].op {
-                match op {
-                    spirv_headers::Op::String => self.string_count += 1,
-                    spirv_headers::Op::Source => {
-                        module.internal.source_language =
-                            spirv_headers::SourceLanguage::from_u32(spv_words[word_index + 1]);
-                        module.internal.source_language_version = spv_words[word_index + 2];
-                        if self.nodes[node_index].word_count >= 4 {
-                            module.internal.source_file_id = spv_words[word_index + 3];
-                        }
+            match self.nodes[node_index].op {
+                spirv_headers::Op::String => self.string_count += 1,
+                spirv_headers::Op::Source => {
+                    module.internal.source_language =
+                        spirv_headers::SourceLanguage::from_u32(spv_words[word_index + 1]);
+                    module.internal.source_language_version = spv_words[word_index + 2];
+                    if self.nodes[node_index].word_count >= 4 {
+                        module.internal.source_file_id = spv_words[word_index + 3];
                     }
-                    spirv_headers::Op::EntryPoint => self.entry_point_count += 1,
-                    spirv_headers::Op::Name | spirv_headers::Op::MemberName => {
-                        let member_offset: usize = if op == spirv_headers::Op::MemberName {
+                }
+                spirv_headers::Op::EntryPoint => self.entry_point_count += 1,
+                spirv_headers::Op::Name | spirv_headers::Op::MemberName => {
+                    let member_offset: usize =
+                        if self.nodes[node_index].op == spirv_headers::Op::MemberName {
                             1
                         } else {
                             0
                         };
-                        let name_start = word_index + member_offset + 2;
-                        let mut node = &mut self.nodes[node_index];
-                        node.name = unsafe {
-                            let name_ptr =
-                                spv_words.as_ptr().offset(name_start as isize) as *const c_char;
-                            let name_str = CStr::from_ptr(name_ptr);
-                            name_str.to_str().unwrap().to_owned()
-                        };
-                        println!("Name: {}", &self.nodes[node_index].name);
-                    }
-                    spirv_headers::Op::TypeStruct => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.member_count = node.word_count - 2;
-                        node.result_id = spv_words[word_index + 1];
-                        node.is_type = true;
-                    }
-                    spirv_headers::Op::TypeVoid
-                    | spirv_headers::Op::TypeBool
-                    | spirv_headers::Op::TypeInt
-                    | spirv_headers::Op::TypeFloat
-                    | spirv_headers::Op::TypeVector
-                    | spirv_headers::Op::TypeMatrix
-                    | spirv_headers::Op::TypeSampler
-                    | spirv_headers::Op::TypeOpaque
-                    | spirv_headers::Op::TypeFunction
-                    | spirv_headers::Op::TypeEvent
-                    | spirv_headers::Op::TypeDeviceEvent
-                    | spirv_headers::Op::TypeReserveId
-                    | spirv_headers::Op::TypeQueue
-                    | spirv_headers::Op::TypePipe
-                    | spirv_headers::Op::TypeAccelerationStructureNV => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.result_id = spv_words[word_index + 1];
-                        node.is_type = true;
-                    }
-                    spirv_headers::Op::TypeImage => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.result_id = spv_words[word_index + 1];
-                        node.image_traits.sampled_type_id = spv_words[word_index + 2];
-                        node.image_traits.dim =
-                            spirv_headers::Dim::from_u32(spv_words[word_index + 3]);
-                        node.image_traits.depth = spv_words[word_index + 4];
-                        node.image_traits.arrayed = spv_words[word_index + 5];
-                        node.image_traits.ms = spv_words[word_index + 6];
-                        node.image_traits.sampled = spv_words[word_index + 7];
-                        node.image_traits.image_format =
-                            spirv_headers::ImageFormat::from_u32(spv_words[word_index + 8]);
-                        node.is_type = true;
-                    }
-                    spirv_headers::Op::TypeSampledImage => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.result_id = spv_words[word_index + 1];
-                        node.image_type_id = spv_words[word_index + 2];
-                        node.is_type = true;
-                    }
-                    spirv_headers::Op::TypeArray => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.result_id = spv_words[word_index + 1];
-                        node.array_traits.element_type_id = spv_words[word_index + 2];
-                        node.array_traits.length_id = spv_words[word_index + 3];
-                        node.is_type = true;
-                    }
-                    spirv_headers::Op::TypeRuntimeArray => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.result_id = spv_words[word_index + 1];
-                        node.array_traits.element_type_id = spv_words[word_index + 2];
-                        node.is_type = true;
-                    }
-                    spirv_headers::Op::TypePointer => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.result_id = spv_words[word_index + 1];
-                        node.storage_class =
-                            spirv_headers::StorageClass::from_u32(spv_words[word_index + 2]);
-                        node.type_id = spv_words[word_index + 3];
-                        node.is_type = true;
-                    }
-                    spirv_headers::Op::TypeForwardPointer => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.result_id = spv_words[word_index + 1];
-                        node.storage_class =
-                            spirv_headers::StorageClass::from_u32(spv_words[word_index + 2]);
-                        node.is_type = true;
-                    }
-                    spirv_headers::Op::ConstantTrue
-                    | spirv_headers::Op::ConstantFalse
-                    | spirv_headers::Op::Constant
-                    | spirv_headers::Op::ConstantComposite
-                    | spirv_headers::Op::ConstantSampler
-                    | spirv_headers::Op::ConstantNull => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.result_type_id = spv_words[word_index + 1];
-                        node.result_id = spv_words[word_index + 2];
-                    }
-                    spirv_headers::Op::Variable => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.type_id = spv_words[word_index + 1];
-                        node.result_id = spv_words[word_index + 2];
-                        node.storage_class =
-                            spirv_headers::StorageClass::from_u32(spv_words[word_index + 3]);
-                    }
-                    spirv_headers::Op::Load => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.result_type_id = spv_words[word_index + 1];
-                        node.result_id = spv_words[word_index + 2];
-                    }
-                    spirv_headers::Op::Function => {
-                        let mut node = &mut self.nodes[node_index];
-                        node.result_id = spv_words[word_index + 2];
-                        function_node = node_index;
-                    }
-                    spirv_headers::Op::Label => {
-                        if function_node != std::usize::MAX {
-                            let mut node = &mut self.nodes[function_node];
-                            node.result_id = spv_words[node.word_offset as usize + 2];
-                            self.function_count += 1;
-                        }
-                    }
-                    spirv_headers::Op::FunctionEnd => function_node = std::usize::MAX,
-                    _ => {}
+                    let name_start = word_index + member_offset + 2;
+                    let mut node = &mut self.nodes[node_index];
+                    node.name = unsafe {
+                        let name_ptr =
+                            spv_words.as_ptr().offset(name_start as isize) as *const c_char;
+                        let name_str = CStr::from_ptr(name_ptr);
+                        name_str.to_str().unwrap().to_owned()
+                    };
                 }
-            } else {
-                return Err("Invalid SPIR-V op!".to_string());
+                spirv_headers::Op::TypeStruct => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.member_count = node.word_count - 2;
+                    node.result_id = spv_words[word_index + 1];
+                    node.is_type = true;
+                }
+                spirv_headers::Op::TypeVoid
+                | spirv_headers::Op::TypeBool
+                | spirv_headers::Op::TypeInt
+                | spirv_headers::Op::TypeFloat
+                | spirv_headers::Op::TypeVector
+                | spirv_headers::Op::TypeMatrix
+                | spirv_headers::Op::TypeSampler
+                | spirv_headers::Op::TypeOpaque
+                | spirv_headers::Op::TypeFunction
+                | spirv_headers::Op::TypeEvent
+                | spirv_headers::Op::TypeDeviceEvent
+                | spirv_headers::Op::TypeReserveId
+                | spirv_headers::Op::TypeQueue
+                | spirv_headers::Op::TypePipe
+                | spirv_headers::Op::TypeAccelerationStructureNV => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.result_id = spv_words[word_index + 1];
+                    node.is_type = true;
+                }
+                spirv_headers::Op::TypeImage => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.result_id = spv_words[word_index + 1];
+                    node.image_traits.sampled_type_id = spv_words[word_index + 2];
+                    node.image_traits.dim = spirv_headers::Dim::from_u32(spv_words[word_index + 3]);
+                    node.image_traits.depth = spv_words[word_index + 4];
+                    node.image_traits.arrayed = spv_words[word_index + 5];
+                    node.image_traits.ms = spv_words[word_index + 6];
+                    node.image_traits.sampled = spv_words[word_index + 7];
+                    node.image_traits.image_format =
+                        spirv_headers::ImageFormat::from_u32(spv_words[word_index + 8]);
+                    node.is_type = true;
+                }
+                spirv_headers::Op::TypeSampledImage => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.result_id = spv_words[word_index + 1];
+                    node.image_type_id = spv_words[word_index + 2];
+                    node.is_type = true;
+                }
+                spirv_headers::Op::TypeArray => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.result_id = spv_words[word_index + 1];
+                    node.array_traits.element_type_id = spv_words[word_index + 2];
+                    node.array_traits.length_id = spv_words[word_index + 3];
+                    node.is_type = true;
+                }
+                spirv_headers::Op::TypeRuntimeArray => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.result_id = spv_words[word_index + 1];
+                    node.array_traits.element_type_id = spv_words[word_index + 2];
+                    node.is_type = true;
+                }
+                spirv_headers::Op::TypePointer => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.result_id = spv_words[word_index + 1];
+                    if let Some(storage_class) =
+                        spirv_headers::StorageClass::from_u32(spv_words[word_index + 2])
+                    {
+                        node.storage_class = storage_class;
+                    } else {
+                        return Err("Invalid SPIR-V storage class!".into());
+                    }
+                    node.type_id = spv_words[word_index + 3];
+                    node.is_type = true;
+                }
+                spirv_headers::Op::TypeForwardPointer => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.result_id = spv_words[word_index + 1];
+                    if let Some(storage_class) =
+                        spirv_headers::StorageClass::from_u32(spv_words[word_index + 2])
+                    {
+                        node.storage_class = storage_class;
+                    } else {
+                        return Err("Invalid SPIR-V storage class!".into());
+                    }
+                    node.is_type = true;
+                }
+                spirv_headers::Op::ConstantTrue
+                | spirv_headers::Op::ConstantFalse
+                | spirv_headers::Op::Constant
+                | spirv_headers::Op::ConstantComposite
+                | spirv_headers::Op::ConstantSampler
+                | spirv_headers::Op::ConstantNull => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.result_type_id = spv_words[word_index + 1];
+                    node.result_id = spv_words[word_index + 2];
+                }
+                spirv_headers::Op::Variable => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.type_id = spv_words[word_index + 1];
+                    node.result_id = spv_words[word_index + 2];
+                    if let Some(storage_class) =
+                        spirv_headers::StorageClass::from_u32(spv_words[word_index + 3])
+                    {
+                        node.storage_class = storage_class;
+                    } else {
+                        return Err("Invalid SPIR-V storage class!".into());
+                    }
+                }
+                spirv_headers::Op::Load => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.result_type_id = spv_words[word_index + 1];
+                    node.result_id = spv_words[word_index + 2];
+                }
+                spirv_headers::Op::Function => {
+                    let mut node = &mut self.nodes[node_index];
+                    node.result_id = spv_words[word_index + 2];
+                    function_node = node_index;
+                }
+                spirv_headers::Op::Label => {
+                    if function_node != std::usize::MAX {
+                        let mut node = &mut self.nodes[function_node];
+                        node.result_id = spv_words[node.word_offset as usize + 2];
+                        self.function_count += 1;
+                    }
+                }
+                spirv_headers::Op::FunctionEnd => function_node = std::usize::MAX,
+                _ => {}
             }
 
             let node = &self.nodes[node_index];
@@ -417,28 +430,26 @@ impl Parser {
         if self.string_count > 0 && spv_words.len() > 0 && self.nodes.len() > 0 {
             self.strings.reserve(self.string_count);
             for node in &self.nodes {
-                if let Some(op) = node.op {
-                    if op != spirv_headers::Op::String {
-                        continue;
-                    }
-
-                    if self.strings.len() >= self.string_count {
-                        return Err("Count mismatch while parsing strings.".into());
-                    }
-
-                    let string_start = node.word_offset as usize + 2;
-                    let string_value = unsafe {
-                        let string_ptr =
-                            spv_words.as_ptr().offset(string_start as isize) as *const c_char;
-                        let string_str = CStr::from_ptr(string_ptr);
-                        string_str.to_str().unwrap().to_owned()
-                    };
-
-                    self.strings.push(ParserString {
-                        result_id: spv_words[node.word_offset as usize + 1],
-                        string: string_value,
-                    });
+                if node.op != spirv_headers::Op::String {
+                    continue;
                 }
+
+                if self.strings.len() >= self.string_count {
+                    return Err("Count mismatch while parsing strings.".into());
+                }
+
+                let string_start = node.word_offset as usize + 2;
+                let string_value = unsafe {
+                    let string_ptr =
+                        spv_words.as_ptr().offset(string_start as isize) as *const c_char;
+                    let string_str = CStr::from_ptr(string_ptr);
+                    string_str.to_str().unwrap().to_owned()
+                };
+
+                self.strings.push(ParserString {
+                    result_id: spv_words[node.word_offset as usize + 1],
+                    string: string_value,
+                });
             }
 
             for string in &self.strings {
@@ -468,9 +479,7 @@ impl Parser {
     ) -> Result<(), String> {
         for node_index in 0..self.nodes.len() {
             let op = &self.nodes[node_index].op;
-            if op != &Some(spirv_headers::Op::MemberName)
-                && op != &Some(spirv_headers::Op::MemberDecorate)
-            {
+            if op != &spirv_headers::Op::MemberName && op != &spirv_headers::Op::MemberDecorate {
                 continue;
             }
 
@@ -618,8 +627,8 @@ impl Parser {
                 if let Some(node_index) = self.find_node(*var_id) {
                     let node = &self.nodes[node_index];
                     match node.storage_class {
-                        Some(spirv_headers::StorageClass::Input) => input_count += 1,
-                        Some(spirv_headers::StorageClass::Output) => output_count += 1,
+                        spirv_headers::StorageClass::Input => input_count += 1,
+                        spirv_headers::StorageClass::Output => output_count += 1,
                         _ => {}
                     }
                 } else {
@@ -660,11 +669,11 @@ impl Parser {
                             let mut variable =
                                 crate::types::variable::ReflectInterfaceVariable::default();
                             match node.storage_class {
-                                Some(spirv_headers::StorageClass::Input) => {
+                                spirv_headers::StorageClass::Input => {
                                     variable.storage_class =
                                         crate::types::ReflectStorageClass::Input
                                 }
-                                Some(spirv_headers::StorageClass::Output) => {
+                                spirv_headers::StorageClass::Output => {
                                     variable.storage_class =
                                         crate::types::ReflectStorageClass::Output
                                 }
@@ -737,7 +746,7 @@ impl Parser {
         let push_constants = Self::enumerate_all_push_constants(module);
 
         for node in &self.nodes {
-            if node.op != Some(spirv_headers::Op::EntryPoint) {
+            if node.op != spirv_headers::Op::EntryPoint {
                 continue;
             }
 
