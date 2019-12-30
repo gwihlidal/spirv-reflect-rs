@@ -527,6 +527,46 @@ impl Parser {
         Ok(())
     }
 
+    fn apply_decorations(
+        decorations: &Decorations,
+    ) -> Result<crate::types::ReflectDecorationFlags, String> {
+        let mut flags = crate::types::ReflectDecorationFlags::NONE;
+
+        if decorations.is_block {
+            flags |= crate::types::ReflectDecorationFlags::BLOCK;
+        }
+
+        if decorations.is_buffer_block {
+            flags |= crate::types::ReflectDecorationFlags::BUFFER_BLOCK;
+        }
+
+        if decorations.is_row_major {
+            flags |= crate::types::ReflectDecorationFlags::ROW_MAJOR;
+        }
+
+        if decorations.is_column_major {
+            flags |= crate::types::ReflectDecorationFlags::COLUMN_MAJOR;
+        }
+
+        if decorations.built_in.is_some() {
+            flags |= crate::types::ReflectDecorationFlags::BUILT_IN;
+        }
+
+        if decorations.is_noperspective {
+            flags |= crate::types::ReflectDecorationFlags::NO_PERSPECTIVE;
+        }
+
+        if decorations.is_flat {
+            flags |= crate::types::ReflectDecorationFlags::FLAT;
+        }
+
+        if decorations.is_non_writable {
+            flags |= crate::types::ReflectDecorationFlags::NON_WRITABLE;
+        }
+
+        Ok(flags)
+    }
+
     fn parse_type(
         &mut self,
         spv_words: &[u32],
@@ -547,8 +587,8 @@ impl Parser {
             type_description.decoration_flags = crate::types::ReflectDecorationFlags::NONE;
         }
 
-        // TODO
-        //type_description.decoration_flags |= self.apply_decorations(&self.nodes[node_index].decorations)?;
+        type_description.decoration_flags |=
+            Self::apply_decorations(&self.nodes[node_index].decorations)?;
 
         match self.nodes[node_index].op {
             spirv_headers::Op::TypeOpaque => {}
