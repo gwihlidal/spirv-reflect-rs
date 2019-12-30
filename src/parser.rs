@@ -496,14 +496,14 @@ impl Parser {
         }
 
         for node in &mut self.nodes {
-            if node.member_count == 0 {
+            let member_count = node.member_count as usize;
+            if member_count == 0 {
                 continue;
             }
 
-            node.member_names
-                .resize(node.member_count as usize, String::new());
+            node.member_names.resize(member_count, String::new());
             node.member_decorations
-                .resize(node.member_count as usize, Decorations::default());
+                .resize(member_count, Decorations::default());
         }
 
         Ok(())
@@ -511,10 +511,30 @@ impl Parser {
 
     fn parse_names(
         &mut self,
-        _spv_words: &[u32],
+        spv_words: &[u32],
         _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_names");
+        for node_index in 0..self.nodes.len() {
+            let node_op = self.nodes[node_index].op;
+            if node_op != spirv_headers::Op::MemberName && node_op != spirv_headers::Op::Name {
+                continue;
+            }
+
+            let word_offset = self.nodes[node_index].word_offset as usize;
+            let target_id = spv_words[word_offset + 1];
+            if let Some(target_node_index) = self.find_node(target_id) {
+                let node_name = self.nodes[node_index].name.to_owned();
+                let mut target_node = &mut self.nodes[target_node_index];
+                if node_op == spirv_headers::Op::MemberName {
+                    let member_index = spv_words[word_offset + 2] as usize;
+                    target_node.member_names[member_index] = node_name;
+                } else {
+                    target_node.name = node_name;
+                }
+                dbg!(&target_node);
+            }
+        }
+
         Ok(())
     }
 
@@ -993,6 +1013,7 @@ impl Parser {
                             self.parse_interface_variable(
                                 &module,
                                 &mut built_in,
+                                &mut variable,
                                 &type_decorations,
                                 &type_description,
                             )?;
