@@ -40,6 +40,7 @@ bitflags! {
         const EXTERNAL_BLOCK = 524_288;
         const EXTERNAL_ACCELERATION_STRUCTURE_NV = 1_048_576;
         const EXTERNAL_MASK = 2_031_616;
+        const SAMPLED_MASK = 65536 | 262_144;
         const STRUCT = 268_435_456;
         const ARRAY = 536_870_912;
     }

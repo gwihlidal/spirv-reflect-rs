@@ -195,7 +195,7 @@ impl Parser {
 
         self.parse_types(spv_words, module)?;
         self.parse_descriptor_bindings(spv_words, module)?;
-        self.parse_descriptor_type(spv_words, module)?;
+        self.parse_descriptor_type(module)?;
         self.parse_counter_bindings(spv_words, module)?;
         self.parse_descriptor_blocks(spv_words, module)?;
         self.parse_push_constant_blocks(spv_words, module)?;
@@ -1054,12 +1054,112 @@ impl Parser {
         Ok(())
     }
 
-    fn parse_descriptor_type(
-        &mut self,
-        _spv_words: &[u32],
-        _module: &mut super::ShaderModule,
-    ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_descriptor_type");
+    fn parse_descriptor_type(&mut self, module: &mut super::ShaderModule) -> Result<(), String> {
+        const SAMPLED_IMAGE: u32 = 1;
+        const STORAGE_IMAGE: u32 = 2;
+        for binding_index in 0..module.internal.descriptor_bindings.len() {
+            let mut descriptor_binding = &mut module.internal.descriptor_bindings[binding_index];
+            if let Some(type_index) = descriptor_binding.type_description {
+                let type_description = &module.internal.type_descriptions[type_index];
+                match type_description.type_flags & crate::types::ReflectTypeFlags::EXTERNAL_MASK {
+                    crate::types::ReflectTypeFlags::EXTERNAL_BLOCK => {
+                        if type_description
+                            .decoration_flags
+                            .contains(crate::types::ReflectDecorationFlags::BLOCK)
+                        {
+                            descriptor_binding.descriptor_type =
+                                crate::types::ReflectDescriptorType::UniformBuffer;
+                        } else if type_description
+                            .decoration_flags
+                            .contains(crate::types::ReflectDecorationFlags::BUFFER_BLOCK)
+                        {
+                            descriptor_binding.descriptor_type =
+                                crate::types::ReflectDescriptorType::StorageBuffer;
+                        } else {
+                            return Err("Invalid SPIR-V struct type".into());
+                        }
+                    }
+                    crate::types::ReflectTypeFlags::EXTERNAL_IMAGE => {
+                        if descriptor_binding.image.dim == crate::types::ReflectDimension::Buffer {
+                            if descriptor_binding.image.sampled == SAMPLED_IMAGE {
+                                descriptor_binding.descriptor_type =
+                                    crate::types::ReflectDescriptorType::UniformTexelBuffer;
+                            } else if descriptor_binding.image.sampled == STORAGE_IMAGE {
+                                descriptor_binding.descriptor_type =
+                                    crate::types::ReflectDescriptorType::StorageTexelBuffer;
+                            } else {
+                                return Err("Invalid SPIR-V texel buffer sampling".into());
+                            }
+                        } else if descriptor_binding.image.dim
+                            == crate::types::ReflectDimension::SubPassData
+                        {
+                            descriptor_binding.descriptor_type =
+                                crate::types::ReflectDescriptorType::InputAttachment;
+                        } else {
+                            if descriptor_binding.image.sampled == SAMPLED_IMAGE {
+                                descriptor_binding.descriptor_type =
+                                    crate::types::ReflectDescriptorType::SampledImage;
+                            } else if descriptor_binding.image.sampled == STORAGE_IMAGE {
+                                descriptor_binding.descriptor_type =
+                                    crate::types::ReflectDescriptorType::StorageImage;
+                            } else {
+                                return Err("Invalid SPIR-V image sampling".into());
+                            }
+                        }
+                    }
+                    crate::types::ReflectTypeFlags::EXTERNAL_SAMPLER => {
+                        descriptor_binding.descriptor_type =
+                            crate::types::ReflectDescriptorType::Sampler;
+                    }
+                    crate::types::ReflectTypeFlags::SAMPLED_MASK => {
+                        if descriptor_binding.image.dim == crate::types::ReflectDimension::Buffer {
+                            if descriptor_binding.image.sampled == SAMPLED_IMAGE {
+                                descriptor_binding.descriptor_type =
+                                    crate::types::ReflectDescriptorType::UniformBuffer;
+                            } else if descriptor_binding.image.sampled == STORAGE_IMAGE {
+                                descriptor_binding.descriptor_type =
+                                    crate::types::ReflectDescriptorType::StorageBuffer;
+                            } else {
+                                return Err("Invalid SPIR-V texel buffer sampling".into());
+                            }
+                        } else {
+                            descriptor_binding.descriptor_type =
+                                crate::types::ReflectDescriptorType::CombinedImageSampler;
+                        }
+                    }
+                    _ => {
+                        return Err("Invalid SPIR-V type flag".into());
+                    }
+                }
+
+                descriptor_binding.resource_type = match descriptor_binding.descriptor_type {
+                    crate::types::ReflectDescriptorType::Sampler => {
+                        crate::types::ReflectResourceTypeFlags::SAMPLER
+                    }
+                    crate::types::ReflectDescriptorType::CombinedImageSampler => {
+                        crate::types::ReflectResourceTypeFlags::SAMPLER
+                            | crate::types::ReflectResourceTypeFlags::SHADER_RESOURCE_VIEW
+                    }
+                    crate::types::ReflectDescriptorType::SampledImage
+                    | crate::types::ReflectDescriptorType::UniformTexelBuffer => {
+                        crate::types::ReflectResourceTypeFlags::SHADER_RESOURCE_VIEW
+                    }
+                    crate::types::ReflectDescriptorType::StorageImage
+                    | crate::types::ReflectDescriptorType::StorageTexelBuffer
+                    | crate::types::ReflectDescriptorType::StorageBuffer
+                    | crate::types::ReflectDescriptorType::StorageBufferDynamic => {
+                        crate::types::ReflectResourceTypeFlags::UNORDERED_ACCESS_VIEW
+                    }
+                    crate::types::ReflectDescriptorType::UniformBuffer
+                    | crate::types::ReflectDescriptorType::UniformBufferDynamic => {
+                        crate::types::ReflectResourceTypeFlags::CONSTANT_BUFFER_VIEW
+                    }
+                    _ => crate::types::ReflectResourceTypeFlags::UNDEFINED,
+                };
+            } else {
+                return Err("Invalid SPIR-V type description".into());
+            }
+        }
         Ok(())
     }
 
