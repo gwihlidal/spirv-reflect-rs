@@ -531,7 +531,6 @@ impl Parser {
                 } else {
                     target_node.name = node_name;
                 }
-                dbg!(&target_node);
             }
         }
 
@@ -540,9 +539,157 @@ impl Parser {
 
     fn parse_decorations(
         &mut self,
-        _spv_words: &[u32],
+        spv_words: &[u32],
         _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
+        for node_index in 0..self.nodes.len() {
+            let node_op = self.nodes[node_index].op;
+            if node_op != spirv_headers::Op::Decorate
+                && node_op != spirv_headers::Op::MemberDecorate
+                && node_op != spirv_headers::Op::DecorateId
+                && node_op != spirv_headers::Op::DecorateString
+                && node_op != spirv_headers::Op::MemberDecorateStringGOOGLE
+            {
+                continue;
+            }
+
+            let word_offset = self.nodes[node_index].word_offset as usize;
+            let member_offset = if node_op == spirv_headers::Op::MemberDecorate {
+                1
+            } else {
+                0
+            };
+
+            if let Some(decoration) =
+                spirv_headers::Decoration::from_u32(spv_words[word_offset + member_offset + 2])
+            {
+                let affects_reflection = match decoration {
+                    spirv_headers::Decoration::Block
+                    | spirv_headers::Decoration::BufferBlock
+                    | spirv_headers::Decoration::ColMajor
+                    | spirv_headers::Decoration::RowMajor
+                    | spirv_headers::Decoration::ArrayStride
+                    | spirv_headers::Decoration::MatrixStride
+                    | spirv_headers::Decoration::BuiltIn
+                    | spirv_headers::Decoration::NoPerspective
+                    | spirv_headers::Decoration::Flat
+                    | spirv_headers::Decoration::NonWritable
+                    | spirv_headers::Decoration::Location
+                    | spirv_headers::Decoration::Binding
+                    | spirv_headers::Decoration::DescriptorSet
+                    | spirv_headers::Decoration::Offset
+                    | spirv_headers::Decoration::InputAttachmentIndex
+                    | spirv_headers::Decoration::HlslCounterBufferGOOGLE
+                    | spirv_headers::Decoration::HlslSemanticGOOGLE => true,
+                    _ => false,
+                };
+
+                if !affects_reflection {
+                    continue;
+                }
+
+                let target_id = spv_words[word_offset + 1];
+                if let Some(target_node_index) = self.find_node(target_id) {
+                    let target_node = &mut self.nodes[target_node_index];
+                    let mut target_decorations = if node_op == spirv_headers::Op::MemberDecorate {
+                        let member_index = spv_words[word_offset + 2] as usize;
+                        &mut target_node.member_decorations[member_index]
+                    } else {
+                        &mut target_node.decorations
+                    };
+
+                    match decoration {
+                        spirv_headers::Decoration::Block => {
+                            target_decorations.is_block = true;
+                        }
+                        spirv_headers::Decoration::BufferBlock => {
+                            target_decorations.is_buffer_block = true;
+                        }
+                        spirv_headers::Decoration::ColMajor => {
+                            target_decorations.is_column_major = true;
+                        }
+                        spirv_headers::Decoration::RowMajor => {
+                            target_decorations.is_row_major = true;
+                        }
+                        spirv_headers::Decoration::ArrayStride => {
+                            let word_offset = word_offset + member_offset + 3;
+                            target_decorations.matrix_stride = spv_words[word_offset];
+                        }
+                        spirv_headers::Decoration::MatrixStride => {
+                            let word_offset = word_offset + member_offset + 3;
+                            target_decorations.location.value = spv_words[word_offset];
+                        }
+                        spirv_headers::Decoration::BuiltIn => {
+                            let word_offset = word_offset + member_offset + 3;
+                            target_decorations.matrix_stride = spv_words[word_offset];
+                        }
+                        spirv_headers::Decoration::NoPerspective => {
+                            target_decorations.is_noperspective = true;
+                        }
+                        spirv_headers::Decoration::Flat => {
+                            target_decorations.is_flat = true;
+                        }
+                        spirv_headers::Decoration::NonWritable => {
+                            target_decorations.is_non_writable = true;
+                        }
+                        spirv_headers::Decoration::Location => {
+                            let word_offset = word_offset + member_offset + 3;
+                            target_decorations.location.value = spv_words[word_offset];
+                            target_decorations.location.word_offset = word_offset as u32;
+                        }
+                        spirv_headers::Decoration::Binding => {
+                            let word_offset = word_offset + member_offset + 3;
+                            target_decorations.binding.value = spv_words[word_offset];
+                            target_decorations.binding.word_offset = word_offset as u32;
+                        }
+                        spirv_headers::Decoration::DescriptorSet => {
+                            let word_offset = word_offset + member_offset + 3;
+                            target_decorations.set.value = spv_words[word_offset];
+                            target_decorations.set.word_offset = word_offset as u32;
+                        }
+                        spirv_headers::Decoration::Offset => {
+                            let word_offset = word_offset + member_offset + 3;
+                            target_decorations.offset.value = spv_words[word_offset];
+                            target_decorations.offset.word_offset = word_offset as u32;
+                        }
+                        spirv_headers::Decoration::InputAttachmentIndex => {
+                            let word_offset = word_offset + member_offset + 3;
+                            target_decorations.input_attachment_index.value =
+                                spv_words[word_offset];
+                            target_decorations.input_attachment_index.word_offset =
+                                word_offset as u32;
+                        }
+                        spirv_headers::Decoration::HlslCounterBufferGOOGLE => {
+                            let word_offset = word_offset + member_offset + 3;
+                            target_decorations.uav_counter_buffer.value = spv_words[word_offset];
+                            target_decorations.uav_counter_buffer.word_offset = word_offset as u32;
+                        }
+                        spirv_headers::Decoration::HlslSemanticGOOGLE => {
+                            let word_offset = word_offset + member_offset + 3;
+
+                            target_decorations.semantic.value = unsafe {
+                                let semantic_ptr = spv_words
+                                    .as_ptr()
+                                    .offset((word_offset / SPIRV_WORD_SIZE) as isize)
+                                    as *const _;
+                                CStr::from_ptr(semantic_ptr).to_string_lossy().into_owned()
+                            };
+
+                            target_decorations.semantic.word_offset = word_offset as u32;
+                        }
+                        _ => {}
+                    }
+                } else {
+                    return Err("Invalid SPIR-V ID reference".into());
+                }
+            } else {
+                return Err("Invalid SPIR-V decoration".into());
+            }
+        }
+
+        /*let affects_reflection = match decoration {
+
+        };*/
         println!("UNIMPLEMENTED - parse_decorations");
         Ok(())
     }
