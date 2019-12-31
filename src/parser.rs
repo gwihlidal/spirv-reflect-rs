@@ -479,18 +479,102 @@ impl Parser {
 
     fn parse_function(
         &mut self,
-        //_spv_words: &[u32],
+        spv_words: &[u32],
         //_module: &mut super::ShaderModule,
-        _node_index: usize,
-        _first_label_index: usize,
+        function_node_index: usize,
+        first_label_index: usize,
     ) -> Result<ParserFunction, String> {
-        println!("UNIMPLEMENTED - parse_function");
-        Ok(ParserFunction::default())
+        let mut function = ParserFunction {
+            id: self.nodes[function_node_index].result_id,
+            callees: Vec::new(),
+            accessed: Vec::new(),
+        };
+
+        let mut callee_count = 0;
+        let mut accessed_count = 0;
+
+        for node_index in first_label_index..self.nodes.len() {
+            let node_op = self.nodes[node_index].op;
+            if node_op != spirv_headers::Op::FunctionEnd {
+                continue;
+            }
+
+            match node_op {
+                spirv_headers::Op::FunctionCall => {
+                    callee_count += 1;
+                }
+                spirv_headers::Op::Load
+                | spirv_headers::Op::AccessChain
+                | spirv_headers::Op::InBoundsAccessChain
+                | spirv_headers::Op::PtrAccessChain
+                | spirv_headers::Op::ArrayLength
+                | spirv_headers::Op::GenericPtrMemSemantics
+                | spirv_headers::Op::InBoundsPtrAccessChain
+                | spirv_headers::Op::Store => {
+                    accessed_count += 1;
+                }
+                spirv_headers::Op::CopyMemory | spirv_headers::Op::CopyMemorySized => {
+                    accessed_count += 2;
+                }
+                _ => {}
+            }
+        }
+
+        function.callees.reserve(callee_count);
+        function.accessed.reserve(accessed_count);
+
+        for node_index in first_label_index..self.nodes.len() {
+            let node_op = self.nodes[node_index].op;
+            if node_op != spirv_headers::Op::FunctionEnd {
+                continue;
+            }
+
+            let word_offset = self.nodes[node_index].word_offset as usize;
+            match node_op {
+                spirv_headers::Op::FunctionCall => {
+                    function.callees.push(ParserFunctionCallee {
+                        callee: spv_words[word_offset + 3],
+                        function: std::usize::MAX, // resolved later
+                    });
+                }
+                spirv_headers::Op::Load
+                | spirv_headers::Op::AccessChain
+                | spirv_headers::Op::InBoundsAccessChain
+                | spirv_headers::Op::PtrAccessChain
+                | spirv_headers::Op::ArrayLength
+                | spirv_headers::Op::GenericPtrMemSemantics
+                | spirv_headers::Op::InBoundsPtrAccessChain => {
+                    function.accessed.push(spv_words[word_offset + 3]);
+                }
+                spirv_headers::Op::Store => {
+                    function.accessed.push(spv_words[word_offset + 2]);
+                }
+                spirv_headers::Op::CopyMemory | spirv_headers::Op::CopyMemorySized => {
+                    function.accessed.push(spv_words[word_offset + 2]);
+                    function.accessed.push(spv_words[word_offset + 3]);
+                }
+                _ => {}
+            }
+        }
+
+        function.callees.sort_by(|a, b| {
+            let a_id = a.callee;
+            let b_id = b.callee;
+            a_id.cmp(&b_id)
+        });
+        function.callees.dedup();
+
+        function.accessed.sort_by(|a, b| a.cmp(&b));
+        function.accessed.dedup();
+
+        dbg!(&function);
+
+        Ok(function)
     }
 
     fn parse_functions(
         &mut self,
-        _spv_words: &[u32],
+        spv_words: &[u32],
         _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
         self.functions.reserve(self.function_count);
@@ -518,7 +602,7 @@ impl Parser {
                 continue;
             }
 
-            let function = self.parse_function(current_node_index, node_index)?;
+            let function = self.parse_function(&spv_words, current_node_index, node_index)?;
             self.functions.push(function);
         }
 
