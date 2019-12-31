@@ -17,7 +17,9 @@ pub struct ShaderModule {
 
 impl ShaderModule {
     pub fn load_u8_data(spv_data: &[u8]) -> Result<ShaderModule, String> {
-        assert_eq!(spv_data.len() % std::mem::size_of::<u32>(), 0); // TODO: Nice error
+        if spv_data.len() % std::mem::size_of::<u32>() != 0 {
+            return Err("Invalid SPIR-V data - length must be evenly divisible by WORD size (4)".into());
+        }
         let u32_data: &[u32] = unsafe {
             std::slice::from_raw_parts(
                 spv_data.as_ptr() as *const u32,
