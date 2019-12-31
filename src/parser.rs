@@ -125,6 +125,19 @@ impl Default for ParserNode {
     }
 }
 
+#[derive(Default, Debug, Clone, PartialEq)]
+pub(crate) struct ParserFunctionCallee {
+    pub callee: u32,
+    pub function: usize,
+}
+
+#[derive(Default, Debug, Clone, PartialEq)]
+pub(crate) struct ParserFunction {
+    pub id: u32,
+    pub callees: Vec<ParserFunctionCallee>,
+    pub accessed: Vec<u32>,
+}
+
 #[derive(Default, Debug)]
 pub(crate) struct ParserString {
     pub result_id: u32,
@@ -135,6 +148,7 @@ pub(crate) struct ParserString {
 pub(crate) struct Parser {
     pub nodes: Vec<ParserNode>,
     pub strings: Vec<ParserString>,
+    pub functions: Vec<ParserFunction>,
 
     pub string_count: usize,
     pub type_count: usize,
@@ -463,12 +477,74 @@ impl Parser {
         Ok(())
     }
 
+    fn parse_function(
+        &mut self,
+        //_spv_words: &[u32],
+        //_module: &mut super::ShaderModule,
+        _node_index: usize,
+        _first_label_index: usize,
+    ) -> Result<ParserFunction, String> {
+        println!("UNIMPLEMENTED - parse_function");
+        Ok(ParserFunction::default())
+    }
+
     fn parse_functions(
         &mut self,
         _spv_words: &[u32],
         _module: &mut super::ShaderModule,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_functions");
+        self.functions.reserve(self.function_count);
+        for mut node_index in 0..self.nodes.len() {
+            let current_node_index = node_index;
+            let op = &self.nodes[current_node_index].op;
+            if op != &spirv_headers::Op::Function {
+                continue;
+            }
+
+            let mut function_definition = false;
+            for sub_node_index in node_index..self.nodes.len() {
+                node_index = sub_node_index; // TODO: Verify this is correct
+                if self.nodes[node_index].op == spirv_headers::Op::Label {
+                    function_definition = true;
+                    break;
+                }
+
+                if self.nodes[node_index].op == spirv_headers::Op::FunctionEnd {
+                    break;
+                }
+            }
+
+            if !function_definition {
+                continue;
+            }
+
+            let function = self.parse_function(current_node_index, node_index)?;
+            self.functions.push(function);
+        }
+
+        self.functions.sort_by(|a, b| {
+            let a_id = a.id as i32;
+            let b_id = b.id as i32;
+            a_id.cmp(&b_id)
+        });
+
+        // Link up callee pointers to optimize for traversal.
+        for function_index in 0..self.functions.len() {
+            if self.functions[function_index].callees.len() > 0 {
+                let mut callee_function = 0;
+                for callee_index in 0..self.functions[function_index].callees.len() {
+                    let callee_id = self.functions[function_index].callees[callee_index].callee;
+                    while self.functions[callee_function].id != callee_id {
+                        callee_function += 1;
+                        if callee_function >= self.function_count {
+                            return Err("Invalid SPIR-V ID reference".into());
+                        }
+                    }
+                    self.functions[function_index].callees[callee_index].function = callee_function;
+                }
+            }
+        }
+
         Ok(())
     }
 
