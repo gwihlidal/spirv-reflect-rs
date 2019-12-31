@@ -48,8 +48,7 @@ pub struct ReflectDescriptorBinding {
     pub count: u32,
     pub uav_counter_id: u32,
     pub uav_counter_binding: Option<Box<ReflectDescriptorBinding>>,
-    //pub type_description: Option<ReflectTypeDescription>,
-    pub type_description: Option<usize>,
+    pub type_index: Option<usize>,
     pub word_offset: ReflectDescriptorBindingSet,
 }
 

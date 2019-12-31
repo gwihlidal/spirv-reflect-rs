@@ -180,19 +180,6 @@ impl Parser {
         self.parse_member_counts(spv_words, module)?;
         self.parse_names(spv_words, module)?;
         self.parse_decorations(spv_words, module)?;
-
-        // TODO:
-
-        /*
-          // Zero out descriptor set data
-          p_module->descriptor_set_count = 0;
-          memset(p_module->descriptor_sets, 0, SPV_REFLECT_MAX_DESCRIPTOR_SETS * sizeof(*p_module->descriptor_sets));
-          // Initialize descriptor set numbers
-          for (uint32_t set_number = 0; set_number < SPV_REFLECT_MAX_DESCRIPTOR_SETS; ++set_number) {
-            p_module->descriptor_sets[set_number].set = (uint32_t)INVALID_VALUE;
-          }
-        }*/
-
         self.parse_types(spv_words, module)?;
         self.parse_descriptor_bindings(spv_words, module)?;
         self.parse_descriptor_type(module)?;
@@ -1022,8 +1009,7 @@ impl Parser {
                             set: node.decorations.set.value,
                             count,
                             uav_counter_id: node.decorations.uav_counter_buffer.value,
-                            //type_description: Some(type_description.clone()),
-                            type_description: Some(resolved_type_index),
+                            type_index: Some(resolved_type_index),
                             resource_type: crate::types::ReflectResourceTypeFlags::UNDEFINED,
                             block: crate::types::ReflectBlockVariable::default(),
                             image: if is_external_image || is_sampled_image {
@@ -1059,7 +1045,7 @@ impl Parser {
         const STORAGE_IMAGE: u32 = 2;
         for binding_index in 0..module.internal.descriptor_bindings.len() {
             let mut descriptor_binding = &mut module.internal.descriptor_bindings[binding_index];
-            if let Some(type_index) = descriptor_binding.type_description {
+            if let Some(type_index) = descriptor_binding.type_index {
                 let type_description = &module.internal.type_descriptions[type_index];
                 match type_description.type_flags & crate::types::ReflectTypeFlags::EXTERNAL_MASK {
                     crate::types::ReflectTypeFlags::EXTERNAL_BLOCK => {
