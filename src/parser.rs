@@ -188,28 +188,32 @@ impl Parser {
         self.parse_push_constant_blocks(spv_words, module)?;
         self.parse_entry_points(spv_words, module)?;
 
-        // TODO:
-
-        /*if module.entry_points.len() > 0 {
-            SpvReflectEntryPoint* p_entry = &(p_module->entry_points[0]);
-            p_module->entry_point_name = p_entry->name;
-            p_module->entry_point_id = p_entry->id;
-            p_module->spirv_execution_model = p_entry->spirv_execution_model;
-            p_module->shader_stage = p_entry->shader_stage;
-            p_module->input_variable_count = p_entry->input_variable_count;
-            p_module->input_variables = p_entry->input_variables;
-            p_module->output_variable_count = p_entry->output_variable_count;
-            p_module->output_variables = p_entry->output_variables;
-        }*/
-
-        /*
-        if (result == SPV_REFLECT_RESULT_SUCCESS) {
-            result = DisambiguateStorageBufferSrvUav(p_module);
+        // Fix up SRV vs UAV descriptors for storage buffers
+        for mut descriptor_binding in &mut module.internal.descriptor_bindings {
+            if descriptor_binding.descriptor_type
+                == crate::types::ReflectDescriptorType::StorageBuffer
+                && descriptor_binding
+                    .block
+                    .decoration_flags
+                    .contains(crate::types::ReflectDecorationFlags::NON_WRITABLE)
+            {
+                descriptor_binding.resource_type =
+                    crate::types::ReflectResourceTypeFlags::SHADER_RESOURCE_VIEW;
+            }
         }
-        if (result == SPV_REFLECT_RESULT_SUCCESS) {
-            result = SynchronizeDescriptorSets(p_module);
+
+        self.build_descriptor_sets(spv_words, module)?;
+
+        // TODO: Clean this up
+        if module.internal.entry_points.len() > 0 {
+            let entry_point = &module.internal.entry_points[0];
+            module.internal.entry_point_name = entry_point.name.to_owned();
+            module.internal.entry_point_id = entry_point.id;
+            module.internal.spirv_execution_model = entry_point.spirv_execution_model;
+            module.internal.shader_stage = entry_point.shader_stage;
+            module.internal.input_variables = entry_point.input_variables.clone();
+            module.internal.output_variables = entry_point.output_variables.clone();
         }
-        */
 
         Ok(())
     }
@@ -1531,6 +1535,16 @@ impl Parser {
             module.internal.entry_points.push(entry_point);
         }
 
+        Ok(())
+    }
+
+    fn build_descriptor_sets(
+        &self,
+        _spv_words: &[u32],
+        module: &mut super::ShaderModule,
+    ) -> Result<(), String> {
+        module.internal.descriptor_sets.clear();
+        println!("UNIMPLEMENTED - build_descriptor_sets");
         Ok(())
     }
 

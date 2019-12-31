@@ -59,7 +59,7 @@ impl ShaderModule {
         &self.internal.source_text
     }
 
-    pub fn get_spirv_execution_model(&self) -> spirv_headers::ExecutionModel {
+    pub fn get_spirv_execution_model(&self) -> Option<spirv_headers::ExecutionModel> {
         self.internal.spirv_execution_model
     }
 
@@ -119,6 +119,7 @@ impl ShaderModule {
         _new_set: Option<u32>,
     ) -> Result<(), &str> {
         println!("UNIMPLEMENTED - change_descriptor_binding_numbers");
+        // TODO: call build_descriptor_sets() at the end
         Ok(())
     }
 
@@ -128,6 +129,7 @@ impl ShaderModule {
         _new_set: u32,
     ) -> Result<(), &str> {
         println!("UNIMPLEMENTED - change_descriptor_set_number");
+        // TODO: call build_descriptor_sets() at the end
         Ok(())
     }
 
