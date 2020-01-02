@@ -1173,6 +1173,7 @@ impl Parser {
                             set: node.decorations.set.value,
                             count,
                             uav_counter_id: node.decorations.uav_counter_buffer.value,
+                            uav_counter_index: std::usize::MAX,
                             type_index: Some(resolved_type_index),
                             resource_type: crate::types::ReflectResourceTypeFlags::UNDEFINED,
                             block: crate::types::ReflectBlockVariable::default(),
@@ -1184,7 +1185,6 @@ impl Parser {
                             array: crate::types::ReflectBindingArrayTraits {
                                 dims: type_description.traits.array.dims.clone(),
                             },
-                            uav_counter_binding: None,
                         },
                     );
                 } else {
@@ -1316,9 +1316,60 @@ impl Parser {
     fn parse_counter_bindings(
         &mut self,
         _spv_words: &[u32],
-        _module: &mut super::ShaderModule,
+        module: &mut super::ShaderModule,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_counter_bindings");
+        for descriptor_binding_index in 0..module.internal.descriptor_bindings.len() {
+            let descriptor_binding = &module.internal.descriptor_bindings[descriptor_binding_index];
+            if descriptor_binding.descriptor_type
+                != crate::types::ReflectDescriptorType::StorageBuffer
+            {
+                continue;
+            }
+
+            let mut counter_binding_index = std::usize::MAX;
+
+            if descriptor_binding.uav_counter_id != std::u32::MAX {
+                // Modern approach.
+                for counter_descriptor_binding_index in 0..module.internal.descriptor_bindings.len()
+                {
+                    let counter_descriptor_binding =
+                        &module.internal.descriptor_bindings[counter_descriptor_binding_index];
+                    if counter_descriptor_binding.descriptor_type
+                        != crate::types::ReflectDescriptorType::StorageBuffer
+                    {
+                        continue;
+                    }
+
+                    if descriptor_binding.uav_counter_id == counter_descriptor_binding.spirv_id {
+                        counter_binding_index = counter_descriptor_binding_index;
+                        break;
+                    }
+                }
+            } else {
+                // Legacy approach.
+                let counter_name = format!("{}@count", &descriptor_binding.name);
+
+                for counter_descriptor_binding_index in 0..module.internal.descriptor_bindings.len()
+                {
+                    let counter_descriptor_binding =
+                        &module.internal.descriptor_bindings[counter_descriptor_binding_index];
+                    if counter_descriptor_binding.descriptor_type
+                        != crate::types::ReflectDescriptorType::StorageBuffer
+                    {
+                        continue;
+                    }
+
+                    if counter_descriptor_binding.name == counter_name {
+                        counter_binding_index = counter_descriptor_binding_index;
+                        break;
+                    }
+                }
+            }
+
+            module.internal.descriptor_bindings[descriptor_binding_index].uav_counter_index =
+                counter_binding_index;
+        }
+
         Ok(())
     }
 
