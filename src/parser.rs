@@ -1373,6 +1373,30 @@ impl Parser {
         Ok(())
     }
 
+    fn parse_descriptor_block_variable(
+        &mut self,
+        //_spv_words: &[u32],
+        _module: &mut super::ShaderModule,
+        _type_index: usize,
+        _push_constant: &mut crate::types::ReflectBlockVariable,
+    ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_descriptor_block_variable");
+        Ok(())
+    }
+
+    fn parse_descriptor_block_variable_sizes(
+        &mut self,
+        //_spv_words: &[u32],
+        _module: &mut super::ShaderModule,
+        _is_parent_root: bool,
+        _is_parent_aos: bool,
+        _is_parent_rta: bool,
+        _push_constant: &mut crate::types::ReflectBlockVariable,
+    ) -> Result<(), String> {
+        println!("UNIMPLEMENTED - parse_descriptor_block_variable_sizes");
+        Ok(())
+    }
+
     fn parse_descriptor_blocks(
         &mut self,
         _spv_words: &[u32],
