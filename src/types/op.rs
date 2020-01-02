@@ -1,5 +1,3 @@
-//use crate::ffi;
-//use num_traits::cast::FromPrimitive;
 use spirv_headers;
 use std::ops::Deref;
 
@@ -19,15 +17,6 @@ impl Deref for ReflectOp {
     }
 }
 
-/*impl From<ffi::SpvOp> for ReflectOp {
-    fn from(raw_op: ffi::SpvOp) -> Self {
-        match spirv_headers::Op::from_u32(raw_op as u32) {
-            Some(op) => ReflectOp(op),
-            None => Default::default(),
-        }
-    }
-}*/
-
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct ReflectBuiltIn(pub(crate) spirv_headers::BuiltIn);
 
@@ -43,13 +32,3 @@ impl Deref for ReflectBuiltIn {
         &self.0
     }
 }
-
-/*impl From<ffi::SpvBuiltIn> for ReflectBuiltIn {
-    fn from(raw_built_in: ffi::SpvBuiltIn) -> Self {
-        match spirv_headers::BuiltIn::from_u32(raw_built_in as u32) {
-            Some(built_in) => ReflectBuiltIn(built_in),
-            None => Default::default(),
-        }
-    }
-}
-*/

@@ -5,8 +5,6 @@ extern crate spirv_headers;
 #[macro_use]
 extern crate serde_derive;
 
-//use num_traits::cast::FromPrimitive;
-
 pub(crate) mod parser;
 pub mod types;
 
