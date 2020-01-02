@@ -56,7 +56,5 @@ pub struct ReflectDescriptorBinding {
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct ReflectDescriptorSet {
     pub set: u32,
-    pub bindings: Vec<ReflectDescriptorBinding>,
-    //#[serde(skip_serializing)]
-    //pub(crate) internal_data: *const ffi::SpvReflectDescriptorSet,
+    pub bindings: Vec<usize>, //ReflectDescriptorBinding>,
 }
