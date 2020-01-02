@@ -156,9 +156,9 @@ impl ShaderModule {
         &mut self,
         _set: &types::descriptor::ReflectDescriptorSet,
         _new_set: u32,
-    ) -> Result<(), &str> {
+    ) -> Result<(), String> {
         println!("UNIMPLEMENTED - change_descriptor_set_number");
-        // TODO: call build_descriptor_sets() at the end
+        self.internal.build_descriptor_sets()?;
         Ok(())
     }
 
@@ -166,7 +166,7 @@ impl ShaderModule {
         &mut self,
         _variable: &types::variable::ReflectInterfaceVariable,
         _new_location: u32,
-    ) -> Result<(), &str> {
+    ) -> Result<(), String> {
         println!("UNIMPLEMENTED - change_input_variable_location");
         Ok(())
     }
@@ -175,7 +175,7 @@ impl ShaderModule {
         &mut self,
         _variable: &types::variable::ReflectInterfaceVariable,
         _new_location: u32,
-    ) -> Result<(), &str> {
+    ) -> Result<(), String> {
         println!("UNIMPLEMENTED - change_output_variable_location");
         Ok(())
     }
