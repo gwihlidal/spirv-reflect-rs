@@ -567,8 +567,6 @@ impl Parser {
         function.accessed.sort_by(|a, b| a.cmp(&b));
         function.accessed.dedup();
 
-        dbg!(&function);
-
         Ok(function)
     }
 
@@ -1881,6 +1879,25 @@ impl Parser {
             module.internal.entry_points.push(entry_point);
         }
 
+        Ok(())
+    }
+
+    fn traverse_call_graph(
+        &self,
+        function_index: usize,
+        functions: &mut Vec<u32>,
+        depth: usize,
+    ) -> Result<(), String> {
+        if depth > self.functions.len() {
+            // Vulkan doesn't allow for recursion:
+            // "Recursion: The static function-call graph for an entry point must not contain cycles."
+            return Err("Entry point call graph must not contain cycles".into());
+        }
+
+        functions.push(self.functions[function_index].id);
+        for callee in &self.functions[function_index].callees {
+            self.traverse_call_graph(callee.function, functions, depth + 1)?;
+        }
         Ok(())
     }
 
