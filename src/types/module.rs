@@ -58,4 +58,140 @@ impl ReflectShaderModule {
 
         None
     }
+
+    pub(crate) fn build_descriptor_sets(&mut self) -> Result<(), String> {
+        const MAX_DESCRIPTOR_SETS: usize = 64;
+
+        // Clear out old descriptor set data
+        self.descriptor_sets.clear();
+        self.descriptor_sets.resize(
+            MAX_DESCRIPTOR_SETS,
+            crate::types::ReflectDescriptorSet {
+                set: std::u32::MAX,
+                bindings: Vec::new(),
+            },
+        );
+
+        dbg!(self.descriptor_sets.len());
+        // TODO: Compiler ICE
+        //let mut descriptor_count = [MAX_DESCRIPTOR_SETS; 0usize];
+
+        for descriptor_binding in &self.descriptor_bindings {
+            let _set_index = if let Some(set_index) = self
+                .descriptor_sets
+                .iter()
+                .position(|set| set.set == descriptor_binding.set)
+            {
+                // Found existing set
+                set_index
+            } else {
+                // Find an available set
+                if let Some(set_index) = self
+                    .descriptor_sets
+                    .iter()
+                    .position(|set| set.set == std::u32::MAX)
+                {
+                    self.descriptor_sets[set_index].set = descriptor_binding.set;
+                    set_index
+                } else {
+                    // Ran out of sets!
+                    return Err("Error building descriptor sets - no more slots available".into());
+                }
+            };
+
+            // TODO: Compiler ICE
+            //descriptor_count[set_index] += 1;
+        }
+
+        // TODO: Compiler ICE
+        //for set_index in 0..self.descriptor_sets.len() {
+        //    let count = descriptor_count[set_index];
+        //    self.descriptor_sets[set_index]
+        //        .bindings
+        //        .reserve(count);
+        //}
+
+        let mut set_count = 0;
+        for descriptor_set in &self.descriptor_sets {
+            if descriptor_set.set != std::u32::MAX {
+                set_count += 1;
+            }
+        }
+
+        self.descriptor_sets.sort_by(|a, b| {
+            let a_set = a.set;
+            let b_set = b.set;
+            a_set.cmp(&b_set)
+        });
+
+        for set_index in 0..set_count {
+            let set = self.descriptor_sets[set_index].set;
+            for binding_index in 0..self.descriptor_bindings.len() {
+                if self.descriptor_bindings[binding_index].set == set {
+                    self.descriptor_sets[set_index].bindings.push(binding_index);
+                }
+            }
+        }
+
+        // Update entry points
+        for entry_point in &mut self.entry_points {
+            let mut descriptor_set_count = 0;
+            for descriptor_set in &self.descriptor_sets {
+                for binding_index in &descriptor_set.bindings {
+                    let binding_id = &self.descriptor_bindings[*binding_index].spirv_id;
+                    if let Some(_) = entry_point
+                        .used_uniforms
+                        .iter()
+                        .position(|id| id == binding_id)
+                    {
+                        descriptor_set_count += 1;
+                        break;
+                    }
+                }
+            }
+
+            entry_point.descriptor_sets.clear();
+            entry_point.descriptor_sets.reserve(descriptor_set_count);
+
+            for descriptor_set in &self.descriptor_sets {
+                let mut binding_count = 0;
+
+                for binding_index in &descriptor_set.bindings {
+                    let binding_id = &self.descriptor_bindings[*binding_index].spirv_id;
+                    if let Some(_) = entry_point
+                        .used_uniforms
+                        .iter()
+                        .position(|id| id == binding_id)
+                    {
+                        binding_count += 1;
+                    }
+                }
+
+                if binding_count == 0 {
+                    continue;
+                }
+
+                let mut bindings = Vec::with_capacity(binding_count);
+                for binding_index in &descriptor_set.bindings {
+                    let binding = &self.descriptor_bindings[*binding_index];
+                    if let Some(_) = entry_point
+                        .used_uniforms
+                        .iter()
+                        .position(|id| id == &binding.spirv_id)
+                    {
+                        bindings.push(*binding_index);
+                    }
+                }
+
+                entry_point
+                    .descriptor_sets
+                    .push(crate::types::ReflectDescriptorSet {
+                        set: descriptor_set.set,
+                        bindings,
+                    });
+            }
+        }
+
+        Ok(())
+    }
 }
