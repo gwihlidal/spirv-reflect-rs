@@ -143,13 +143,45 @@ impl ShaderModule {
 
     pub fn change_descriptor_binding_numbers(
         &mut self,
-        _binding: &types::descriptor::ReflectDescriptorBinding,
-        _new_binding: u32,
-        _new_set: Option<u32>,
-    ) -> Result<(), &str> {
-        println!("UNIMPLEMENTED - change_descriptor_binding_numbers");
-        // TODO: call build_descriptor_sets() at the end
-        Ok(())
+        binding_index: usize,
+        new_binding: Option<u32>,
+        new_set: Option<u32>,
+    ) -> Result<(), String> {
+        if binding_index < self.internal.descriptor_bindings.len() {
+            let mut descriptor_binding = &mut self.internal.descriptor_bindings[binding_index];
+            let (word_offset_binding, word_offset_set) = descriptor_binding.word_offset;
+
+            if word_offset_binding as usize > self.internal.spirv_code.len() - 1 {
+                return Err(
+                    "Error attempting to change descriptor binding numbers - binding word offset range exceeded"
+                        .into(),
+                );
+            }
+
+            if word_offset_set as usize > self.internal.spirv_code.len() - 1 {
+                return Err(
+                    "Error attempting to change descriptor binding numbers - set word offset range exceeded"
+                        .into(),
+                );
+            }
+
+            if let Some(new_binding) = new_binding {
+                descriptor_binding.binding = new_binding;
+                self.internal.spirv_code[word_offset_binding as usize] = descriptor_binding.binding;
+            }
+
+            if let Some(new_set) = new_set {
+                descriptor_binding.set = new_set;
+                self.internal.spirv_code[word_offset_set as usize] = descriptor_binding.set;
+                self.internal.build_descriptor_sets()?;
+            }
+            Ok(())
+        } else {
+            Err(
+                "Error attempting to change descriptor binding numbers - index is out of range"
+                    .into(),
+            )
+        }
     }
 
     pub fn change_descriptor_set_number(
