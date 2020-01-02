@@ -1409,9 +1409,78 @@ impl Parser {
     fn parse_push_constant_blocks(
         &mut self,
         _spv_words: &[u32],
-        _module: &mut super::ShaderModule,
+        module: &mut super::ShaderModule,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_push_constant_blocks");
+        let mut block_count = 0;
+        for node_index in 0..self.nodes.len() {
+            let node = &self.nodes[node_index];
+            if node.op != spirv_headers::Op::Variable
+                || node.storage_class != spirv_headers::StorageClass::PushConstant
+            {
+                continue;
+            }
+
+            block_count += 1;
+        }
+
+        if block_count > 0 {
+            module.internal.push_constant_blocks.reserve(block_count);
+
+            for node_index in 0..self.nodes.len() {
+                let node = &self.nodes[node_index];
+                if node.op != spirv_headers::Op::Variable
+                    || node.storage_class != spirv_headers::StorageClass::PushConstant
+                {
+                    continue;
+                }
+
+                if let Some(type_index) = module.internal.find_type(node.type_id) {
+                    // Resolve pointer types
+                    let resolved_type_index = if *module.internal.type_descriptions[type_index].op
+                        == spirv_headers::Op::TypePointer
+                    {
+                        if let Some(type_node_index) =
+                            self.find_node(module.internal.type_descriptions[type_index].id)
+                        {
+                            let type_node = &self.nodes[type_node_index];
+                            if let Some(pointer_type_index) =
+                                module.internal.find_type(type_node.type_id)
+                            {
+                                pointer_type_index
+                            } else {
+                                return Err("Invalid SPIR-V ID reference".into());
+                            }
+                        } else {
+                            return Err("Invalid SPIR-V ID reference".into());
+                        }
+                    } else {
+                        type_index
+                    };
+
+                    if let Some(_) =
+                        self.find_node(module.internal.type_descriptions[resolved_type_index].id)
+                    {
+                        let mut push_constant = crate::types::ReflectBlockVariable::default();
+                        self.parse_descriptor_block_variable(
+                            module,
+                            resolved_type_index,
+                            &mut push_constant,
+                        )?;
+                        self.parse_descriptor_block_variable_sizes(
+                            module,
+                            true,
+                            false,
+                            false,
+                            &mut push_constant,
+                        )?;
+                        module.internal.push_constant_blocks.push(push_constant);
+                    } else {
+                        return Err("Invalid SPIR-V ID reference".into());
+                    }
+                }
+            }
+        }
+
         Ok(())
     }
 
