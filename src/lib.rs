@@ -93,10 +93,26 @@ impl ShaderModule {
 
     pub fn enumerate_descriptor_sets(
         &self,
-        _entry_point: Option<&str>,
+        entry_point_name: Option<&str>,
     ) -> Result<Vec<types::ReflectDescriptorSet>, &str> {
-        println!("UNIMPLEMENTED - enumerate_descriptor_sets");
-        Ok(Vec::new())
+        let mut descriptor_sets = match entry_point_name {
+            Some(entry_point_name) => {
+                if let Some(ref entry_point) = self
+                    .internal
+                    .entry_points
+                    .iter()
+                    .find(|entry_point| entry_point.name == entry_point_name)
+                {
+                    entry_point.descriptor_sets.to_owned()
+                } else {
+                    return Err("Error enumerating descriptor sets - entry point not found".into());
+                }
+            }
+            None => self.internal.descriptor_sets.to_owned(),
+        };
+        
+        descriptor_sets.retain(|x| x.set != std::u32::MAX);
+        Ok(descriptor_sets)
     }
 
     pub fn enumerate_push_constant_blocks(
