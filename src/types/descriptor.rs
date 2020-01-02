@@ -50,6 +50,7 @@ pub struct ReflectDescriptorBinding {
     pub uav_counter_index: usize,
     pub type_index: Option<usize>,
     pub word_offset: ReflectDescriptorBindingSet,
+    pub accessed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq)]

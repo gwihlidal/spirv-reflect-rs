@@ -1170,6 +1170,7 @@ impl Parser {
                             input_attachment_index: node.decorations.input_attachment_index.value,
                             set: node.decorations.set.value,
                             count,
+                            accessed: false,
                             uav_counter_id: node.decorations.uav_counter_buffer.value,
                             uav_counter_index: std::usize::MAX,
                             type_index: Some(resolved_type_index),
@@ -1750,13 +1751,68 @@ impl Parser {
     fn parse_static_resources(
         &self,
         _spv_words: &[u32],
-        _module: &mut super::ShaderModule,
-        _uniforms: &[u32],
-        _push_constants: &[u32],
-        _entry_point: &mut crate::types::variable::ReflectEntryPoint,
+        module: &mut super::ShaderModule,
+        uniforms: &[u32],
+        push_constants: &[u32],
+        entry_point: &mut crate::types::variable::ReflectEntryPoint,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_static_resources");
-        Ok(())
+        for function_index in 0..self.functions.len() {
+            if self.functions[function_index].id == entry_point.id {
+                let mut called_functions = Vec::new();
+                self.traverse_call_graph(function_index, &mut called_functions, 0)?;
+                called_functions.sort();
+                called_functions.dedup();
+
+                let mut usage_count = 0;
+                let mut check_index = 0;
+                for called_index in 0..called_functions.len() {
+                    while self.functions[check_index].id != called_functions[called_index] {
+                        check_index += 1;
+                    }
+
+                    usage_count += self.functions[check_index].accessed.len();
+                }
+
+                // Used variables
+                let mut usage: Vec<u32> = Vec::with_capacity(usage_count);
+
+                check_index = 0;
+                for called_index in 0..called_functions.len() {
+                    while self.functions[check_index].id != called_functions[called_index] {
+                        check_index += 1;
+                    }
+
+                    usage.extend(&self.functions[check_index].accessed);
+                }
+
+                usage.sort();
+                usage.dedup();
+
+                entry_point.used_uniforms =
+                    uniforms.intersect(&usage).into_iter().map(|x| *x).collect();
+                entry_point.used_push_constants = push_constants
+                    .intersect(&usage)
+                    .into_iter()
+                    .map(|x| *x)
+                    .collect();
+
+                for binding_index in 0..module.internal.descriptor_bindings.len() {
+                    let mut descriptor_binding =
+                        &mut module.internal.descriptor_bindings[binding_index];
+                    if usage
+                        .iter()
+                        .position(|x| x == &descriptor_binding.spirv_id)
+                        .is_some()
+                    {
+                        descriptor_binding.accessed = true;
+                    }
+                }
+
+                return Ok(());
+            }
+        }
+
+        return Err("Invalid SPIR-V ID reference".into());
     }
 
     fn parse_entry_points(
