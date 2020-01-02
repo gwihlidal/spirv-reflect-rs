@@ -1022,7 +1022,6 @@ impl Parser {
                 for word_index in 2..self.nodes[node_index].word_count as usize {
                     let member_id = spv_words[word_offset + word_index];
                     if let Some(member_node_index) = self.find_node(member_id) {
-                        dbg!(&type_description.members);
                         assert!(member_index < type_description.members.len());
                         let mut member_type_description =
                             &mut type_description.members[member_index];
