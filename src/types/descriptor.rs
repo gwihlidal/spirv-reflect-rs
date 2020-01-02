@@ -56,5 +56,5 @@ pub struct ReflectDescriptorBinding {
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct ReflectDescriptorSet {
     pub set: u32,
-    pub bindings: Vec<usize>, //ReflectDescriptorBinding>,
+    pub bindings: Vec<usize>,
 }

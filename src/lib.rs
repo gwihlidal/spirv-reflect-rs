@@ -110,7 +110,7 @@ impl ShaderModule {
             }
             None => self.internal.descriptor_sets.to_owned(),
         };
-        
+
         descriptor_sets.retain(|x| x.set != std::u32::MAX);
         Ok(descriptor_sets)
     }
@@ -130,6 +130,17 @@ impl ShaderModule {
 
     pub fn get_entry_point_name(&self) -> &str {
         &self.internal.entry_point_name
+    }
+
+    pub fn get_descriptor_binding(
+        &self,
+        binding_index: usize,
+    ) -> Option<&crate::types::ReflectDescriptorBinding> {
+        if binding_index < self.internal.descriptor_bindings.len() {
+            Some(&self.internal.descriptor_bindings[binding_index])
+        } else {
+            None
+        }
     }
 
     pub fn change_descriptor_binding_numbers(
