@@ -1376,7 +1376,7 @@ impl Parser {
     fn parse_descriptor_block_variable(
         &mut self,
         //_spv_words: &[u32],
-        _module: &mut super::ShaderModule,
+        _module: &super::ShaderModule,
         _type_index: usize,
         _push_constant: &mut crate::types::ReflectBlockVariable,
     ) -> Result<(), String> {
@@ -1400,9 +1400,51 @@ impl Parser {
     fn parse_descriptor_blocks(
         &mut self,
         _spv_words: &[u32],
-        _module: &mut super::ShaderModule,
+        module: &mut super::ShaderModule,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_descriptor_blocks");
+        for descriptor_binding_index in 0..module.internal.descriptor_bindings.len() {
+            let descriptor_type =
+                module.internal.descriptor_bindings[descriptor_binding_index].descriptor_type;
+            if descriptor_type != crate::types::ReflectDescriptorType::UniformBuffer
+                && descriptor_type != crate::types::ReflectDescriptorType::StorageBuffer
+            {
+                continue;
+            }
+
+            if let Some(type_index) =
+                module.internal.descriptor_bindings[descriptor_binding_index].type_index
+            {
+                let mut block = module.internal.descriptor_bindings[descriptor_binding_index]
+                    .block
+                    .to_owned();
+
+                self.parse_descriptor_block_variable(module, type_index, &mut block)?;
+
+                // Top level uses descriptor name
+                block.name = module.internal.descriptor_bindings[descriptor_binding_index]
+                    .name
+                    .to_owned();
+
+                let is_parent_rta =
+                    descriptor_type == crate::types::ReflectDescriptorType::StorageBuffer;
+                self.parse_descriptor_block_variable_sizes(
+                    module,
+                    true,
+                    false,
+                    is_parent_rta,
+                    &mut block,
+                )?;
+                if is_parent_rta {
+                    block.size = 0;
+                    block.padded_size = 0;
+                }
+
+                module.internal.descriptor_bindings[descriptor_binding_index].block = block;
+            } else {
+                return Err("Invalid SPIR-V type description".into());
+            }
+        }
+
         Ok(())
     }
 
