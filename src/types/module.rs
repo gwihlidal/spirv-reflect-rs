@@ -72,7 +72,6 @@ impl ReflectShaderModule {
             },
         );
 
-        dbg!(self.descriptor_sets.len());
         // TODO: Compiler ICE
         //let mut descriptor_count = [MAX_DESCRIPTOR_SETS; 0usize];
 
