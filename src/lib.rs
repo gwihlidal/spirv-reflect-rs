@@ -185,5 +185,6 @@ pub fn create_shader_module(spv_words: &[u32]) -> Result<ShaderModule, String> {
     let mut module = ShaderModule::default();
     let mut parser = parser::Parser::default();
     parser.parse(spv_words, &mut module)?;
+    module.internal.spirv_code = spv_words.to_vec();
     Ok(module)
 }
