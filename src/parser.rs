@@ -1032,7 +1032,7 @@ impl Parser {
                             &spv_words,
                             module,
                             member_node_index,
-                            Some((node_index, member_node_index)),
+                            Some((node_index, member_index)),
                             &mut member_type_description,
                         )?;
                         member_type_description.struct_member_name =
