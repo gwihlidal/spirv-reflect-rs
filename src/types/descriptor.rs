@@ -33,7 +33,7 @@ pub type ReflectOrdinalBinding = u32;
 pub type ReflectOrdinalSet = u32;
 pub type ReflectDescriptorBindingSet = (ReflectOrdinalBinding, ReflectOrdinalSet);
 
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Default, Clone, Serialize, PartialEq)]
 pub struct ReflectDescriptorBinding {
     pub spirv_id: u32,
     pub name: String,
@@ -53,7 +53,7 @@ pub struct ReflectDescriptorBinding {
     pub accessed: bool,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Default, Clone, Serialize, PartialEq)]
 pub struct ReflectDescriptorSet {
     pub set: u32,
     pub bindings: Vec<usize>,

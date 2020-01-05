@@ -8,6 +8,57 @@ extern crate serde_derive;
 pub(crate) mod parser;
 pub mod types;
 
+#[derive(Debug, Clone)]
+pub struct DescriptorSetRef {
+    pub(crate) ref_id: Option<usize>,
+    pub(crate) entry_point_id: Option<usize>,
+    pub value: types::ReflectDescriptorSet,
+}
+
+impl Default for DescriptorSetRef {
+    fn default() -> Self {
+        DescriptorSetRef {
+            ref_id: None,
+            entry_point_id: None,
+            value: types::ReflectDescriptorSet::default(),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct DescriptorBindingRef {
+    pub(crate) ref_id: Option<usize>,
+    pub(crate) entry_point_id: Option<usize>,
+    pub value: types::ReflectDescriptorBinding,
+}
+
+impl Default for DescriptorBindingRef {
+    fn default() -> Self {
+        DescriptorBindingRef {
+            ref_id: None,
+            entry_point_id: None,
+            value: types::ReflectDescriptorBinding::default(),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct PushConstantBlockRef {
+    pub(crate) ref_id: Option<usize>,
+    pub(crate) entry_point_id: Option<usize>,
+    pub value: types::ReflectBlockVariable,
+}
+
+impl Default for PushConstantBlockRef {
+    fn default() -> Self {
+        PushConstantBlockRef {
+            ref_id: None,
+            entry_point_id: None,
+            value: types::ReflectBlockVariable::default(),
+        }
+    }
+}
+
 #[derive(Default, Clone)]
 pub struct ShaderModule {
     internal: types::ReflectShaderModule,
@@ -110,92 +161,154 @@ impl ShaderModule {
     pub fn enumerate_descriptor_bindings(
         &self,
         entry_point_name: Option<&str>,
-    ) -> Result<Vec<types::ReflectDescriptorBinding>, &str> {
+    ) -> Result<Vec<DescriptorBindingRef>, &str> {
+        let mut descriptor_binding_refs =
+            Vec::with_capacity(self.internal.descriptor_bindings.len());
         match entry_point_name {
             Some(entry_point_name) => {
-                if let Some(ref entry_point) = self
+                if let Some(entry_point_index) = self
                     .internal
                     .entry_points
                     .iter()
-                    .find(|entry_point| entry_point.name == entry_point_name)
+                    .position(|entry_point| entry_point.name == entry_point_name)
                 {
-                    let mut descriptor_bindings = Vec::new();
-                    for descriptor_binding in &self.internal.descriptor_bindings {
+                    let entry_point = &self.internal.entry_points[entry_point_index];
+                    for descriptor_binding_index in 0..self.internal.descriptor_bindings.len() {
+                        let descriptor_binding =
+                            &self.internal.descriptor_bindings[descriptor_binding_index];
                         if entry_point
                             .used_uniforms
                             .iter()
                             .position(|x| x == &descriptor_binding.spirv_id)
                             .is_some()
                         {
-                            descriptor_bindings.push(descriptor_binding.to_owned());
+                            descriptor_binding_refs.push(DescriptorBindingRef {
+                                ref_id: Some(descriptor_binding_index),
+                                entry_point_id: Some(entry_point_index),
+                                value: descriptor_binding.to_owned(),
+                            });
                         }
                     }
-                    Ok(descriptor_bindings)
+                    Ok(descriptor_binding_refs)
                 } else {
-                    return Err(
-                        "Error enumerating descriptor bindings - entry point not found".into(),
-                    );
+                    Err("Error enumerating descriptor bindings - entry point not found".into())
                 }
             }
-            None => Ok(self.internal.descriptor_bindings.to_owned()),
+            None => {
+                for descriptor_binding_index in 0..self.internal.descriptor_bindings.len() {
+                    let descriptor_binding =
+                        &self.internal.descriptor_bindings[descriptor_binding_index];
+                    descriptor_binding_refs.push(DescriptorBindingRef {
+                        ref_id: Some(descriptor_binding_index),
+                        entry_point_id: None,
+                        value: descriptor_binding.to_owned(),
+                    });
+                }
+
+                Ok(descriptor_binding_refs)
+            }
         }
     }
 
     pub fn enumerate_descriptor_sets(
         &self,
         entry_point_name: Option<&str>,
-    ) -> Result<Vec<types::ReflectDescriptorSet>, &str> {
-        let mut descriptor_sets = match entry_point_name {
+    ) -> Result<Vec<DescriptorSetRef>, &str> {
+        match entry_point_name {
             Some(entry_point_name) => {
-                if let Some(ref entry_point) = self
+                if let Some(entry_point_index) = self
                     .internal
                     .entry_points
                     .iter()
-                    .find(|entry_point| entry_point.name == entry_point_name)
+                    .position(|entry_point| entry_point.name == entry_point_name)
                 {
-                    entry_point.descriptor_sets.to_owned()
+                    let entry_point = &self.internal.entry_points[entry_point_index];
+
+                    let mut descriptor_set_refs =
+                        Vec::with_capacity(entry_point.descriptor_sets.len());
+
+                    for descriptor_set_index in 0..entry_point.descriptor_sets.len() {
+                        let descriptor_set = &entry_point.descriptor_sets[descriptor_set_index];
+                        if descriptor_set.set != std::u32::MAX {
+                            descriptor_set_refs.push(DescriptorSetRef {
+                                ref_id: Some(descriptor_set_index),
+                                entry_point_id: Some(entry_point_index),
+                                value: descriptor_set.to_owned(),
+                            });
+                        }
+                    }
+
+                    Ok(descriptor_set_refs)
                 } else {
                     return Err("Error enumerating descriptor sets - entry point not found".into());
                 }
             }
-            None => self.internal.descriptor_sets.to_owned(),
-        };
+            None => {
+                let mut descriptor_set_refs =
+                    Vec::with_capacity(self.internal.descriptor_sets.len());
+                for descriptor_set_index in 0..self.internal.descriptor_sets.len() {
+                    let descriptor_set = &self.internal.descriptor_sets[descriptor_set_index];
+                    if descriptor_set.set != std::u32::MAX {
+                        descriptor_set_refs.push(DescriptorSetRef {
+                            ref_id: Some(descriptor_set_index),
+                            entry_point_id: None,
+                            value: descriptor_set.to_owned(),
+                        });
+                    }
+                }
 
-        descriptor_sets.retain(|x| x.set != std::u32::MAX);
-        Ok(descriptor_sets)
+                Ok(descriptor_set_refs)
+            }
+        }
     }
 
     pub fn enumerate_push_constant_blocks(
         &self,
         entry_point_name: Option<&str>,
-    ) -> Result<Vec<types::ReflectBlockVariable>, &str> {
+    ) -> Result<Vec<PushConstantBlockRef>, &str> {
+        let mut refs = Vec::with_capacity(self.internal.push_constant_blocks.len());
         match entry_point_name {
             Some(entry_point_name) => {
-                if let Some(ref entry_point) = self
+                if let Some(entry_point_index) = self
                     .internal
                     .entry_points
                     .iter()
-                    .find(|entry_point| entry_point.name == entry_point_name)
+                    .position(|entry_point| entry_point.name == entry_point_name)
                 {
-                    let mut push_constant_blocks = Vec::new();
-                    for push_constant_block in &self.internal.push_constant_blocks {
+                    let entry_point = &self.internal.entry_points[entry_point_index];
+                    for push_constant_block_index in 0..self.internal.push_constant_blocks.len() {
+                        let push_constant_block =
+                            &self.internal.push_constant_blocks[push_constant_block_index];
                         if entry_point
                             .used_push_constants
                             .iter()
                             .position(|x| x == &push_constant_block.spirv_id)
                             .is_some()
                         {
-                            push_constant_blocks.push(push_constant_block.to_owned());
+                            refs.push(PushConstantBlockRef {
+                                ref_id: Some(push_constant_block_index),
+                                entry_point_id: Some(entry_point_index),
+                                value: push_constant_block.to_owned(),
+                            });
                         }
                     }
-                    Ok(push_constant_blocks)
+                    Ok(refs)
                 } else {
-                    return Err(
-                        "Error enumerating push constant blocks - entry point not found".into(),
-                    );
+                    Err("Error enumerating push constant blocks - entry point not found".into())
                 }
             }
-            None => Ok(self.internal.push_constant_blocks.to_owned()),
+            None => {
+                for push_constant_block_index in 0..self.internal.push_constant_blocks.len() {
+                    let push_constant_block =
+                        &self.internal.push_constant_blocks[push_constant_block_index];
+                    refs.push(PushConstantBlockRef {
+                        ref_id: Some(push_constant_block_index),
+                        entry_point_id: None,
+                        value: push_constant_block.to_owned(),
+                    });
+                }
+                Ok(refs)
+            }
         }
     }
 
