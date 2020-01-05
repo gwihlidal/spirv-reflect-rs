@@ -200,8 +200,7 @@ impl ShaderModule {
     }
 
     pub fn enumerate_entry_points(&self) -> Result<Vec<types::ReflectEntryPoint>, &str> {
-        println!("UNIMPLEMENTED - enumerate_entry_points");
-        Ok(Vec::new())
+        Ok(self.internal.entry_points.to_owned())
     }
 
     pub fn get_entry_point_name(&self) -> &str {
