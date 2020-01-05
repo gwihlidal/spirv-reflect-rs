@@ -88,10 +88,23 @@ impl ShaderModule {
 
     pub fn enumerate_output_variables(
         &self,
-        _entry_point: Option<&str>,
+        entry_point_name: Option<&str>,
     ) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
-        println!("UNIMPLEMENTED - enumerate_output_variables");
-        Ok(Vec::new())
+        match entry_point_name {
+            Some(entry_point_name) => {
+                if let Some(ref entry_point) = self
+                    .internal
+                    .entry_points
+                    .iter()
+                    .find(|entry_point| entry_point.name == entry_point_name)
+                {
+                    Ok(entry_point.output_variables.to_owned())
+                } else {
+                    return Err("Error enumerating output variables - entry point not found".into());
+                }
+            }
+            None => Ok(self.internal.output_variables.to_owned()),
+        }
     }
 
     pub fn enumerate_descriptor_bindings(

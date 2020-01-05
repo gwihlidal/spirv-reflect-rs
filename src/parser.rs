@@ -1898,8 +1898,7 @@ impl Parser {
             };
 
             let name_length_with_null = name.len() + 1;
-            let name_word_count =
-                (name_length_with_null + SPIRV_WORD_SIZE - 1) / SPIRV_WORD_SIZE;
+            let name_word_count = (name_length_with_null + SPIRV_WORD_SIZE - 1) / SPIRV_WORD_SIZE;
 
             let mut entry_point = crate::types::variable::ReflectEntryPoint {
                 name,
