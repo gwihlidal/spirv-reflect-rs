@@ -109,10 +109,36 @@ impl ShaderModule {
 
     pub fn enumerate_descriptor_bindings(
         &self,
-        _entry_point: Option<&str>,
+        entry_point_name: Option<&str>,
     ) -> Result<Vec<types::ReflectDescriptorBinding>, &str> {
-        println!("UNIMPLEMENTED - enumerate_descriptor_bindings");
-        Ok(Vec::new())
+        match entry_point_name {
+            Some(entry_point_name) => {
+                if let Some(ref entry_point) = self
+                    .internal
+                    .entry_points
+                    .iter()
+                    .find(|entry_point| entry_point.name == entry_point_name)
+                {
+                    let mut descriptor_bindings = Vec::new();
+                    for descriptor_binding in &self.internal.descriptor_bindings {
+                        if entry_point
+                            .used_uniforms
+                            .iter()
+                            .position(|x| x == &descriptor_binding.spirv_id)
+                            .is_some()
+                        {
+                            descriptor_bindings.push(descriptor_binding.to_owned());
+                        }
+                    }
+                    Ok(descriptor_bindings)
+                } else {
+                    return Err(
+                        "Error enumerating descriptor bindings - entry point not found".into(),
+                    );
+                }
+            }
+            None => Ok(self.internal.descriptor_bindings.to_owned()),
+        }
     }
 
     pub fn enumerate_descriptor_sets(
