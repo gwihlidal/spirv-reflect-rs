@@ -69,8 +69,7 @@ impl ShaderModule {
         &self,
         _entry_point: Option<&str>,
     ) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
-        println!("UNIMPLEMENTED - enumerate_input_variables");
-        Ok(Vec::new())
+        Ok(self.internal.input_variables.to_owned())
     }
 
     pub fn enumerate_output_variables(
