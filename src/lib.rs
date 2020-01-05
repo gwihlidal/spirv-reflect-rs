@@ -67,9 +67,23 @@ impl ShaderModule {
 
     pub fn enumerate_input_variables(
         &self,
-        _entry_point: Option<&str>,
+        entry_point_name: Option<&str>,
     ) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
-        Ok(self.internal.input_variables.to_owned())
+        match entry_point_name {
+            Some(entry_point_name) => {
+                if let Some(ref entry_point) = self
+                    .internal
+                    .entry_points
+                    .iter()
+                    .find(|entry_point| entry_point.name == entry_point_name)
+                {
+                    Ok(entry_point.input_variables.to_owned())
+                } else {
+                    return Err("Error enumerating input variables - entry point not found".into());
+                }
+            }
+            None => Ok(self.internal.input_variables.to_owned()),
+        }
     }
 
     pub fn enumerate_output_variables(
