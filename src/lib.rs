@@ -167,10 +167,36 @@ impl ShaderModule {
 
     pub fn enumerate_push_constant_blocks(
         &self,
-        _entry_point: Option<&str>,
+        entry_point_name: Option<&str>,
     ) -> Result<Vec<types::ReflectBlockVariable>, &str> {
-        println!("UNIMPLEMENTED - enumerate_push_constant_blocks");
-        Ok(Vec::new())
+        match entry_point_name {
+            Some(entry_point_name) => {
+                if let Some(ref entry_point) = self
+                    .internal
+                    .entry_points
+                    .iter()
+                    .find(|entry_point| entry_point.name == entry_point_name)
+                {
+                    let mut push_constant_blocks = Vec::new();
+                    for push_constant_block in &self.internal.push_constant_blocks {
+                        if entry_point
+                            .used_push_constants
+                            .iter()
+                            .position(|x| x == &push_constant_block.spirv_id)
+                            .is_some()
+                        {
+                            push_constant_blocks.push(push_constant_block.to_owned());
+                        }
+                    }
+                    Ok(push_constant_blocks)
+                } else {
+                    return Err(
+                        "Error enumerating push constant blocks - entry point not found".into(),
+                    );
+                }
+            }
+            None => Ok(self.internal.push_constant_blocks.to_owned()),
+        }
     }
 
     pub fn enumerate_entry_points(&self) -> Result<Vec<types::ReflectEntryPoint>, &str> {
