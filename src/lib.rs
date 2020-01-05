@@ -320,17 +320,6 @@ impl ShaderModule {
         &self.internal.entry_point_name
     }
 
-    pub fn get_descriptor_binding(
-        &self,
-        binding_index: usize,
-    ) -> Option<&crate::types::ReflectDescriptorBinding> {
-        if binding_index < self.internal.descriptor_bindings.len() {
-            Some(&self.internal.descriptor_bindings[binding_index])
-        } else {
-            None
-        }
-    }
-
     pub fn change_descriptor_binding_numbers(
         &mut self,
         binding_index: usize,
