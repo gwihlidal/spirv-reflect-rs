@@ -5,6 +5,7 @@ use std::os::raw::c_char;
 
 pub const STARTING_WORD: usize = 5;
 pub const SPIRV_WORD_SIZE: usize = std::mem::size_of::<u32>();
+pub const SPIRV_BYTE_WIDTH: usize = 8;
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub(crate) struct NumberDecoration {
@@ -1385,13 +1386,156 @@ impl Parser {
     fn parse_descriptor_block_variable_sizes(
         &mut self,
         //_spv_words: &[u32],
-        _module: &mut super::ShaderModule,
-        _is_parent_root: bool,
-        _is_parent_aos: bool,
-        _is_parent_rta: bool,
-        _push_constant: &mut crate::types::ReflectBlockVariable,
+        module: &mut super::ShaderModule,
+        is_parent_root: bool,
+        is_parent_aos: bool,
+        is_parent_rta: bool,
+        variable: &mut crate::types::ReflectBlockVariable,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_descriptor_block_variable_sizes");
+        if variable.members.len() > 0 {
+            // Calculate absolute offsets
+            for mut variable_member in &mut variable.members {
+                variable_member.absolute_offset = if is_parent_root {
+                    variable_member.offset
+                } else {
+                    if is_parent_aos {
+                        0
+                    } else {
+                        variable_member.offset + variable.absolute_offset
+                    }
+                };
+            }
+
+            // Calculate size
+            for mut variable_member in &mut variable.members {
+                if let Some(ref variable_member_type) = variable_member.type_description {
+                    match *variable_member_type.op {
+                        spirv_headers::Op::TypeBool => {
+                            variable_member.size = SPIRV_WORD_SIZE as u32;
+                        }
+                        spirv_headers::Op::TypeInt | spirv_headers::Op::TypeFloat => {
+                            variable_member.size = variable_member_type.traits.numeric.scalar.width
+                                / SPIRV_BYTE_WIDTH as u32;
+                        }
+                        spirv_headers::Op::TypeVector => {
+                            variable_member.size =
+                                variable_member_type.traits.numeric.vector.component_count
+                                    * (variable_member_type.traits.numeric.scalar.width
+                                        / SPIRV_BYTE_WIDTH as u32);
+                        }
+                        spirv_headers::Op::TypeMatrix => {
+                            if variable_member_type
+                                .decoration_flags
+                                .contains(crate::types::ReflectDecorationFlags::COLUMN_MAJOR)
+                            {
+                                variable_member.size =
+                                    variable_member_type.traits.numeric.matrix.column_count
+                                        * variable_member.numeric.matrix.stride;
+                            } else if variable_member_type
+                                .decoration_flags
+                                .contains(crate::types::ReflectDecorationFlags::ROW_MAJOR)
+                            {
+                                variable_member.size =
+                                    variable_member_type.traits.numeric.matrix.row_count
+                                        * variable_member.numeric.matrix.stride;
+                            }
+                        }
+                        spirv_headers::Op::TypeArray => {
+                            if (variable_member_type.type_flags
+                                & crate::types::ReflectTypeFlags::STRUCT)
+                                == crate::types::ReflectTypeFlags::STRUCT
+                            {
+                                // Struct of structs
+                                self.parse_descriptor_block_variable_sizes(
+                                    module,
+                                    false,
+                                    true,
+                                    is_parent_rta,
+                                    &mut variable_member,
+                                )?;
+                            }
+                            variable_member.size = if variable_member.array.dims.len() > 0 {
+                                let mut element_count = 1;
+                                for dim in &variable_member.array.dims {
+                                    element_count *= dim;
+                                }
+                                element_count
+                            } else {
+                                0
+                            } * variable_member.array.stride;
+                        }
+                        spirv_headers::Op::TypeRuntimeArray => {
+                            if (variable_member_type.type_flags
+                                & crate::types::ReflectTypeFlags::STRUCT)
+                                == crate::types::ReflectTypeFlags::STRUCT
+                            {
+                                self.parse_descriptor_block_variable_sizes(
+                                    module,
+                                    false,
+                                    true,
+                                    true,
+                                    &mut variable_member,
+                                )?;
+                            }
+                        }
+                        spirv_headers::Op::TypeStruct => {
+                            self.parse_descriptor_block_variable_sizes(
+                                module,
+                                false,
+                                is_parent_aos,
+                                is_parent_rta,
+                                &mut variable_member,
+                            )?;
+                        }
+                        _ => {}
+                    }
+                }
+            }
+
+            // Calculate padding
+            for member_index in 0..(variable.members.len() - 1) {
+                let next_member_index = member_index + 1;
+                variable.members[member_index].padded_size = variable.members[next_member_index]
+                    .offset
+                    - variable.members[member_index].offset;
+                if variable.members[member_index].size > variable.members[member_index].padded_size
+                {
+                    variable.members[member_index].size =
+                        variable.members[member_index].padded_size;
+                }
+                if is_parent_rta {
+                    variable.members[member_index].padded_size =
+                        variable.members[member_index].size;
+                }
+            }
+
+            // Round up last member to next multiple of SPIR-V data alignment
+            const SPIRV_DATA_ALIGN: u32 = 16;
+            let last_size = {
+                let last_member_index = variable.members.len() - 1;
+                let mut last_member_variable = &mut variable.members[last_member_index];
+
+                last_member_variable.padded_size =
+                    ((last_member_variable.offset + last_member_variable.size + SPIRV_DATA_ALIGN
+                        - 1)
+                        & !(SPIRV_DATA_ALIGN - 1))
+                        - last_member_variable.offset;
+
+                if last_member_variable.size > last_member_variable.padded_size {
+                    last_member_variable.size = last_member_variable.padded_size;
+                }
+
+                if is_parent_rta {
+                    last_member_variable.padded_size = last_member_variable.size;
+                }
+
+                last_member_variable.offset + last_member_variable.padded_size
+            };
+
+            variable.size = last_size;
+            variable.padded_size = last_size;
+        }
+
         Ok(())
     }
 
