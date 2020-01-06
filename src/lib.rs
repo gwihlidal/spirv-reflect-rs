@@ -410,16 +410,42 @@ impl ShaderModule {
 
     pub fn change_descriptor_set_number(
         &mut self,
-        _set: &DescriptorSetRef,
-        _new_set: u32,
+        set: &DescriptorSetRef,
+        new_set: u32,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - change_descriptor_set_number");
-        //for descriptor_set in &self.descriptor_sets {
-        //     if descriptor_set.set ==
-        //     for binding_index in &descriptor_set.bindings {
-
-        self.internal.build_descriptor_sets()?;
-        Ok(())
+        if let Some(set_index) = set.ref_id {
+            if set_index < self.internal.descriptor_sets.len() {
+                let set = &mut self.internal.descriptor_sets[set_index];
+                for binding_ref in &set.binding_refs {
+                    if let Some(binding_index) = binding_ref.ref_id {
+                        let mut descriptor_binding =
+                            &mut self.internal.descriptor_bindings[binding_index];
+                        let (_, word_offset_set) = descriptor_binding.word_offset;
+                        if word_offset_set as usize > self.internal.spirv_code.len() - 1 {
+                            return Err(
+                                "Error attempting to change descriptor set number - set word offset range exceeded"
+                                    .into(),
+                            );
+                        }
+                        descriptor_binding.set = new_set;
+                        self.internal.spirv_code[word_offset_set as usize] = new_set;
+                    } else {
+                        return Err(
+                            "Error attempting to change descriptor set number - ref is invalid"
+                                .into(),
+                        );
+                    }
+                }
+                Ok(self.internal.build_descriptor_sets()?)
+            } else {
+                Err(
+                    "Error attempting to change descriptor set number - index is out of range"
+                        .into(),
+                )
+            }
+        } else {
+            Err("Error attempting to change descriptor set number - ref is invalid".into())
+        }
     }
 
     pub fn change_input_variable_location(
