@@ -19,21 +19,23 @@ fn main() {
             let _sets = module.enumerate_descriptor_sets(None).unwrap();
 
             println!("Original input variables (unmodified)");
-            let input_vars = module.enumerate_input_variables(None).unwrap();
-            for var in &input_vars {
+            let input_var_refs = module.enumerate_input_variables(None).unwrap();
+            for var_ref in &input_var_refs {
+                let var = &var_ref.value;
                 println!(
                     "   input var - name: {} location: {}",
                     var.name, var.location
                 );
                 if var.name == "input.Alpha" {
                     // Change alpha input variable location from 2 to 8
-                    module.change_input_variable_location(&var, 8).unwrap();
+                    module.change_input_variable_location(var_ref, 8).unwrap();
                 }
             }
 
             println!("Modified input variables (alpha location is now 8)");
-            let input_vars2 = module.enumerate_input_variables(None).unwrap();
-            for var in &input_vars2 {
+            let input_var2_refs = module.enumerate_input_variables(None).unwrap();
+            for var_ref in &input_var2_refs {
+                let var = &var_ref.value;
                 println!(
                     "   input var - name: {} location: {}",
                     var.name, var.location

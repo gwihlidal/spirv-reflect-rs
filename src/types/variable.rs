@@ -205,7 +205,7 @@ impl From<Option<spirv_headers::StorageClass>> for ReflectStorageClass {
     }
 }
 
-#[derive(Debug, Default, Clone, Serialize)]
+#[derive(Debug, Default, Clone, Serialize, PartialEq)]
 pub struct ReflectInterfaceVariable {
     pub spirv_id: u32,
     pub name: String,

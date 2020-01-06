@@ -8,7 +8,7 @@ extern crate serde_derive;
 pub(crate) mod parser;
 pub mod types;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct DescriptorSetRef {
     pub(crate) ref_id: Option<usize>,
     pub(crate) entry_point_id: Option<usize>,
@@ -25,7 +25,7 @@ impl Default for DescriptorSetRef {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct DescriptorBindingRef {
     pub(crate) ref_id: Option<usize>,
     pub(crate) entry_point_id: Option<usize>,
@@ -42,7 +42,7 @@ impl Default for DescriptorBindingRef {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct PushConstantBlockRef {
     pub(crate) ref_id: Option<usize>,
     pub(crate) entry_point_id: Option<usize>,
@@ -55,6 +55,23 @@ impl Default for PushConstantBlockRef {
             ref_id: None,
             entry_point_id: None,
             value: types::ReflectBlockVariable::default(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+pub struct InterfaceVariableRef {
+    pub(crate) ref_id: Option<usize>,
+    pub(crate) entry_point_id: Option<usize>,
+    pub value: types::ReflectInterfaceVariable,
+}
+
+impl Default for InterfaceVariableRef {
+    fn default() -> Self {
+        InterfaceVariableRef {
+            ref_id: None,
+            entry_point_id: None,
+            value: types::ReflectInterfaceVariable::default(),
         }
     }
 }
@@ -119,21 +136,44 @@ impl ShaderModule {
     pub fn enumerate_input_variables(
         &self,
         entry_point_name: Option<&str>,
-    ) -> Result<Vec<types::ReflectInterfaceVariable>, &str> {
+    ) -> Result<Vec<InterfaceVariableRef>, &str> {
         match entry_point_name {
             Some(entry_point_name) => {
-                if let Some(ref entry_point) = self
+                if let Some(entry_point_index) = self
                     .internal
                     .entry_points
                     .iter()
-                    .find(|entry_point| entry_point.name == entry_point_name)
+                    .position(|entry_point| entry_point.name == entry_point_name)
                 {
-                    Ok(entry_point.input_variables.to_owned())
+                    let entry_point = &self.internal.entry_points[entry_point_index];
+                    let mut input_variable_refs =
+                        Vec::with_capacity(entry_point.input_variables.len());
+                    for variable_index in 0..entry_point.input_variables.len() {
+                        let input_variable = &entry_point.input_variables[variable_index];
+                        input_variable_refs.push(InterfaceVariableRef {
+                            ref_id: Some(variable_index),
+                            entry_point_id: Some(entry_point_index),
+                            value: input_variable.to_owned(),
+                        });
+                    }
+                    Ok(input_variable_refs)
                 } else {
                     return Err("Error enumerating input variables - entry point not found".into());
                 }
             }
-            None => Ok(self.internal.input_variables.to_owned()),
+            None => {
+                let mut input_variable_refs =
+                    Vec::with_capacity(self.internal.input_variables.len());
+                for variable_index in 0..self.internal.input_variables.len() {
+                    let input_variable = &self.internal.input_variables[variable_index];
+                    input_variable_refs.push(InterfaceVariableRef {
+                        ref_id: Some(variable_index),
+                        entry_point_id: None,
+                        value: input_variable.to_owned(),
+                    });
+                }
+                Ok(input_variable_refs)
+            }
         }
     }
 
@@ -322,60 +362,69 @@ impl ShaderModule {
 
     pub fn change_descriptor_binding_numbers(
         &mut self,
-        binding_index: usize,
+        binding_ref: &DescriptorBindingRef,
         new_binding: Option<u32>,
         new_set: Option<u32>,
     ) -> Result<(), String> {
-        if binding_index < self.internal.descriptor_bindings.len() {
-            let mut descriptor_binding = &mut self.internal.descriptor_bindings[binding_index];
-            let (word_offset_binding, word_offset_set) = descriptor_binding.word_offset;
+        if let Some(binding_index) = binding_ref.ref_id {
+            if binding_index < self.internal.descriptor_bindings.len() {
+                let mut descriptor_binding = &mut self.internal.descriptor_bindings[binding_index];
+                let (word_offset_binding, word_offset_set) = descriptor_binding.word_offset;
 
-            if word_offset_binding as usize > self.internal.spirv_code.len() - 1 {
-                return Err(
-                    "Error attempting to change descriptor binding numbers - binding word offset range exceeded"
+                if word_offset_binding as usize > self.internal.spirv_code.len() - 1 {
+                    return Err(
+                        "Error attempting to change descriptor binding numbers - binding word offset range exceeded"
+                            .into(),
+                    );
+                }
+
+                if word_offset_set as usize > self.internal.spirv_code.len() - 1 {
+                    return Err(
+                        "Error attempting to change descriptor binding numbers - set word offset range exceeded"
+                            .into(),
+                    );
+                }
+
+                if let Some(new_binding) = new_binding {
+                    descriptor_binding.binding = new_binding;
+                    self.internal.spirv_code[word_offset_binding as usize] =
+                        descriptor_binding.binding;
+                }
+
+                if let Some(new_set) = new_set {
+                    descriptor_binding.set = new_set;
+                    self.internal.spirv_code[word_offset_set as usize] = descriptor_binding.set;
+                    self.internal.build_descriptor_sets()?;
+                }
+                Ok(())
+            } else {
+                Err(
+                    "Error attempting to change descriptor binding numbers - index is out of range"
                         .into(),
-                );
+                )
             }
-
-            if word_offset_set as usize > self.internal.spirv_code.len() - 1 {
-                return Err(
-                    "Error attempting to change descriptor binding numbers - set word offset range exceeded"
-                        .into(),
-                );
-            }
-
-            if let Some(new_binding) = new_binding {
-                descriptor_binding.binding = new_binding;
-                self.internal.spirv_code[word_offset_binding as usize] = descriptor_binding.binding;
-            }
-
-            if let Some(new_set) = new_set {
-                descriptor_binding.set = new_set;
-                self.internal.spirv_code[word_offset_set as usize] = descriptor_binding.set;
-                self.internal.build_descriptor_sets()?;
-            }
-            Ok(())
         } else {
-            Err(
-                "Error attempting to change descriptor binding numbers - index is out of range"
-                    .into(),
-            )
+            Err("Error attempting to change descriptor binding numbers - ref is invalid".into())
         }
     }
 
     pub fn change_descriptor_set_number(
         &mut self,
-        _set: &types::descriptor::ReflectDescriptorSet,
+        _set: &DescriptorSetRef,
         _new_set: u32,
     ) -> Result<(), String> {
         println!("UNIMPLEMENTED - change_descriptor_set_number");
+        //for descriptor_set in &self.descriptor_sets {
+        //     if descriptor_set.set ==
+        //     for binding_index in &descriptor_set.bindings {
+
         self.internal.build_descriptor_sets()?;
         Ok(())
     }
 
     pub fn change_input_variable_location(
         &mut self,
-        _variable: &types::variable::ReflectInterfaceVariable,
+        _variable: &InterfaceVariableRef,
         _new_location: u32,
     ) -> Result<(), String> {
         println!("UNIMPLEMENTED - change_input_variable_location");
@@ -384,7 +433,7 @@ impl ShaderModule {
 
     pub fn change_output_variable_location(
         &mut self,
-        _variable: &types::variable::ReflectInterfaceVariable,
+        _variable: &InterfaceVariableRef,
         _new_location: u32,
     ) -> Result<(), String> {
         println!("UNIMPLEMENTED - change_output_variable_location");

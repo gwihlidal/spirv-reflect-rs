@@ -68,7 +68,7 @@ impl ReflectShaderModule {
             MAX_DESCRIPTOR_SETS,
             crate::types::ReflectDescriptorSet {
                 set: std::u32::MAX,
-                bindings: Vec::new(),
+                binding_refs: Vec::new(),
             },
         );
 
@@ -126,18 +126,27 @@ impl ReflectShaderModule {
         for set_index in 0..set_count {
             let set = self.descriptor_sets[set_index].set;
             for binding_index in 0..self.descriptor_bindings.len() {
-                if self.descriptor_bindings[binding_index].set == set {
-                    self.descriptor_sets[set_index].bindings.push(binding_index);
+                let descriptor_binding = &self.descriptor_bindings[binding_index];
+                if descriptor_binding.set == set {
+                    self.descriptor_sets[set_index].binding_refs.push(
+                        crate::DescriptorBindingRef {
+                            ref_id: Some(binding_index),
+                            entry_point_id: None,
+                            value: descriptor_binding.to_owned(),
+                        },
+                    );
                 }
             }
         }
 
         // Update entry points
-        for entry_point in &mut self.entry_points {
+        for entry_point_index in 0..self.entry_points.len() {
+            let entry_point = &mut self.entry_points[entry_point_index];
             let mut descriptor_set_count = 0;
             for descriptor_set in &self.descriptor_sets {
-                for binding_index in &descriptor_set.bindings {
-                    let binding_id = &self.descriptor_bindings[*binding_index].spirv_id;
+                for binding_ref in &descriptor_set.binding_refs {
+                    let binding_id =
+                        &self.descriptor_bindings[binding_ref.ref_id.unwrap()].spirv_id;
                     if let Some(_) = entry_point
                         .used_uniforms
                         .iter()
@@ -155,8 +164,9 @@ impl ReflectShaderModule {
             for descriptor_set in &self.descriptor_sets {
                 let mut binding_count = 0;
 
-                for binding_index in &descriptor_set.bindings {
-                    let binding_id = &self.descriptor_bindings[*binding_index].spirv_id;
+                for binding_ref in &descriptor_set.binding_refs {
+                    let binding_id =
+                        &self.descriptor_bindings[binding_ref.ref_id.unwrap()].spirv_id;
                     if let Some(_) = entry_point
                         .used_uniforms
                         .iter()
@@ -170,15 +180,20 @@ impl ReflectShaderModule {
                     continue;
                 }
 
-                let mut bindings = Vec::with_capacity(binding_count);
-                for binding_index in &descriptor_set.bindings {
-                    let binding = &self.descriptor_bindings[*binding_index];
+                let mut binding_refs = Vec::with_capacity(binding_count);
+                for binding_ref in &descriptor_set.binding_refs {
+                    let descriptor_binding_id = binding_ref.ref_id.unwrap();
+                    let descriptor_binding = &self.descriptor_bindings[descriptor_binding_id];
                     if let Some(_) = entry_point
                         .used_uniforms
                         .iter()
-                        .position(|id| id == &binding.spirv_id)
+                        .position(|id| id == &descriptor_binding.spirv_id)
                     {
-                        bindings.push(*binding_index);
+                        binding_refs.push(crate::DescriptorBindingRef {
+                            ref_id: Some(descriptor_binding_id),
+                            entry_point_id: Some(entry_point_index),
+                            value: descriptor_binding.to_owned(),
+                        });
                     }
                 }
 
@@ -186,7 +201,7 @@ impl ReflectShaderModule {
                     .descriptor_sets
                     .push(crate::types::ReflectDescriptorSet {
                         set: descriptor_set.set,
-                        bindings,
+                        binding_refs,
                     });
             }
         }

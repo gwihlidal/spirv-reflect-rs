@@ -56,5 +56,5 @@ pub struct ReflectDescriptorBinding {
 #[derive(Debug, Default, Clone, Serialize, PartialEq)]
 pub struct ReflectDescriptorSet {
     pub set: u32,
-    pub bindings: Vec<usize>,
+    pub binding_refs: Vec<crate::DescriptorBindingRef>,
 }
