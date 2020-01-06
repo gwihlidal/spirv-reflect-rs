@@ -1866,6 +1866,7 @@ impl Parser {
             variable.decoration_flags = Self::apply_decorations(&type_decorations)?;
             variable.numeric = type_description.traits.numeric.clone();
             variable.format = Self::parse_format(&type_description)?;
+            variable.type_description = type_description.to_owned();
         } else {
             return Err("Invalid SPIR-V ID reference".into());
         }
