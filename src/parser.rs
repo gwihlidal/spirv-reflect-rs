@@ -1374,12 +1374,103 @@ impl Parser {
 
     fn parse_descriptor_block_variable(
         &mut self,
-        //_spv_words: &[u32],
-        _module: &super::ShaderModule,
-        _type_index: usize,
-        _push_constant: &mut crate::types::ReflectBlockVariable,
+        module: &super::ShaderModule,
+        type_description: &crate::types::ReflectTypeDescription,
+        variable: &mut crate::types::ReflectBlockVariable,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - parse_descriptor_block_variable");
+        let mut has_no_write = false;
+        let resolved_type_description = if type_description.members.len() > 0 {
+            if let Some(type_node_index) = self.find_node(type_description.id) {
+                variable.members.reserve(type_description.members.len());
+
+                let (resolved_node_index, resolved_type) = match self.nodes[type_node_index].op {
+                    spirv_headers::Op::TypeArray => {
+                        let mut resolved_node_index = type_node_index;
+                        while self.nodes[type_node_index].op == spirv_headers::Op::TypeArray {
+                            let element_type_id =
+                                self.nodes[type_node_index].array_traits.element_type_id;
+                            if let Some(test_type_node_index) = self.find_node(element_type_id) {
+                                resolved_node_index = test_type_node_index;
+                            } else {
+                                return Err("Invalid SPIR-V ID reference".into());
+                            }
+                        }
+                        (resolved_node_index, type_description)
+                    }
+                    spirv_headers::Op::TypeRuntimeArray => {
+                        if let Some(resolved_type_index) = module
+                            .internal
+                            .find_type(self.nodes[type_node_index].array_traits.element_type_id)
+                        {
+                            let resolved_type_description =
+                                &module.internal.type_descriptions[resolved_type_index];
+                            if let Some(resolved_type_node_index) =
+                                self.find_node(resolved_type_description.id)
+                            {
+                                (resolved_type_node_index, resolved_type_description)
+                            } else {
+                                return Err("Invalid SPIR-V ID reference".into());
+                            }
+                        } else {
+                            return Err("Invalid SPIR-V ID reference".into());
+                        }
+                    }
+                    _ => (type_node_index, type_description),
+                };
+
+                for member_index in 0..type_description.members.len() {
+                    let mut member_variable = crate::types::ReflectBlockVariable::default();
+
+                    let member_type_description = &type_description.members[member_index];
+                    if (member_type_description.type_flags & crate::types::ReflectTypeFlags::STRUCT)
+                        == crate::types::ReflectTypeFlags::STRUCT
+                    {
+                        self.parse_descriptor_block_variable(
+                            module,
+                            member_type_description,
+                            &mut member_variable,
+                        )?;
+                    }
+
+                    let type_node = &self.nodes[resolved_node_index];
+
+                    member_variable.name = type_node.member_names[member_index].to_owned();
+                    member_variable.offset =
+                        type_node.member_decorations[member_index].offset.value;
+                    member_variable.decoration_flags =
+                        Self::apply_decorations(&type_node.member_decorations[member_index])?;
+
+                    if member_variable
+                        .decoration_flags
+                        .contains(crate::types::ReflectDecorationFlags::NON_WRITABLE)
+                    {
+                        has_no_write = true;
+                    }
+
+                    if *type_description.op == spirv_headers::Op::TypeArray {
+                        member_variable.array = member_type_description.traits.array.clone();
+                    }
+
+                    member_variable.numeric = member_type_description.traits.numeric.clone();
+                    member_variable.type_description = Some(member_type_description.to_owned());
+                    variable.members.push(member_variable);
+                }
+
+                resolved_type
+            } else {
+                return Err("Invalid SPIR-V ID reference".into());
+            }
+        } else {
+            type_description
+        };
+
+        if has_no_write {
+            variable.decoration_flags |= crate::types::ReflectDecorationFlags::NON_WRITABLE;
+        }
+
+        let var_type_description = resolved_type_description.to_owned();
+        variable.name = var_type_description.type_name.to_owned();
+        variable.type_description = Some(var_type_description);
         Ok(())
     }
 
@@ -1560,7 +1651,8 @@ impl Parser {
                     .block
                     .to_owned();
 
-                self.parse_descriptor_block_variable(module, type_index, &mut block)?;
+                let type_description = &module.internal.type_descriptions[type_index];
+                self.parse_descriptor_block_variable(module, type_description, &mut block)?;
 
                 // Top level uses descriptor name
                 block.name = module.internal.descriptor_bindings[descriptor_binding_index]
@@ -1645,9 +1737,11 @@ impl Parser {
                         self.find_node(module.internal.type_descriptions[resolved_type_index].id)
                     {
                         let mut push_constant = crate::types::ReflectBlockVariable::default();
+                        let type_description =
+                            &module.internal.type_descriptions[resolved_type_index];
                         self.parse_descriptor_block_variable(
                             module,
-                            resolved_type_index,
+                            type_description,
                             &mut push_constant,
                         )?;
                         self.parse_descriptor_block_variable_sizes(
