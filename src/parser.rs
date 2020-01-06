@@ -772,15 +772,16 @@ impl Parser {
                         }
                         spirv_headers::Decoration::ArrayStride => {
                             let word_offset = word_offset + member_offset + 3;
-                            target_decorations.matrix_stride = spv_words[word_offset];
+                            target_decorations.array_stride = spv_words[word_offset];
                         }
                         spirv_headers::Decoration::MatrixStride => {
                             let word_offset = word_offset + member_offset + 3;
-                            target_decorations.location.value = spv_words[word_offset];
+                            target_decorations.matrix_stride = spv_words[word_offset];
                         }
                         spirv_headers::Decoration::BuiltIn => {
                             let word_offset = word_offset + member_offset + 3;
-                            target_decorations.matrix_stride = spv_words[word_offset];
+                            target_decorations.built_in =
+                                spirv_headers::BuiltIn::from_u32(spv_words[word_offset]);
                         }
                         spirv_headers::Decoration::NoPerspective => {
                             target_decorations.is_noperspective = true;
@@ -1046,8 +1047,6 @@ impl Parser {
                 }
             }
             spirv_headers::Op::TypePointer => {
-                type_description.type_flags |= crate::types::ReflectTypeFlags::STRUCT
-                    | crate::types::ReflectTypeFlags::EXTERNAL_BLOCK;
                 type_description.storage_class =
                     spirv_headers::StorageClass::from_u32(spv_words[word_offset + 2]).into();
                 if type_description.storage_class == crate::types::ReflectStorageClass::Undefined {
@@ -1452,7 +1451,7 @@ impl Parser {
                     }
 
                     member_variable.numeric = member_type_description.traits.numeric.clone();
-                    member_variable.type_description = Some(member_type_description.to_owned());
+                    member_variable.type_description = member_type_description.to_owned();
                     variable.members.push(member_variable);
                 }
 
@@ -1470,7 +1469,7 @@ impl Parser {
 
         let var_type_description = resolved_type_description.to_owned();
         variable.name = var_type_description.type_name.to_owned();
-        variable.type_description = Some(var_type_description);
+        variable.type_description = var_type_description;
         Ok(())
     }
 
@@ -1499,87 +1498,98 @@ impl Parser {
 
             // Calculate size
             for mut variable_member in &mut variable.members {
-                if let Some(ref variable_member_type) = variable_member.type_description {
-                    match *variable_member_type.op {
-                        spirv_headers::Op::TypeBool => {
-                            variable_member.size = SPIRV_WORD_SIZE as u32;
-                        }
-                        spirv_headers::Op::TypeInt | spirv_headers::Op::TypeFloat => {
-                            variable_member.size = variable_member_type.traits.numeric.scalar.width
+                match *variable_member.type_description.op {
+                    spirv_headers::Op::TypeBool => {
+                        variable_member.size = SPIRV_WORD_SIZE as u32;
+                    }
+                    spirv_headers::Op::TypeInt | spirv_headers::Op::TypeFloat => {
+                        variable_member.size =
+                            variable_member.type_description.traits.numeric.scalar.width
                                 / SPIRV_BYTE_WIDTH as u32;
+                    }
+                    spirv_headers::Op::TypeVector => {
+                        variable_member.size = variable_member
+                            .type_description
+                            .traits
+                            .numeric
+                            .vector
+                            .component_count
+                            * (variable_member.type_description.traits.numeric.scalar.width
+                                / SPIRV_BYTE_WIDTH as u32);
+                    }
+                    spirv_headers::Op::TypeMatrix => {
+                        if variable_member
+                            .decoration_flags
+                            .contains(crate::types::ReflectDecorationFlags::COLUMN_MAJOR)
+                        {
+                            variable_member.size = variable_member
+                                .type_description
+                                .traits
+                                .numeric
+                                .matrix
+                                .column_count
+                                * variable_member.numeric.matrix.stride;
+                        } else if variable_member
+                            .decoration_flags
+                            .contains(crate::types::ReflectDecorationFlags::ROW_MAJOR)
+                        {
+                            variable_member.size = variable_member
+                                .type_description
+                                .traits
+                                .numeric
+                                .matrix
+                                .row_count
+                                * variable_member.numeric.matrix.stride;
                         }
-                        spirv_headers::Op::TypeVector => {
-                            variable_member.size =
-                                variable_member_type.traits.numeric.vector.component_count
-                                    * (variable_member_type.traits.numeric.scalar.width
-                                        / SPIRV_BYTE_WIDTH as u32);
-                        }
-                        spirv_headers::Op::TypeMatrix => {
-                            if variable_member_type
-                                .decoration_flags
-                                .contains(crate::types::ReflectDecorationFlags::COLUMN_MAJOR)
-                            {
-                                variable_member.size =
-                                    variable_member_type.traits.numeric.matrix.column_count
-                                        * variable_member.numeric.matrix.stride;
-                            } else if variable_member_type
-                                .decoration_flags
-                                .contains(crate::types::ReflectDecorationFlags::ROW_MAJOR)
-                            {
-                                variable_member.size =
-                                    variable_member_type.traits.numeric.matrix.row_count
-                                        * variable_member.numeric.matrix.stride;
-                            }
-                        }
-                        spirv_headers::Op::TypeArray => {
-                            if (variable_member_type.type_flags
-                                & crate::types::ReflectTypeFlags::STRUCT)
-                                == crate::types::ReflectTypeFlags::STRUCT
-                            {
-                                // Struct of structs
-                                self.parse_descriptor_block_variable_sizes(
-                                    module,
-                                    false,
-                                    true,
-                                    is_parent_rta,
-                                    &mut variable_member,
-                                )?;
-                            }
-                            variable_member.size = if variable_member.array.dims.len() > 0 {
-                                let mut element_count = 1;
-                                for dim in &variable_member.array.dims {
-                                    element_count *= dim;
-                                }
-                                element_count
-                            } else {
-                                0
-                            } * variable_member.array.stride;
-                        }
-                        spirv_headers::Op::TypeRuntimeArray => {
-                            if (variable_member_type.type_flags
-                                & crate::types::ReflectTypeFlags::STRUCT)
-                                == crate::types::ReflectTypeFlags::STRUCT
-                            {
-                                self.parse_descriptor_block_variable_sizes(
-                                    module,
-                                    false,
-                                    true,
-                                    true,
-                                    &mut variable_member,
-                                )?;
-                            }
-                        }
-                        spirv_headers::Op::TypeStruct => {
+                    }
+                    spirv_headers::Op::TypeArray => {
+                        if (variable_member.type_description.type_flags
+                            & crate::types::ReflectTypeFlags::STRUCT)
+                            == crate::types::ReflectTypeFlags::STRUCT
+                        {
+                            // Struct of structs
                             self.parse_descriptor_block_variable_sizes(
                                 module,
                                 false,
-                                is_parent_aos,
+                                true,
                                 is_parent_rta,
                                 &mut variable_member,
                             )?;
                         }
-                        _ => {}
+                        variable_member.size = if variable_member.array.dims.len() > 0 {
+                            let mut element_count = 1;
+                            for dim in &variable_member.array.dims {
+                                element_count *= dim;
+                            }
+                            element_count
+                        } else {
+                            0
+                        } * variable_member.array.stride;
                     }
+                    spirv_headers::Op::TypeRuntimeArray => {
+                        if (variable_member.type_description.type_flags
+                            & crate::types::ReflectTypeFlags::STRUCT)
+                            == crate::types::ReflectTypeFlags::STRUCT
+                        {
+                            self.parse_descriptor_block_variable_sizes(
+                                module,
+                                false,
+                                true,
+                                true,
+                                &mut variable_member,
+                            )?;
+                        }
+                    }
+                    spirv_headers::Op::TypeStruct => {
+                        self.parse_descriptor_block_variable_sizes(
+                            module,
+                            false,
+                            is_parent_aos,
+                            is_parent_rta,
+                            &mut variable_member,
+                        )?;
+                    }
+                    _ => {}
                 }
             }
 

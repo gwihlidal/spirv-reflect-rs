@@ -153,7 +153,7 @@ pub struct ReflectBlockVariable {
     pub numeric: ReflectNumericTraits,
     pub array: ReflectArrayTraits,
     pub members: Vec<ReflectBlockVariable>,
-    pub type_description: Option<ReflectTypeDescription>,
+    pub type_description: ReflectTypeDescription,
 }
 
 #[derive(Debug, Copy, Clone, Serialize, PartialEq)]
@@ -219,7 +219,7 @@ pub struct ReflectInterfaceVariable {
     pub array: ReflectArrayTraits,
     pub members: Vec<ReflectInterfaceVariable>,
     pub format: ReflectFormat,
-    pub type_description: Option<ReflectTypeDescription>,
+    pub type_description: ReflectTypeDescription,
     pub word_offset: u32,
 }
 
