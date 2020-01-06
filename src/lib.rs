@@ -450,11 +450,31 @@ impl ShaderModule {
 
     pub fn change_input_variable_location(
         &mut self,
-        _variable: &InterfaceVariableRef,
-        _new_location: u32,
+        variable: &InterfaceVariableRef,
+        new_location: u32,
     ) -> Result<(), String> {
-        println!("UNIMPLEMENTED - change_input_variable_location");
-        Ok(())
+        if let Some(variable_index) = variable.ref_id {
+            if variable_index < self.internal.input_variables.len() {
+                let mut variable = &mut self.internal.input_variables[variable_index];
+                let word_offset_location = variable.word_offset;
+                if word_offset_location as usize > self.internal.spirv_code.len() - 1 {
+                    return Err(
+                        "Error attempting to change input variable location - location word offset range exceeded"
+                            .into(),
+                    );
+                }
+                variable.location = new_location;
+                self.internal.spirv_code[word_offset_location as usize] = new_location;
+                Ok(())
+            } else {
+                Err(
+                    "Error attempting to change input variable location - index is out of range"
+                        .into(),
+                )
+            }
+        } else {
+            Err("Error attempting to change input variable location - ref is invalid".into())
+        }
     }
 
     pub fn change_output_variable_location(
