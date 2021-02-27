@@ -1,4 +1,5 @@
-#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
 pub enum ReflectResourceType {
     Undefined,
     Sampler,

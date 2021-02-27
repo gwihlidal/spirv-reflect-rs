@@ -1,5 +1,6 @@
 #[allow(non_camel_case_types)]
-#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
 pub enum ReflectImageFormat {
     Undefined,
     RGBA32_FLOAT,
@@ -50,7 +51,8 @@ impl Default for ReflectImageFormat {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, Copy, Clone, Serialize, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
 pub enum ReflectFormat {
     Undefined,
     R32_UINT,
