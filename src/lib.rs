@@ -2,14 +2,13 @@
 extern crate bitflags;
 extern crate num_traits;
 extern crate spirv_headers;
-#[macro_use]
-extern crate serde_derive;
 
 use num_traits::cast::FromPrimitive;
 
 pub mod convert;
 pub mod ffi;
 pub mod types;
+pub use spirv_headers as headers;
 
 pub(crate) fn ffi_to_string(ffi: *const ::std::os::raw::c_char) -> String {
     if ffi.is_null() {
