@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Update `SPIRV-Reflect` to https://github.com/KhronosGroup/SPIRV-Reflect `master` with stable KHR RayTracing spec.
+* Update `bindgen` from `0.51` to `0.59`.
 
 ## 0.2.3 (2019-11-03)
 
