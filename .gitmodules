@@ -1,7 +1,7 @@
 [submodule "vendor"]
 	path = vendor
-	url = https://github.com/jaynus/SPIRV-Reflect.git
-	branch = nsubtil/NV_ray_tracing
+	url = https://github.com/KhronosGroup/SPIRV-Reflect
+	branch = master
 [submodule "spirv"]
 	path = spirv
 	url = https://github.com/gfx-rs/rspirv.git

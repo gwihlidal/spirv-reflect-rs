@@ -21,7 +21,7 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
             )
         }
         .iter()
-        .map(|var| ffi_to_interface_variable(var))
+        .map(|&var| ffi_to_interface_variable(var))
         .collect(),
         output_variables: unsafe {
             std::slice::from_raw_parts(
@@ -30,7 +30,7 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
             )
         }
         .iter()
-        .map(|var| ffi_to_interface_variable(var))
+        .map(|&var| ffi_to_interface_variable(var))
         .collect(),
         descriptor_sets: unsafe {
             std::slice::from_raw_parts(
@@ -104,7 +104,7 @@ pub(crate) fn ffi_to_type_description(
         type_name: super::ffi_to_string(ffi_type.type_name),
         struct_member_name: super::ffi_to_string(ffi_type.struct_member_name),
         storage_class: ffi_to_storage_class(ffi_type.storage_class),
-        type_flags: ffi_to_type_flags(ffi_type.type_flags as i32),
+        type_flags: ffi_to_type_flags(ffi_type.type_flags),
         decoration_flags: ffi_to_decoration_flags(ffi_type.decoration_flags),
         traits: ffi_to_type_description_traits(ffi_type.traits),
         members,
@@ -238,8 +238,8 @@ pub(crate) fn ffi_to_descriptor_type(
         ffi::SpvReflectDescriptorType_SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT => {
             ReflectDescriptorType::InputAttachment
         }
-        ffi::SpvReflectDescriptorType_SPV_REFLECT_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV => {
-            ReflectDescriptorType::AccelerationStructureNV
+        ffi::SpvReflectDescriptorType_SPV_REFLECT_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR => {
+            ReflectDescriptorType::AccelerationStructureKHR
         }
         _ => unimplemented!(),
     }
