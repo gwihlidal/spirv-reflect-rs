@@ -2,6 +2,3 @@
 	path = vendor
 	url = https://github.com/KhronosGroup/SPIRV-Reflect
 	branch = master
-[submodule "spirv"]
-	path = spirv
-	url = https://github.com/gfx-rs/rspirv.git

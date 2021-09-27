@@ -1,27 +1,27 @@
 use crate::ffi;
 use num_traits::cast::FromPrimitive;
-use spirv_headers;
+use spirv;
 use std::ops::Deref;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub struct ReflectOp(spirv_headers::Op);
+pub struct ReflectOp(spirv::Op);
 
 impl Default for ReflectOp {
     fn default() -> Self {
-        ReflectOp(spirv_headers::Op::Nop)
+        ReflectOp(spirv::Op::Nop)
     }
 }
 
 impl Deref for ReflectOp {
-    type Target = spirv_headers::Op;
-    fn deref(&self) -> &spirv_headers::Op {
+    type Target = spirv::Op;
+    fn deref(&self) -> &spirv::Op {
         &self.0
     }
 }
 
 impl From<ffi::SpvOp> for ReflectOp {
     fn from(raw_op: ffi::SpvOp) -> Self {
-        match spirv_headers::Op::from_u32(raw_op as u32) {
+        match spirv::Op::from_u32(raw_op as u32) {
             Some(op) => ReflectOp(op),
             None => Default::default(),
         }
@@ -29,24 +29,24 @@ impl From<ffi::SpvOp> for ReflectOp {
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
-pub struct ReflectBuiltIn(spirv_headers::BuiltIn);
+pub struct ReflectBuiltIn(spirv::BuiltIn);
 
 impl Default for ReflectBuiltIn {
     fn default() -> Self {
-        ReflectBuiltIn(spirv_headers::BuiltIn::Position)
+        ReflectBuiltIn(spirv::BuiltIn::Position)
     }
 }
 
 impl Deref for ReflectBuiltIn {
-    type Target = spirv_headers::BuiltIn;
-    fn deref(&self) -> &spirv_headers::BuiltIn {
+    type Target = spirv::BuiltIn;
+    fn deref(&self) -> &spirv::BuiltIn {
         &self.0
     }
 }
 
 impl From<ffi::SpvBuiltIn> for ReflectBuiltIn {
     fn from(raw_built_in: ffi::SpvBuiltIn) -> Self {
-        match spirv_headers::BuiltIn::from_u32(raw_built_in as u32) {
+        match spirv::BuiltIn::from_u32(raw_built_in as u32) {
             Some(built_in) => ReflectBuiltIn(built_in),
             None => Default::default(),
         }

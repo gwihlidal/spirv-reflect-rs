@@ -1,17 +1,16 @@
 use crate::ffi;
 use crate::types::*;
 use num_traits::cast::FromPrimitive;
-use spirv_headers;
 
 pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> ReflectEntryPoint {
     ReflectEntryPoint {
         name: super::ffi_to_string(ffi_type.name),
         id: ffi_type.id,
-        spirv_execution_model: match spirv_headers::ExecutionModel::from_u32(
+        spirv_execution_model: match spirv::ExecutionModel::from_u32(
             ffi_type.spirv_execution_model as u32,
         ) {
             Some(model) => model,
-            None => spirv_headers::ExecutionModel::Vertex,
+            None => spirv::ExecutionModel::Vertex,
         },
         shader_stage: ffi_to_shader_stage_flags(ffi_type.shader_stage),
         input_variables: unsafe {

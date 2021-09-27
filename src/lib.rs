@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate bitflags;
 extern crate num_traits;
-extern crate spirv_headers;
 #[macro_use]
 extern crate serde_derive;
 
@@ -78,15 +77,15 @@ impl ShaderModule {
         }
     }
 
-    pub fn get_source_language(&self) -> spirv_headers::SourceLanguage {
+    pub fn get_source_language(&self) -> spirv::SourceLanguage {
         match self.module {
             Some(ref module) => {
-                match spirv_headers::SourceLanguage::from_u32(module.source_language as u32) {
+                match spirv::SourceLanguage::from_u32(module.source_language as u32) {
                     Some(language) => language,
-                    None => spirv_headers::SourceLanguage::Unknown,
+                    None => spirv::SourceLanguage::Unknown,
                 }
             }
-            None => spirv_headers::SourceLanguage::Unknown,
+            None => spirv::SourceLanguage::Unknown,
         }
     }
 
@@ -111,15 +110,15 @@ impl ShaderModule {
         }
     }
 
-    pub fn get_spirv_execution_model(&self) -> spirv_headers::ExecutionModel {
+    pub fn get_spirv_execution_model(&self) -> spirv::ExecutionModel {
         match self.module {
             Some(ref module) => {
-                match spirv_headers::ExecutionModel::from_u32(module.spirv_execution_model as u32) {
+                match spirv::ExecutionModel::from_u32(module.spirv_execution_model as u32) {
                     Some(model) => model,
-                    None => spirv_headers::ExecutionModel::Vertex,
+                    None => spirv::ExecutionModel::Vertex,
                 }
             }
-            None => spirv_headers::ExecutionModel::Vertex,
+            None => spirv::ExecutionModel::Vertex,
         }
     }
 
