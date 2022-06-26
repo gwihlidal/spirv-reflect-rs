@@ -4,6 +4,8 @@ extern crate num_traits;
 #[macro_use]
 extern crate serde_derive;
 
+use std::convert::TryInto;
+
 use num_traits::cast::FromPrimitive;
 
 pub mod convert;
@@ -585,7 +587,7 @@ pub fn create_shader_module(spv_data: &[u8]) -> Result<ShaderModule, &'static st
     let mut module: ffi::SpvReflectShaderModule = unsafe { std::mem::zeroed() };
     let result: ffi::SpvReflectResult = unsafe {
         ffi::spvReflectCreateShaderModule(
-            spv_data.len() as u64,
+            spv_data.len().try_into().unwrap(),
             spv_data.as_ptr() as *const std::os::raw::c_void,
             &mut module,
         )
