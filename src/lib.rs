@@ -585,7 +585,7 @@ pub fn create_shader_module(spv_data: &[u8]) -> Result<ShaderModule, &'static st
     let mut module: ffi::SpvReflectShaderModule = unsafe { std::mem::zeroed() };
     let result: ffi::SpvReflectResult = unsafe {
         ffi::spvReflectCreateShaderModule(
-            spv_data.len() as u64,
+            spv_data.len(),
             spv_data.as_ptr() as *const std::os::raw::c_void,
             &mut module,
         )
