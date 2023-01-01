@@ -168,6 +168,13 @@ pub struct ReflectInterfaceVariable {
     pub(crate) internal_data: *const ffi::SpvReflectInterfaceVariable,
 }
 
+#[derive(Debug, Copy, Clone, Serialize)]
+pub struct ReflectLocalSize {
+    pub x: u32,
+    pub y: u32,
+    pub z: u32,
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct ReflectEntryPoint {
     pub name: String,
@@ -180,4 +187,5 @@ pub struct ReflectEntryPoint {
     pub descriptor_sets: Vec<ReflectDescriptorSet>,
     pub used_uniforms: Vec<u32>,
     pub used_push_constants: Vec<u32>,
+    pub local_size: ReflectLocalSize,
 }
