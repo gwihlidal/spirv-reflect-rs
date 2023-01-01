@@ -169,7 +169,7 @@ pub struct ReflectInterfaceVariable {
 }
 
 #[derive(Debug, Copy, Clone, Serialize)]
-pub struct ReflectLocalSize {
+pub struct ReflectEntryPointLocalSize {
     pub x: u32,
     pub y: u32,
     pub z: u32,
@@ -187,5 +187,5 @@ pub struct ReflectEntryPoint {
     pub descriptor_sets: Vec<ReflectDescriptorSet>,
     pub used_uniforms: Vec<u32>,
     pub used_push_constants: Vec<u32>,
-    pub local_size: ReflectLocalSize,
+    pub local_size: ReflectEntryPointLocalSize,
 }
