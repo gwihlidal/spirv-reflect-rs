@@ -51,6 +51,11 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
             )
         }
         .to_vec(),
+        local_size: ReflectEntryPointLocalSize {
+            x: ffi_type.local_size.x,
+            y: ffi_type.local_size.y,
+            z: ffi_type.local_size.z,
+        },
     }
 }
 
