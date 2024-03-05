@@ -99,8 +99,12 @@ pub(crate) fn ffi_to_interface_variable(
 pub(crate) fn ffi_to_type_description(
     ffi_type: &ffi::SpvReflectTypeDescription,
 ) -> ReflectTypeDescription {
-    let ffi_members =
-        unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
+    let empty = Vec::new();
+    let ffi_members = if ffi_type.member_count as usize > 0 {
+        unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) }
+    } else {
+        &empty
+    };
     let members: Vec<ReflectTypeDescription> = ffi_members
         .iter()
         .map(|member| ffi_to_type_description(member))
@@ -469,8 +473,12 @@ pub(crate) fn ffi_to_binding_array_traits(
 pub(crate) fn ffi_to_block_variable(
     ffi_type: &ffi::SpvReflectBlockVariable,
 ) -> ReflectBlockVariable {
-    let ffi_members =
-        unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
+    let empty = Vec::new();
+    let ffi_members = if ffi_type.member_count as usize > 0 {
+        unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) }
+    } else {
+        &empty
+    };
     let members: Vec<ReflectBlockVariable> = ffi_members
         .iter()
         .map(|member| ffi_to_block_variable(member))
