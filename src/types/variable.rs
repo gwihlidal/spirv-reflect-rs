@@ -16,6 +16,13 @@ bitflags! {
         const NO_PERSPECTIVE = 32;
         const FLAT = 64;
         const NON_WRITABLE = 128;
+        const RELAXED_PRECISION = 256;
+        const NON_READABLE = 512;
+        const PATCH = 1024;
+        const PER_VERTEX = 2048;
+        const PER_TASK = 4096;
+        const WEIGHT_TEXTURE = 8192;
+        const BLOCK_MATCH_TEXTURE = 16384;
     }
 }
 
@@ -43,6 +50,7 @@ bitflags! {
         const EXTERNAL_MASK = 2_031_616;
         const STRUCT = 268_435_456;
         const ARRAY = 536_870_912;
+        const REF = 1_073_741_824;
     }
 }
 
