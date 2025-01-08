@@ -2,6 +2,14 @@ use crate::ffi;
 use crate::types::*;
 use num_traits::cast::FromPrimitive;
 
+unsafe fn ffi_slice_from_raw_parts<'a, T>(data: *const T, len: usize) -> &'a [T] {
+    if len > 0 {
+        std::slice::from_raw_parts(data, len)
+    } else {
+        &[]
+    }
+}
+
 pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> ReflectEntryPoint {
     ReflectEntryPoint {
         name: super::ffi_to_string(ffi_type.name),
@@ -14,7 +22,7 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
         },
         shader_stage: ffi_to_shader_stage_flags(ffi_type.shader_stage),
         input_variables: unsafe {
-            std::slice::from_raw_parts(
+            ffi_slice_from_raw_parts(
                 ffi_type.input_variables,
                 ffi_type.input_variable_count as usize,
             )
@@ -23,7 +31,7 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
         .map(|&var| ffi_to_interface_variable(var))
         .collect(),
         output_variables: unsafe {
-            std::slice::from_raw_parts(
+            ffi_slice_from_raw_parts(
                 ffi_type.output_variables,
                 ffi_type.output_variable_count as usize,
             )
@@ -32,7 +40,7 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
         .map(|&var| ffi_to_interface_variable(var))
         .collect(),
         descriptor_sets: unsafe {
-            std::slice::from_raw_parts(
+            ffi_slice_from_raw_parts(
                 ffi_type.descriptor_sets,
                 ffi_type.descriptor_set_count as usize,
             )
@@ -41,11 +49,11 @@ pub(crate) fn ffi_to_entry_point(ffi_type: &ffi::SpvReflectEntryPoint) -> Reflec
         .map(|set| ffi_to_descriptor_set(set))
         .collect(),
         used_uniforms: unsafe {
-            std::slice::from_raw_parts(ffi_type.used_uniforms, ffi_type.used_uniform_count as usize)
+            ffi_slice_from_raw_parts(ffi_type.used_uniforms, ffi_type.used_uniform_count as usize)
         }
         .to_vec(),
         used_push_constants: unsafe {
-            std::slice::from_raw_parts(
+            ffi_slice_from_raw_parts(
                 ffi_type.used_push_constants,
                 ffi_type.used_push_constant_count as usize,
             )
@@ -64,7 +72,7 @@ pub(crate) fn ffi_to_interface_variable(
 ) -> ReflectInterfaceVariable {
     let ffi_type = unsafe { &*ffi_type_ptr };
     let ffi_members =
-        unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
+        unsafe { ffi_slice_from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
     let members: Vec<ReflectInterfaceVariable> = ffi_members
         .iter()
         .map(|member| ffi_to_interface_variable(member))
@@ -97,7 +105,7 @@ pub(crate) fn ffi_to_type_description(
     ffi_type: &ffi::SpvReflectTypeDescription,
 ) -> ReflectTypeDescription {
     let ffi_members =
-        unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
+        unsafe { ffi_slice_from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
     let members: Vec<ReflectTypeDescription> = ffi_members
         .iter()
         .map(|member| ffi_to_type_description(member))
@@ -122,7 +130,7 @@ pub(crate) fn ffi_to_descriptor_set(
     let mut bindings: Vec<ReflectDescriptorBinding> =
         Vec::with_capacity(ffi_type.binding_count as usize);
     let ffi_bindings =
-        unsafe { std::slice::from_raw_parts(ffi_type.bindings, ffi_type.binding_count as usize) };
+        unsafe { ffi_slice_from_raw_parts(ffi_type.bindings, ffi_type.binding_count as usize) };
     for ffi_binding in ffi_bindings {
         bindings.push(ffi_to_descriptor_binding(*ffi_binding));
     }
@@ -467,7 +475,7 @@ pub(crate) fn ffi_to_block_variable(
     ffi_type: &ffi::SpvReflectBlockVariable,
 ) -> ReflectBlockVariable {
     let ffi_members =
-        unsafe { std::slice::from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
+        unsafe { ffi_slice_from_raw_parts(ffi_type.members, ffi_type.member_count as usize) };
     let members: Vec<ReflectBlockVariable> = ffi_members
         .iter()
         .map(|member| ffi_to_block_variable(member))
